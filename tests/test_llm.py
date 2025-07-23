@@ -269,7 +269,7 @@ def test_authenticate_method(monkeypatch):
     monkeypatch.setattr("litai.client.login.Auth", mock_auth_constructor)
 
     # Test case 1: Both api_key and user_id provided
-    llm = LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
+    LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
 
     # Verify that the authentication was called
     mock_auth.authenticate.assert_called_once()
@@ -280,7 +280,7 @@ def test_authenticate_method(monkeypatch):
 
     # Test case 2: Neither api_key nor user_id provided
     mock_auth.reset_mock()
-    llm2 = LLM(model="openai/gpt-4")
+    LLM(model="openai/gpt-4")
 
     # Verify that authentication was not called
     mock_auth.authenticate.assert_not_called()
