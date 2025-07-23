@@ -112,11 +112,6 @@ class LLM:
         if lightning_user_id is not None:
             os.environ["LIGHTNING_USER_ID"] = lightning_user_id
 
-        if teamspace is None:
-            teamspace = os.environ.get("LIGHTNING_TEAMSPACE")
-
-        self._authenticate(lightning_api_key, lightning_user_id)
-
         if verbose not in [0, 1, 2]:
             raise ValueError("Verbose must be 0, 1, or 2.")
         self._verbose = verbose
