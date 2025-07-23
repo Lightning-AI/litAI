@@ -22,6 +22,9 @@ import warnings
 from typing import Any, Dict, List, Optional, Union
 
 import requests
+from lightning_sdk import User
+from lightning_sdk.api import UserApi
+from lightning_sdk.lightning_cloud import login
 from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
@@ -111,6 +114,18 @@ class LLM:
         if lightning_user_id is not None:
             os.environ["LIGHTNING_USER_ID"] = lightning_user_id
 
+        if teamspace is None:
+            teamspace = os.environ.get("LIGHTNING_TEAMSPACE")
+
+        if teamspace is None:
+            raise ValueError(
+                "Missing teamspace configuration. Provide a `teamspace` argument when creating the LLM instance,"
+                " or set the `LIGHTNING_TEAMSPACE` environment variable."
+            )
+
+        self._authenticate(lightning_api_key, lightning_user_id)
+
+
         if verbose not in [0, 1, 2]:
             raise ValueError("Verbose must be 0, 1, or 2.")
         self._verbose = verbose
@@ -133,6 +148,20 @@ class LLM:
         self._load_exception: Optional[BaseException] = None
 
         threading.Thread(target=self._load_models, daemon=True).start()
+
+    def _authenticate(self, lightning_api_key, lightning_user_id):
+        if not(lightning_api_key and lightning_user_id):
+            return
+        auth = login.Auth()
+        auth.login()
+        try:
+            auth.authenticate()
+            user_api_key = auth.api_key
+            user_id = auth.user_id
+            os.environ["LIGHTNING_API_KEY"] = user_api_key
+            os.environ["LIGHTNING_USER_ID"] = user_id
+        except ConnectionError as e:
+            raise e
 
     @property
     def model(self) -> str:
