@@ -140,7 +140,7 @@ class LLM:
 
         threading.Thread(target=self._load_models, daemon=True).start()
 
-    def _authenticate(self, lightning_api_key, lightning_user_id):
+    def _authenticate(self, lightning_api_key: Optional[str], lightning_user_id: Optional[str]) -> None:
         if not (lightning_api_key and lightning_user_id):
             return
         auth = login.Auth()

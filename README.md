@@ -50,7 +50,7 @@ pip install litai
 
 ## Run on a Studio
 
-When running inside Lightning Studio, authentication is handled automatically. You can use any available LLM for text generation.
+When running inside Lightning Studio, you can use any available LLM out of the box — no extra setup required.
 
 ```python
 from litai import LLM
@@ -62,22 +62,16 @@ print(llm.chat("who are you?"))
 
 ## Run locally (outside Studio)
 
-To use LitAI outside of Lightning Studio, you’ll need to manually authenticate using the following:
+To use LitAI outside of Lightning Studio, you'll need to explicitly provide your teamspace name.
 
-- **teamspace** — Format: "owner-name/teamspace-name"
-  (e.g. "username/my-team" or "org-name/my-team")
-- **lightning_api_key** — Your personal API key from Global Settings → Keys
-- **lightning_user_id** — Your Lightning user ID, also found in the Keys section
+The format is: `"owner-name/teamspace-name"`
+
+(e.g. `"username/my-team"` or `"org-name/team-name"`)
 
 ```python
 from litai import LLM
 
-llm = LLM(
-    model="openai/gpt-4",
-    teamspace="owner-name/teamspace-name",
-    lightning_api_key="your-api-key",
-    lightning_user_id="your-user-id",
-)
+llm = LLM(model="openai/gpt-4", teamspace="owner-name/teamspace-name")
 print(llm.chat("who are you?"))
 # I'm an AI by OpenAI
 ```
