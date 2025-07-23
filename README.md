@@ -64,9 +64,7 @@ print(llm.chat("who are you?"))
 
 To use LitAI outside of Lightning Studio, you'll need to explicitly provide your teamspace name.
 
-The format is: `"owner-name/teamspace-name"`
-
-(e.g. `"username/my-team"` or `"org-name/team-name"`)
+The teamspace input format is: `"owner-name/teamspace-name"` (e.g. `"username/my-team"` or `"org-name/team-name"`)
 
 ```python
 from litai import LLM
