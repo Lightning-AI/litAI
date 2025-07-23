@@ -1,0 +1,6 @@
+coverage>=5.0
+pytest>=6.0
+pytest-cov
+mypy==1.16.1
+psutil>=7.0.0
+pytest-asyncio>=1.1.0

@@ -1,0 +1,257 @@
+"""LightningLLM main tests."""
+
+import os
+import re
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
+from litai import LLM
+
+
+def test_initialization_with_config_file(monkeypatch):
+    """Test LigtningLLM config."""
+    mock_llm_instance = MagicMock()
+    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_instance)
+    LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
+    assert os.getenv("LIGHTNING_API_KEY") == "my-key"
+    assert os.getenv("LIGHTNING_USER_ID") == "my-user-id"
+
+
+@patch("litai.client.SDKLLM")
+def test_invalid_model(mock_llm_class):
+    """Test invalid model name."""
+    dummy_model_name = "dummy-model"
+    mock_llm_class.side_effect = ValueError(
+        f"Failed to load model '{dummy_model_name}': Model '{dummy_model_name}' not found. "
+    )
+    llm = LLM(model=dummy_model_name)
+    with pytest.raises(ValueError, match="not found"):
+        llm._wait_for_model()
+
+
+def test_default_model(monkeypatch):
+    """Test default model name."""
+    mock_llm_instance = MagicMock()
+    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_instance)
+    warning_message = "No model was provided, defaulting to openai/gpt-4o"
+    with pytest.warns(UserWarning, match=re.escape(warning_message)):
+        llm = LLM()
+        assert len(llm.fallback_models) == 0
+        assert llm.model == "openai/gpt-4o"
+
+
+@patch("litai.client.SDKLLM")
+def test_cloudy_models_preload(mock_sdkllm):
+    """Test that CLOUDY_MODELS are preloaded during LLM initialization."""
+    cloudy_models = {
+        "openai/gpt-4o",
+        "openai/gpt-4",
+        "openai/o3-mini",
+        "anthropic/claude-3-5-sonnet-20240620",
+        "google/gemini-2.5-pro",
+        "google/gemini-2.5-flash",
+    }
+    from litai.client import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    llm = LLM()
+    llm._wait_for_model()
+
+    expected_calls = len(cloudy_models) * 2  # for both async and sync
+    assert mock_sdkllm.call_count == expected_calls, (
+        f"Expected {expected_calls} calls to SDKLLM, but got {mock_sdkllm.call_count}"
+    )
+
+    enable_async_param = {call.kwargs["enable_async"] for call in mock_sdkllm.call_args_list}
+    assert set(enable_async_param) == {True, False}
+
+
+@patch("litai.client.SDKLLM")
+def test_llm_chat(mock_llm_class):
+    """Test LigtningLLM chat."""
+    from litai.client import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.chat.return_value = "Hello! I am a helpful assistant."
+
+    mock_llm_class.return_value = mock_llm_instance
+
+    llm = LLM(model="openai/gpt-4")
+
+    response = llm.chat(
+        "Hello, who are you?",
+        system_prompt="You are a helpful assistant.",
+        metadata={"user_api": "123456"},
+        my_kwarg="test-kwarg",
+    )
+
+    assert isinstance(response, str)
+    assert "helpful" in response.lower()
+    mock_llm_instance.chat.assert_called_once_with(
+        prompt="Hello, who are you?",
+        system_prompt="You are a helpful assistant.",
+        max_completion_tokens=500,
+        images=None,
+        conversation=None,
+        metadata={"user_api": "123456"},
+        stream=False,
+        full_response=False,
+        my_kwarg="test-kwarg",
+    )
+    test_kwargs = mock_llm_instance.chat.call_args.kwargs
+    assert test_kwargs.get("my_kwarg") == "test-kwarg"
+
+    llm.reset_conversation("test")
+    mock_llm_instance.reset_conversation.assert_called_once()
+
+
+def test_model_override(monkeypatch):
+    """Test override model logic when main model fails."""
+    mock_llm = MagicMock()
+    mock_llm.name = "default-model"
+    mock_llm.enable_async = False
+    mock_fallback_model = MagicMock()
+    mock_fallback_model.name = "fallback-model"
+    mock_fallback_model.enable_async = False
+
+    mock_override = MagicMock()
+    mock_override.name = "override-model"
+    mock_override.chat.return_value = "Override response"
+    mock_override.enable_async = False
+
+    def mock_llm_constructor(name, teamspace="default-teamspace", **kwargs):
+        if name == "default-model":
+            return mock_llm
+        if name == "fallback-model":
+            return mock_fallback_model
+        if name == "override-model":
+            return mock_override
+        raise ValueError(f"Unknown model: {name}")
+
+    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_constructor)
+
+    llm = LLM(
+        model="default-model",
+        fallback_models=["fallback-model"],
+        max_retries=3,
+        full_response=True,
+    )
+
+    llm.chat(prompt="Hello", model="override-model")
+
+    assert mock_override.chat.call_count == 1
+    assert mock_fallback_model.chat.call_count == 0
+    assert mock_llm.chat.call_count == 0
+
+    mock_override.chat.assert_called_once_with(
+        prompt="Hello",
+        system_prompt=None,
+        max_completion_tokens=500,
+        images=None,
+        conversation=None,
+        metadata=None,
+        stream=False,
+        full_response=True,
+    )
+
+
+def test_fallback_models(monkeypatch):
+    """Test fallback model logic when main model fails."""
+    from litai.client import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_main_model = MagicMock()
+    mock_main_model.name = "main-model"
+    mock_fallback_model = MagicMock()
+    mock_fallback_model.name = "fallback-model"
+
+    mock_main_model.chat.side_effect = Exception("Primary model error")
+    mock_fallback_model.chat.side_effect = [
+        Exception("Fallback error 1"),
+        Exception("Fallback error 2"),
+        "Fallback response",
+    ]
+
+    def mock_llm_constructor(name, teamspace="default-teamspace", **kwargs):
+        if name == "main-model":
+            return mock_main_model
+        if name == "fallback-model":
+            return mock_fallback_model
+        raise ValueError(f"Unknown model: {name}")
+
+    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_constructor)
+
+    llm = LLM(
+        model="main-model",
+        fallback_models=["fallback-model"],
+        max_retries=3,
+    )
+
+    llm.chat(prompt="Hello")
+
+    assert mock_main_model.chat.call_count == 3
+    assert mock_fallback_model.chat.call_count == 3
+
+    mock_fallback_model.chat.assert_called_with(
+        prompt="Hello",
+        system_prompt=None,
+        max_completion_tokens=500,
+        images=None,
+        conversation=None,
+        metadata=None,
+        stream=False,
+        full_response=False,
+    )
+
+
+@pytest.mark.asyncio
+async def test_llm_async_chat(monkeypatch):
+    """Test async requests."""
+    mock_sdkllm = MagicMock()
+    mock_sdkllm.name = "mock-model"
+    mock_sdkllm.chat = AsyncMock(return_value="Hello, async world!")
+
+    monkeypatch.setattr("litai.client.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
+
+    llm = LLM(model="mock-model", enable_async=True)
+    result = await llm.chat("Hi there", conversation="async-test")
+    assert result == "Hello, async world!"
+    mock_sdkllm.chat.assert_called_once()
+
+
+def test_get_history(monkeypatch, capsys):
+    """Test get history."""
+    mock_sdkllm = MagicMock()
+    mock_sdkllm.name = "mock-model"
+    mock_sdkllm.get_history = MagicMock(
+        return_value=[
+            {"role": "user", "content": "Hello, world!", "model": "mock-model"},
+            {"role": "assistant", "content": "I am a mock model!", "model": "mock-model"},
+        ]
+    )
+
+    monkeypatch.setattr("litai.client.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
+
+    llm = LLM(model="mock-model")
+
+    # Test default behavior (prints to stdout)
+    result = llm.get_history("async-test")
+    assert result is None  # get_history returns None when raw=False
+
+    # Capture the printed output
+    captured = capsys.readouterr()
+    assert "🧠 Conversation: 'async-test'" in captured.out
+    assert "🟦 You" in captured.out
+    assert "🟨 mock-model" in captured.out
+    assert "Hello, world!" in captured.out
+    assert "I am a mock model!" in captured.out
+    assert "--- End of conversation ---" in captured.out
+
+    # Test raw=True behavior (returns data instead of printing)
+    result = llm.get_history("async-test", raw=True)
+    assert result == [
+        {"role": "user", "content": "Hello, world!", "model": "mock-model"},
+        {"role": "assistant", "content": "I am a mock model!", "model": "mock-model"},
+    ]

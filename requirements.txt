@@ -1,0 +1,1 @@
+lightning_sdk == 2025.07.22
