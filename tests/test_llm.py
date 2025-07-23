@@ -255,3 +255,32 @@ def test_get_history(monkeypatch, capsys):
         {"role": "user", "content": "Hello, world!", "model": "mock-model"},
         {"role": "assistant", "content": "I am a mock model!", "model": "mock-model"},
     ]
+
+
+def test_authenticate_method(monkeypatch):
+    # Mock the login.Auth class
+    mock_auth = MagicMock()
+    mock_auth.api_key = "test-api-key"
+    mock_auth.user_id = "test-user-id"
+
+    def mock_auth_constructor():
+        return mock_auth
+
+    monkeypatch.setattr("litai.client.login.Auth", mock_auth_constructor)
+
+    # Test case 1: Both api_key and user_id provided
+    llm = LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
+
+    # Verify that the authentication was called
+    mock_auth.authenticate.assert_called_once()
+
+    # Verify that environment variables were set
+    assert os.getenv("LIGHTNING_API_KEY") == "test-api-key"
+    assert os.getenv("LIGHTNING_USER_ID") == "test-user-id"
+
+    # Test case 2: Neither api_key nor user_id provided
+    mock_auth.reset_mock()
+    llm2 = LLM(model="openai/gpt-4")
+
+    # Verify that authentication was not called
+    mock_auth.authenticate.assert_not_called()

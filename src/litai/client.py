@@ -22,8 +22,6 @@ import warnings
 from typing import Any, Dict, List, Optional, Union
 
 import requests
-from lightning_sdk import User
-from lightning_sdk.api import UserApi
 from lightning_sdk.lightning_cloud import login
 from lightning_sdk.llm import LLM as SDKLLM
 
@@ -117,12 +115,6 @@ class LLM:
         if teamspace is None:
             teamspace = os.environ.get("LIGHTNING_TEAMSPACE")
 
-        if teamspace is None:
-            raise ValueError(
-                "Missing teamspace configuration. Provide a `teamspace` argument when creating the LLM instance,"
-                " or set the `LIGHTNING_TEAMSPACE` environment variable."
-            )
-
         self._authenticate(lightning_api_key, lightning_user_id)
 
 
@@ -153,7 +145,6 @@ class LLM:
         if not(lightning_api_key and lightning_user_id):
             return
         auth = login.Auth()
-        auth.login()
         try:
             auth.authenticate()
             user_api_key = auth.api_key
