@@ -106,11 +106,13 @@ class LLM:
                 "Either provide both or none.\n"
                 "To find the API key and user ID, go to the Global Settings page in your Lightning account."
             )
-        if lightning_api_key is not None:
-            os.environ["LIGHTNING_API_KEY"] = lightning_api_key
 
-        if lightning_user_id is not None:
+        if lightning_api_key is not None and lightning_user_id is not None:
+            os.environ["LIGHTNING_API_KEY"] = lightning_api_key
             os.environ["LIGHTNING_USER_ID"] = lightning_user_id
+
+        if os.environ.get("LIGHTNING_API_KEY") is None and os.environ.get("LIGHTNING_USER_ID") is None:
+            self._authenticate()
 
         if verbose not in [0, 1, 2]:
             raise ValueError("Verbose must be 0, 1, or 2.")
@@ -135,9 +137,7 @@ class LLM:
 
         threading.Thread(target=self._load_models, daemon=True).start()
 
-    def _authenticate(self, lightning_api_key: Optional[str], lightning_user_id: Optional[str]) -> None:
-        if not (lightning_api_key and lightning_user_id):
-            return
+    def _authenticate(self) -> None:
         auth = login.Auth()
         try:
             auth.authenticate()
