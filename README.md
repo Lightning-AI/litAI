@@ -62,6 +62,11 @@ print(llm.chat("who are you?"))
 ```
 
 # Key features
+A single, unified dashboard to manage models and spend.   
+
+<div align='center'>
+<img alt="Lightning" src="https://github.com/user-attachments/assets/702bb8aa-7948-4602-b9a3-8f55224eb116" width="800px" style="max-width: 100%;">
+</div>
 
 ✅ [Use over 20+ models (ChatGPT, Claude, etc...)](https://lightning.ai/)    
 ✅ [Monitor all usage in one place](https://lightning.ai/model-apis)    
