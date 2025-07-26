@@ -216,37 +216,72 @@ print(llm.chat("Who created you?"))
 # Performance
 LitAI does smart routing across a global network of servers. As a result, it only adds 25ms of overhead for an API call.   
 
+<br/>
+
 # FAQ
 
-### Do I need a subscription to use LitAI?    
+
+
+<details>
+  <summary>Do I need a subscription to use LitAI? (Nope) </summary>
+   
 Nope. You can start instantly without a subscription. LitAI is pay-as-you-go and lets you use your own model API keys (like OpenAI, Anthropic, etc.).
+</details>
 
-### Do I need an OpenAI account?    
+<details>
+  <summary>Do I need an OpenAI account?  (Nope)</summary>
+
 Nope. You get access to all models and all model providers without a subscription.   
+</details>
 
-### What happens if a model API fails or goes down?    
+<details>
+  <summary>What happens if a model API fails or goes down? </summary>
+
 LitAI automatically retries the same model and can fall back to other models you specify. You’ll get the best chance of getting a response, even during outages.
+</details>
 
-### Can I bring my own API keys for OpenAI, Anthropic, etc.?
+<details>
+  <summary>Can I bring my own API keys for OpenAI, Anthropic, etc.? (Yes)</summary>
+
 Yes! You can plug in your own keys to any OpenAI compatible API 
+</details>
 
-### Can I connect private models?
+<details>
+  <summary>Can I connect private models? (Yes)</summary>
+
 Yes! You can connect any endpoint that supports the OpenAI spec.   
+</details>
 
-### Can you deploy a dedicated, private model like Llama for me?
+<details>
+  <summary>Can you deploy a dedicated, private model like Llama for me? (Yes)</summary>
+
 Yes! We can deploy dedicated models on any cloud (Lambda, AWS, etc).
+</details>
 
-### Can you deploy models on-prem?
+<details>
+  <summary>Can you deploy models on-prem? (Yes)</summary>
+
 Yes! We can deploy on any dedicated VPC on the cloud or your own physical data center.
+</details>
 
-### Do deployed models support Kubernetes?
+<details>
+  <summary>Do deployed models support Kubernetes? (Yes)</summary>
+
 Yes! We can use the Lightning AI orchestrator custom built for AI or Kubernetes, whatever you want!
+</details>
 
-### How do I pay for the model APIs?
+<details>
+  <summary>How do I pay for the model APIs?</summary>
+
 Buy Lightning AI credits on Lightning to pay for the APIs.
+</details>
 
-### Do you add fees?
+<details>
+  <summary>Do you add fees?</summary>
+
 At this moment we don't add fees on top of the API calls, but that might change in the future!
+</details>
+
 
 # Community
 LitAI is a [community project accepting contributions](https://lightning.ai/docs/litserve/community) - Let's make the world's most advanced AI routing engine.
