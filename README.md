@@ -12,7 +12,7 @@
 
 </div>
 
-AI models fail. APIs go down. Every provider has different rules, tokens, and limits. LitAI gives you one Python interface for any model - OpenAI, Anthropic, open-source, or your own -with automatic retries, fallback, and logging built in. Build reliable apps without glue code.
+AI models fail. APIs go down. Every provider has different rules, tokens, and limits. LitAI gives you one Python interface for any model - OpenAI, Anthropic, open-source, or your own - with automatic retries, fallback, and logging built in. Build reliable apps without glue code.
 
 &#160;
 
