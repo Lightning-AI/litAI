@@ -1,24 +1,26 @@
 <div align='center'>
 
-<h1> ⚡ LitAI </h1>
+<h2>
+  The easiest way to use any AI model.
+  <br/>
+  No subscription. Better uptime.
+</h2>    
 
-**Easiest way to access any AI model with a single subscription using Python.**
+<img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
 
 &#160;
 
 </div>
 
-Every AI model is better at some tasks than others, and we have to switch between them. This requires subscriptions to multiple LLM providers and is costly. LitAI lets you use any LLM provider (both proprietary and open-source) under a single subscription.
-
-Easily switch between any AI model, save costs, and track usage through a unified dashboard.
+Using multiple AI models is painful - different APIs, multiple subscriptions, downtime, and runaway costs. LitAI gives you one interface for any model - OpenAI, Anthropic, open-source, or your own - with automatic fallback, usage logging, and usage monitoring built into a single platform.
 
 &#160;
 
 <div align='center'>
 <pre>
-✅ Access any AI model      ✅ Usage dashboard            ✅ Single subscription        
-✅ Bring your own model     ✅ Easily switch across LLMs  ✅ 20+ public models          
-✅ Track LLM token usage    ✅ Easy setup                 ✅ No MLOps glue code         
+✅ Use any AI model         ✅ Unified usage dashboard  ✅ No subscription   
+✅ Bring your own model     ✅ Easily switch models     ✅ 20+ public models 
+✅ Deploy dedicated models  ✅ Start instantly          ✅ No MLOps glue code
 </pre>
 </div>  
 
