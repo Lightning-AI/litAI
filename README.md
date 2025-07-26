@@ -282,6 +282,12 @@ Buy Lightning AI credits on Lightning to pay for the APIs.
 At this moment we don't add fees on top of the API calls, but that might change in the future!
 </details>
 
+<details>
+  <summary>Are you SOC2, HIPAA compliant? (Yes)</summary>
+
+LitAI is built by Lightning AI. Our enterprise AI platform powers teams all the way from Fortune 100 to startups. Our platform is fully SOC2, HIPAA compliant.   
+</details>
+
 
 # Community
 LitAI is a [community project accepting contributions](https://lightning.ai/docs/litserve/community) - Let's make the world's most advanced AI routing engine.
