@@ -79,18 +79,58 @@ Monitor usage and manage spend via the model dashboard on [Lightning AI](https:/
 ✅ Bring your own model (connect your API keys, coming soon...)    
 ✅ Chat logs (coming soon...)    
 
+<br/>
+
 # Advanced features
 
-## Concurrency with async
+### Auto fallbacks and retries
 
-LitAI supports asynchronous execution, allowing you to handle multiple requests concurrently without blocking. This is especially useful in high-throughput applications like chatbots, APIs, or agent loops.
+Model APIs can flake or can have outages. LitAI LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
+
+```python
+from litai import LLM
+
+llm = LLM(
+    model="openai/gpt-4",
+    fallback_models=["google/gemini-2.5-flash", "anthropic/claude-3-5-sonnet-20240620"],
+    max_retries=4,
+)
+
+print(llm.chat("How do I fine-tune an LLM?"))
+```
+
+Details:  
+- Fallback models are tried in the order provided.
+- Each model gets up to `max_retries` attempts independently.
+- The first successful response is returned immediately.
+- If all models fail after their retry limits, LitAI raises an error.
+
+
+<details>
+  <summary>Streaming</summary>
+
+Real-time chat applications benefit from showing words as they generate which gives the illusion of faster speed to the user.  Streaming
+is the mechanism that allows you to do this.
+
+```python
+from litai import LLM
+
+llm = LLM(model="openai/gpt-4")
+for chunk in llm.chat("hello", stream=True):
+    print(chunk, end="", flush=True)
+````
+</details>
+
+<details>
+  <summary>Concurrency with async</summary>
+
+Advanced Python programs that process multiple requests at once rely on "async" to do this. LitAI can work with async libraries without blocking calls. This is especially useful in high-throughput applications like chatbots, APIs, or agent loops.   
 
 To enable async behavior, set `enable_async=True` when initializing the `LLM` class. Then use `await llm.chat(...)` inside an `async` function.
 
 ```python
 import asyncio
 from litai import LLM
-
 
 async def main():
     llm = LLM(model="openai/gpt-4", teamspace="lightning-ai/litai", enable_async=True)
@@ -101,22 +141,14 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-## Streaming
+</details>
 
-Stream the model response as it's being generated.
 
-```python
-from litai import LLM
+<details>
+  <summary>Multi-turn conversations</summary>
 
-llm = LLM(model="openai/gpt-4")
-for chunk in llm.chat("hello", stream=True):
-    print(chunk, end="", flush=True)
-```
-
-## Conversations
-
-Keep chat history across multiple turns so the model remembers context.
-This is useful for assistants, summarizers, or research tools that need multi-turn chat history.
+Models only know the message that was sent to them. To enable them to respond with memory of all the messages sent to it so far, track the related
+message under the same conversation.  This is useful for assistants, summarizers, or research tools that need multi-turn chat history.
 
 Each conversation is identified by a unique name. LitAI stores conversation history separately for each name.
 
@@ -145,13 +177,15 @@ llm.chat("What's a RAG pipeline?", conversation="research")
 
 print(llm.list_conversations())
 ```
+</details>
 
-## Switch models
+<details>
+  <summary>Switch models on each call</summary>
 
-Use the best model for each task.
-LitAI lets us dynamically switch models at request time.
+In certain applications you may want to call ChatGPT in one message and Anthropic in another so you can use the best model for each task. 
+LitAI lets you dynamically switch models at request time.
 
-We set a default model when initializing `LLM` and override it with the `model` parameter only when needed.
+Set a default model when initializing `LLM` and override it with the `model` parameter only when needed.
 
 ```python
 from litai import LLM
@@ -170,25 +204,5 @@ print(llm.chat("Who created you?", model="google/gemini-2.5-flash"))
 print(llm.chat("Who created you?"))
 # >> I am a large language model, trained by OpenAI.
 ```
+</details>
 
-## Fallbacks and retries
-
-Ensure reliable responses even if a model is unavailable.\
-LitAI automatically retries requests and switches to fallback models in order.
-
-- Fallback models are tried in the order provided.
-- Each model gets up to `max_retries` attempts independently.
-- The first successful response is returned immediately.
-- If all models fail after their retry limits, LitAI raises an error.
-
-```python
-from litai import LLM
-
-llm = LLM(
-    model="openai/gpt-4",
-    fallback_models=["google/gemini-2.5-flash", "anthropic/claude-3-5-sonnet-20240620"],
-    max_retries=4,
-)
-
-print(llm.chat("How do I fine-tune an LLM?"))
-```
