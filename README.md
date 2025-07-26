@@ -66,6 +66,29 @@ print(answer)
 # I'm an AI by OpenAI
 ```
 
+## Use your own client
+If you have your own client (Like OpenAI), simply switch the URL to Lightning AI.
+```python
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://lightning.ai/api/v1",
+  api_key="LIGHTNING_API_KEY",
+)
+
+completion = client.chat.completions.create(
+  model="openai/gpt-4o",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+)
+
+print(completion.choices[0].message.content)
+```
+
 # Key features
 Monitor usage and manage spend via the model dashboard on [Lightning AI](https://lightning.ai/).   
 
