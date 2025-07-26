@@ -213,3 +213,10 @@ print(llm.chat("Who created you?"))
 # Performance
 LitAI does smart routing across a global network of servers. As a result, it only adds 25ms of overhead for an API call.   
 
+
+# Community
+LitAI is a [community project accepting contributions](https://lightning.ai/docs/litserve/community) - Let's make the world's most advanced AI routing engine.
+
+💬 [Get help on Discord](https://discord.com/invite/XncpTy7DSt)    
+📋 [License: Apache 2.0](https://github.com/Lightning-AI/litAI/blob/main/LICENSE)     
+
