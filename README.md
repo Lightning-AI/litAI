@@ -3,7 +3,7 @@
 <h2>
   The easiest way to use any AI model.
   <br/>
-  No subscription. Better uptime. Unified billing.
+  Easily build agents, chatbots, and more.
 </h2>    
 
 <img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
@@ -18,9 +18,9 @@ Using multiple AI models is painful - different APIs, multiple subscriptions, do
 
 <div align='center'>
 <pre>
-✅ Use any AI model                 ✅ Unified usage dashboard  ✅ No subscription   
-✅ Bring your model API keys        ✅ Smart model fallback     ✅ 20+ public models 
-✅ Deploy dedicated models on-prem  ✅ Start instantly          ✅ No MLOps glue code
+✅ Use any AI model (OpenAI, etc.) ✅ 20+ public models  ✅ Bring your model API keys  
+✅ Unified usage dashboard         ✅ No subscription    ✅ Auto failure model fallback
+✅ Deploy dedicated models on-prem ✅ Start instantly    ✅ No MLOps glue code         
 </pre>
 </div>  
 
@@ -89,7 +89,7 @@ Monitor usage and manage spend via the model dashboard on [Lightning AI](https:/
 
 ### Auto fallbacks and retries
 
-Model APIs can flake or can have outages. LitAI LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
+Model APIs can flake or can have outages. LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
 
 ```python
 from litai import LLM
