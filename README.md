@@ -3,7 +3,7 @@
 <h2>
   The easiest way to use any AI model.
   <br/>
-  Build agents, chatbots, and more with production-grade reliability.
+  Build agents, chatbots, and apps that just work with no downtime.
 </h2>    
 
 <img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
