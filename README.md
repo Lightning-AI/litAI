@@ -59,7 +59,9 @@ Add AI to any Python program in 3 lines:
 from litai import LLM
 
 llm = LLM(model="openai/gpt-4")
-print(llm.chat("who are you?"))
+answer = llm.chat("who are you?")
+print(answer)
+
 # I'm an AI by OpenAI
 ```
 
