@@ -290,7 +290,7 @@ LitAI is built by Lightning AI. Our enterprise AI platform powers teams all the 
 
 
 # Community
-LitAI is a [community project accepting contributions](https://lightning.ai/docs/litserve/community) - Let's make the world's most advanced AI routing engine.
+LitAI is a [community project accepting contributions](https://lightning.ai/docs/litai/community) - Let's make the world's most advanced AI routing engine.
 
 💬 [Get help on Discord](https://discord.com/invite/XncpTy7DSt)    
 📋 [License: Apache 2.0](https://github.com/Lightning-AI/litAI/blob/main/LICENSE)     
