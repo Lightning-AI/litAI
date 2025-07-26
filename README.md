@@ -69,7 +69,7 @@ print(answer)
 Monitor usage and manage spend via the model dashboard on [Lightning AI](https://lightning.ai/).   
 
 <div align='center'>
-<img alt="Lightning" src="https://github.com/user-attachments/assets/702bb8aa-7948-4602-b9a3-8f55224eb116" width="800px" style="max-width: 100%;">
+<img alt="Lightning" src="https://github.com/user-attachments/assets/b1e7049c-c7b0-42f3-a43c-c1e156929f50" width="800px" style="max-width: 100%;">
 </div>
 
 ✅ [Use over 20+ models (ChatGPT, Claude, etc...)](https://lightning.ai/)    
