@@ -38,6 +38,7 @@ Using multiple AI models is painful - different APIs, multiple subscriptions, do
   <a href="#quick-start">Quick start</a> •
   <a href="#key-features">Features</a> •
   <a href="https://lightning.ai/">Lightning AI</a> •
+  <a href="#performance">Performance</a> •
   <a href="https://lightning.ai/docs/litai">Docs</a>
 </p>
 
@@ -206,4 +207,9 @@ print(llm.chat("Who created you?"))
 # >> I am a large language model, trained by OpenAI.
 ```
 </details>
+
+<br/>
+
+# Performance
+LitAI does smart routing across a global network of servers. As a result, it only adds 25ms of overhead for an API call.   
 
