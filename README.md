@@ -19,7 +19,7 @@ Using multiple AI models is painful - different APIs, multiple subscriptions, do
 <div align='center'>
 <pre>
 ✅ Use any AI model         ✅ Unified usage dashboard  ✅ No subscription   
-✅ Bring your own model     ✅ Easily switch models     ✅ 20+ public models 
+✅ Bring your own model     ✅ Smart model fallback     ✅ 20+ public models 
 ✅ Deploy dedicated models  ✅ Start instantly          ✅ No MLOps glue code
 </pre>
 </div>  
@@ -50,9 +50,8 @@ Install LitAI via pip ([more options](https://lightning.ai/docs/litai/home/insta
 pip install litai
 ```
 
-## Run on a Studio
-
-When running inside Lightning Studio, you can use any available LLM out of the box — no extra setup required.
+## Run
+Add AI to any Python program in 3 lines:   
 
 ```python
 from litai import LLM
@@ -62,37 +61,18 @@ print(llm.chat("who are you?"))
 # I'm an AI by OpenAI
 ```
 
-## Run locally (outside Studio)
+# Key features
 
-To use LitAI outside of Lightning Studio, you'll need to explicitly provide your teamspace name.
-
-The teamspace input format is: `"owner-name/teamspace-name"` (e.g. `"username/my-team"` or `"org-name/team-name"`)
-
-```python
-from litai import LLM
-
-llm = LLM(model="openai/gpt-4", teamspace="owner-name/teamspace-name")
-print(llm.chat("who are you?"))
-# I'm an AI by OpenAI
-```
-
-# Key benefits
-
-A few key benefits:
-
-- Supports 20+ public models
-- Bring your own model
-- Keeps chat logs
-- Optional guardrails
-- Usage dashboard
-
-# Features
-
-✅ [Concurrency with async](https://lightning.ai/docs/litai/features/async-litai/)\
-✅ [Fallback and retry](https://lightning.ai/docs/litai/features/fallback-retry/)\
-✅ [Switch models](https://lightning.ai/docs/litai/features/models/)\
-✅ [Multi-turn conversation logs](https://lightning.ai/docs/litai/features/multi-turn-conversation/)\
-✅ [Streaming](https://lightning.ai/docs/litai/features/streaming/)
+✅ [Use over 20+ models (ChatGPT, Claude, etc...)](https://lightning.ai/)    
+✅ [Monitor all usage in one place](https://lightning.ai/model-apis)    
+✅ [Async support](https://lightning.ai/docs/litai/features/async-litai/)     
+✅ [Auto retries on failure](https://lightning.ai/docs/litai/features/fallback-retry/)    
+✅ [Auto model switch on failure](https://lightning.ai/docs/litai/features/fallback-retry/)    
+✅ [Switch models](https://lightning.ai/docs/litai/features/models/)    
+✅ [Multi-turn conversation logs](https://lightning.ai/docs/litai/features/multi-turn-conversation/)    
+✅ [Streaming](https://lightning.ai/docs/litai/features/streaming/)    
+✅ Bring your own model (connect your API keys, coming soon...)    
+✅ Chat logs (coming soon...)    
 
 # Advanced features
 
