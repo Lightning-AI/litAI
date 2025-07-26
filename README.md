@@ -18,9 +18,9 @@ Using multiple AI models is painful - different APIs, multiple subscriptions, do
 
 <div align='center'>
 <pre>
-✅ Use any AI model (OpenAI, etc.) ✅ 20+ public models  ✅ Bring your model API keys  
-✅ Unified usage dashboard         ✅ No subscription    ✅ Auto failure model fallback
-✅ Deploy dedicated models on-prem ✅ Start instantly    ✅ No MLOps glue code         
+✅ Use any AI model (OpenAI, etc.) ✅ 20+ public models  ✅ Bring your model API keys
+✅ Unified usage dashboard         ✅ No subscription    ✅ Auto retries and fallback
+✅ Deploy dedicated models on-prem ✅ Start instantly    ✅ No MLOps glue code       
 </pre>
 </div>  
 
