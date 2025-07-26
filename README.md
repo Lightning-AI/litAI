@@ -35,9 +35,10 @@ Using multiple AI models is painful - different APIs, multiple subscriptions, do
 </div>
 
 <p align="center">
+  <a href="#quick-start">Quick start</a> •
+  <a href="#key-features">Features</a> •
   <a href="https://lightning.ai/">Lightning AI</a> •
-  <a href="https://lightning.ai/docs/litai">Docs</a> •
-  <a href="#quick-start">Quick start</a>
+  <a href="https://lightning.ai/docs/litai">Docs</a>
 </p>
 
 ______________________________________________________________________
