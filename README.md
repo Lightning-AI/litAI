@@ -12,7 +12,7 @@
 
 </div>
 
-AI models fail. APIs go down. Every provider has different rules, tokens, and limits. LitAI gives you one Python interface for any model (OpenAI, Anthropic, open-source, or your own) with automatic retries, fallback, and logging built in. Build reliable apps without glue code.
+LitAI is the simplest way to build AI agents, chatbots, and apps. It gives you one Python interface to talk to any model - no API keys, no setup, no complex tools. Behind the scenes, it handles retries, model fallback, usage tracking, and unified billing, so your apps stay reliable from first prototype to production.
 
 &#160;
 
