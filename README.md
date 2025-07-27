@@ -52,8 +52,6 @@ Install LitAI via pip ([more options](https://lightning.ai/docs/litai/home/insta
 ```bash
 pip install litai
 ```
-
-## Run
 Add AI to any Python program in 3 lines:   
 
 ```python
