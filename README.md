@@ -66,7 +66,9 @@ print(answer)
 # I'm an AI by OpenAI
 ```
 
-## Agent example
+# Examples
+
+### Agent
 Here's a simple agent that tells you the latest news
 
 ```python
@@ -119,12 +121,6 @@ llm = LLM(
 
 print(llm.chat("How do I fine-tune an LLM?"))
 ```
-
-Details:  
-- Fallback models are tried in the order provided.
-- Each model gets up to `max_retries` attempts independently.
-- The first successful response is returned immediately.
-- If all models fail after their retry limits, LitAI raises an error.
 
 <details>
   <summary>Streaming</summary>
