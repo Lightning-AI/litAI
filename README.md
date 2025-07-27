@@ -260,29 +260,6 @@ print(llm.list_conversations())
 ```
 </details>
 
-<details>
-  <summary>Multiple models, same conversation</summary>
-
-<br/>
-
-One application of LitAI is to reduce costs of chats by using separate models for the same conversation. For example, use a cheap model to answer
-the first question and a more expensive model for something that requires more intelligence.
-
-```python
-from litai import LLM
-
-llm = LLM(model="openai/gpt-4")
-
-# use a cheap model for this question
-llm.chat("Is this a number or word: '5'", model="google/gemini-2.5-flash", conversation="story")
-
-# go back to the expensive model
-llm.chat("Create a story about that number like Lord of the Rings", conversation="story")
-
-print(llm.get_history("story"))  # View all messages from the 'story' thread
-```
-
-</details>
 
 <details>
   <summary>Switch models on each call</summary>
@@ -311,6 +288,30 @@ print(llm.chat("Who created you?", model="google/gemini-2.5-flash"))
 print(llm.chat("Who created you?"))
 # >> I am a large language model, trained by OpenAI.
 ```
+</details>
+
+<details>
+  <summary>Multiple models, same conversation</summary>
+
+<br/>
+
+One application of LitAI is to reduce costs of chats by using separate models for the same conversation. For example, use a cheap model to answer
+the first question and a more expensive model for something that requires more intelligence.
+
+```python
+from litai import LLM
+
+llm = LLM(model="openai/gpt-4")
+
+# use a cheap model for this question
+llm.chat("Is this a number or word: '5'", model="google/gemini-2.5-flash", conversation="story")
+
+# go back to the expensive model
+llm.chat("Create a story about that number like Lord of the Rings", conversation="story")
+
+print(llm.get_history("story"))  # View all messages from the 'story' thread
+```
+
 </details>
 
 <br/>
