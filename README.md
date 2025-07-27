@@ -37,6 +37,7 @@ LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one
 <p align="center">
   <a href="#quick-start">Quick start</a> •
   <a href="#key-features">Features</a> •
+  <a href="#examples">Examples</a> •
   <a href="https://lightning.ai/">Lightning AI</a> •
   <a href="#performance">Performance</a> •
   <a href="#faq">FAQ</a> •
