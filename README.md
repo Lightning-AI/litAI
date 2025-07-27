@@ -1,7 +1,7 @@
 <div align='center'>
 
 <h2>
-  The easiest way to use any AI model.
+  The easiest way to chat with any AI model through code.
   <br/>
   Build agents, chatbots, and apps that just work with no downtime.
 </h2>    
