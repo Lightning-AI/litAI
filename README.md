@@ -347,6 +347,7 @@ At this moment we don't add fees on top of the API calls, but that might change 
 LitAI is built by Lightning AI. Our enterprise AI platform powers teams all the way from Fortune 100 to startups. Our platform is fully SOC2, HIPAA compliant.   
 </details>
 
+<br/>
 
 # Community
 LitAI is a [community project accepting contributions](https://lightning.ai/docs/litai/community) - Let's make the world's most advanced AI routing engine.
