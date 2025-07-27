@@ -1,7 +1,7 @@
 <div align='center'>
 
 <h2>
-  The easiest way to chat with any AI model through code.
+  Chat with any AI model with one line of Python.
   <br/>
   Build agents, chatbots, and apps that just work with no downtime.
 </h2>    
@@ -12,7 +12,7 @@
 
 </div>
 
-LitAI is the simplest way to build AI agents, chatbots, and apps. It gives you one Python interface to talk to any model - no API keys, no setup, no complex tools. Behind the scenes, it handles retries, model fallback, usage tracking, and unified billing, so your apps stay reliable from first prototype to production.
+Call any model with one line of Python. LitAI handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or writing wrapper code.
 
 &#160;
 
