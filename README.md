@@ -97,9 +97,9 @@ product_review = "give me a short, bad product review about a tv"
 response = llm.chat(f"Is this review good or bad? Reply only with 'good' or 'bad': {product_review}").strip().lower()
 
 if response == "good":
-    print("✅ good review")
+    print("good review")
 else:
-    print("❌ bad review")
+    print("bad review")
 ```
 
 <br/>
