@@ -169,7 +169,7 @@ for chunk in llm.chat("hello", stream=True):
 </details>
 
 <details>
-  <summary>Use your own client (Like OpenAI)</summary>
+  <summary>Use your own client (like OpenAI)</summary>
 
 <br/>
 
@@ -258,6 +258,30 @@ llm.chat("What's a RAG pipeline?", conversation="research")
 
 print(llm.list_conversations())
 ```
+</details>
+
+<details>
+  <summary>Multiple models, same conversation</summary>
+
+<br/>
+
+One application of LitAI is to reduce costs of chats by using separate models for the same conversation. For example, use a cheap model to answer
+the first question and a more expensive model for something that requires more intelligence.
+
+```python
+from litai import LLM
+
+llm = LLM(model="openai/gpt-4")
+
+# use a cheap model for this question
+llm.chat("Is this a number or word: '5'", model="google/gemini-2.5-flash", conversation="help_session")
+
+# go back to the expensive model
+llm.chat("Generate a story about that number like Lord of the Rings", conversation="help_session")
+
+print(llm.get_history("intro"))  # View all messages from the 'help_session' thread
+```
+
 </details>
 
 <details>
