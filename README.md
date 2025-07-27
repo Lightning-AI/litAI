@@ -63,6 +63,7 @@ print(answer)
 
 # I'm an AI by OpenAI
 ```
+<br/>
 
 # Examples
 What we ***love*** about LitAI is that you can build agents, chatbots and apps in plain Python - no heavy frameworks or magic. Agents can be just simple Python programs with a few decisions made by a model.   
@@ -100,6 +101,8 @@ if response == "good":
 else:
     print("❌ bad review")
 ```
+
+<br/>
 
 # Key features
 Monitor usage and manage spend via the model dashboard on [Lightning AI](https://lightning.ai/).   
