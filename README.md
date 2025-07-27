@@ -84,6 +84,24 @@ response = llm.chat(f"Based on this, what is the latest: {website_text}")
 print(response)
 ```
 
+### Agentic if statement
+We believe the best way to build agents is to use normal Python programs with "agentic IF statements". This way, 90% of the flow is still deterministic
+with a few decisions made by a model. This avoids complex abstractions that agentic frameworks introduce with make agents unreliable and hard to debug.
+
+```python
+from litai import LLM
+
+llm = LLM(model="openai/gpt-4o")
+
+product_review = "give me a short, bad product review about a tv"
+response = llm.chat(f"Is this review good or bad? Reply only with 'good' or 'bad': {product_review}").strip().lower()
+
+if response == "good":
+    print("✅ good review")
+else:
+    print("❌ bad review")
+```
+
 # Key features
 Monitor usage and manage spend via the model dashboard on [Lightning AI](https://lightning.ai/).   
 
