@@ -323,8 +323,6 @@ LitAI does smart routing across a global network of servers. As a result, it onl
 
 # FAQ
 
-
-
 <details>
   <summary>Do I need a subscription to use LitAI? (Nope) </summary>
    
@@ -346,31 +344,31 @@ LitAI automatically retries the same model and can fall back to other models you
 <details>
   <summary>Can I bring my own API keys for OpenAI, Anthropic, etc.? (Yes)</summary>
 
-Yes! You can plug in your own keys to any OpenAI compatible API 
+Yes. You can plug in your own keys to any OpenAI compatible API 
 </details>
 
 <details>
   <summary>Can I connect private models? (Yes)</summary>
 
-Yes! You can connect any endpoint that supports the OpenAI spec.   
+Yes. You can connect any endpoint that supports the OpenAI spec.   
 </details>
 
 <details>
   <summary>Can you deploy a dedicated, private model like Llama for me? (Yes)</summary>
 
-Yes! We can deploy dedicated models on any cloud (Lambda, AWS, etc).
+Yes. We can deploy dedicated models on any cloud (Lambda, AWS, etc).
 </details>
 
 <details>
   <summary>Can you deploy models on-prem? (Yes)</summary>
 
-Yes! We can deploy on any dedicated VPC on the cloud or your own physical data center.
+Yes. We can deploy on any dedicated VPC on the cloud or your own physical data center.
 </details>
 
 <details>
   <summary>Do deployed models support Kubernetes? (Yes)</summary>
 
-Yes! We can use the Lightning AI orchestrator custom built for AI or Kubernetes, whatever you want!
+Yes. We can use the Lightning AI orchestrator custom built for AI or Kubernetes, whatever you want!
 </details>
 
 <details>
@@ -382,7 +380,7 @@ Buy Lightning AI credits on Lightning to pay for the APIs.
 <details>
   <summary>Do you add fees?</summary>
 
-At this moment we don't add fees on top of the API calls, but that might change in the future!
+At this moment we don't add fees on top of the API calls, but that might change in the future.
 </details>
 
 <details>
