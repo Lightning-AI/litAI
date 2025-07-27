@@ -154,6 +154,8 @@ print(llm.chat("What is a fun fact about space?"))
 <details>
   <summary>Streaming</summary>
 
+<br/>
+
 Real-time chat applications benefit from showing words as they generate which gives the illusion of faster speed to the user.  Streaming
 is the mechanism that allows you to do this.
 
@@ -168,8 +170,12 @@ for chunk in llm.chat("hello", stream=True):
 
 <details>
   <summary>Use your own client (Like OpenAI)</summary>
-  
-If you have your own client (Like OpenAI), simply switch the URL to Lightning AI.
+
+<br/>
+
+For those who already have their own SDK to call LLMs (like the OpenAI sdk), you can still use LitAI via the `https://lightning.ai/api/v1` endpoint,
+which will track usage, billing, etc...
+
 ```python
 from openai import OpenAI
 
@@ -195,6 +201,8 @@ print(completion.choices[0].message.content)
 <details>
   <summary>Concurrency with async</summary>
 
+<br/>
+
 Advanced Python programs that process multiple requests at once rely on "async" to do this. LitAI can work with async libraries without blocking calls. This is especially useful in high-throughput applications like chatbots, APIs, or agent loops.   
 
 To enable async behavior, set `enable_async=True` when initializing the `LLM` class. Then use `await llm.chat(...)` inside an `async` function.
@@ -217,6 +225,8 @@ if __name__ == "__main__":
 
 <details>
   <summary>Multi-turn conversations</summary>
+
+<br/>
 
 Models only know the message that was sent to them. To enable them to respond with memory of all the messages sent to it so far, track the related
 message under the same conversation.  This is useful for assistants, summarizers, or research tools that need multi-turn chat history.
@@ -252,6 +262,8 @@ print(llm.list_conversations())
 
 <details>
   <summary>Switch models on each call</summary>
+
+<br/>
 
 In certain applications you may want to call ChatGPT in one message and Anthropic in another so you can use the best model for each task. 
 LitAI lets you dynamically switch models at request time.
