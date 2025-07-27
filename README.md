@@ -91,9 +91,9 @@ That way, 90% of the logic stays deterministic, and the model only steps in when
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4o")
+llm = LLM(model="openai/gpt-3.5-turbo")
 
-product_review = "give me a short, bad product review about a tv"
+product_review = "This TV has terrible picture quality and the sound cuts out constantly."
 response = llm.chat(f"Is this review good or bad? Reply only with 'good' or 'bad': {product_review}").strip().lower()
 
 if response == "good":
