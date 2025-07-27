@@ -105,7 +105,14 @@ else:
 <br/>
 
 # Key features
-Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard. Model calls are paid for with Lightning AI credits. No subscription. 15 free credits per month. Pay as you go for more credits.
+Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard. Model calls are paid for with Lightning AI credits.
+
+<div align='center'>
+<pre>
+✅ No subscription     ✅ 15 free credits (~37M tokens)      ✅ Pay as you go for more credits.
+</pre>
+</div>  
+
 
 <div align='center'>
 <img alt="Lightning" src="https://github.com/user-attachments/assets/b1e7049c-c7b0-42f3-a43c-c1e156929f50" width="800px" style="max-width: 100%;">
