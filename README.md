@@ -84,8 +84,8 @@ print(response)
 ```
 
 ### Agentic if statement
-We believe the best way to build agents is to use normal Python programs with "agentic IF statements". This way, 90% of the flow is still deterministic
-with a few decisions made by a model. This avoids complex abstractions that agentic frameworks introduce with make agents unreliable and hard to debug.
+We believe the best way to build agents is with normal Python programs and simple “agentic if statements.” 
+That way, 90% of the logic stays deterministic, and the model only steps in when needed. No complex abstractions, no framework magic - just code you can trust and debug.
 
 ```python
 from litai import LLM
