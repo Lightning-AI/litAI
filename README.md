@@ -65,7 +65,7 @@ print(answer)
 ```
 
 # Examples
-What we love about LitAI is that you can build agents, chatbots and apps in normal Python without frameworks or abstractions, and simply switch a few parts of 
+What we ***love*** about LitAI is that you can build agents, chatbots and apps in normal Python without frameworks or abstractions, and simply switch a few parts of 
 a Python program to have a model make a decision for you.   
 
 ### Agent
