@@ -66,27 +66,20 @@ print(answer)
 # I'm an AI by OpenAI
 ```
 
-## Use your own client
-If you have your own client (Like OpenAI), simply switch the URL to Lightning AI.
+## Agent example
+Here's a simple agent that tells you the latest news
+
 ```python
-from openai import OpenAI
+import re, requests
+from litai import LLM
 
-client = OpenAI(
-  base_url="https://lightning.ai/api/v1",
-  api_key="LIGHTNING_API_KEY",
-)
+llm = LLM(model="openai/gpt-4o")
 
-completion = client.chat.completions.create(
-  model="openai/gpt-4o",
-  messages=[
-    {
-      "role": "user",
-      "content": "What is the meaning of life?"
-    }
-  ]
-)
+website_url = "https://text.npr.org/"
+website_text = re.sub(r'<[^>]+>', ' ', requests.get(website_url).text)
 
-print(completion.choices[0].message.content)
+response = llm.chat(f"Based on this, what is the latest: {website_text}")
+print(response)
 ```
 
 # Key features
@@ -133,7 +126,6 @@ Details:
 - The first successful response is returned immediately.
 - If all models fail after their retry limits, LitAI raises an error.
 
-
 <details>
   <summary>Streaming</summary>
 
@@ -147,6 +139,32 @@ llm = LLM(model="openai/gpt-4")
 for chunk in llm.chat("hello", stream=True):
     print(chunk, end="", flush=True)
 ````
+</details>
+
+<details>
+  <summary>Use your own client (Like OpenAI)</summary>
+  
+If you have your own client (Like OpenAI), simply switch the URL to Lightning AI.
+```python
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://lightning.ai/api/v1",
+  api_key="LIGHTNING_API_KEY",
+)
+
+completion = client.chat.completions.create(
+  model="openai/gpt-4o",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+)
+
+print(completion.choices[0].message.content)
+```
 </details>
 
 <details>
