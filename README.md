@@ -111,6 +111,8 @@ Monitor usage and manage spend via the model dashboard on [Lightning AI](https:/
 <img alt="Lightning" src="https://github.com/user-attachments/assets/b1e7049c-c7b0-42f3-a43c-c1e156929f50" width="800px" style="max-width: 100%;">
 </div>
 
+<br/>
+
 ✅ [Use over 20+ models (ChatGPT, Claude, etc...)](https://lightning.ai/)    
 ✅ [Monitor all usage in one place](https://lightning.ai/model-apis)    
 ✅ [Async support](https://lightning.ai/docs/litai/features/async-litai/)     
