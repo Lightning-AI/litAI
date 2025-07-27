@@ -109,7 +109,7 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 
 <div align='center'>
 <pre>
-✅ No subscription     ✅ 15 free credits (~37M tokens)      ✅ Pay as you go for more credits.
+✅ No subscription     ✅ 15 free credits (~37M tokens)      ✅ Pay as you go for more credits
 </pre>
 </div>  
 
