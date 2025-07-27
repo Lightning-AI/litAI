@@ -148,7 +148,7 @@ llm = LLM(
     max_retries=4,
 )
 
-print(llm.chat("How do I fine-tune an LLM?"))
+print(llm.chat("What is a fun fact about space?"))
 ```
 
 <details>
@@ -183,7 +183,7 @@ completion = client.chat.completions.create(
   messages=[
     {
       "role": "user",
-      "content": "What is the meaning of life?"
+      "content": "What is a fun fact about space?"
     }
   ]
 )
