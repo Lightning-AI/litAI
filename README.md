@@ -102,6 +102,25 @@ else:
     print("bad review")
 ```
 
+### Shortcuts
+Agentic workflows mostly come down to agentic-if statements or classification decisions. While you can use `llm.chat` yourself to do it,
+we provide 2 simple shortcuts
+
+```python
+from litai import LLM
+llm = LLM()
+
+# shortcut for agentic if statement (can do this yourself with llm.chat if needed)
+if llm.if_('this TV is amazing', "is this a positive review?"):
+    print("bad review")
+else:
+    print("good review")
+
+# shortcut for agentic classification (can do this yourself with llm.chat if needed)
+sentiment = llm.classify("This movie was awful.", ["positive", "negative"])
+print("Sentiment:", sentiment)
+```
+
 <br/>
 
 # Key features
