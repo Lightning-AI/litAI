@@ -425,24 +425,32 @@ class LLM:
             raise ValueError("No model loaded")
         return self._llm.list_conversations()
 
-    def if_(self, input: str, choice1: Optional[str] = None, choice2: Optional[str] = None) -> bool:
-        """Returns True if the model selects the first choice, False otherwise.
-        Defaults to a yes/no binary decision.
-        """
-        choice1 = (choice1 or "yes").strip().lower()
-        choice2 = (choice2 or "no").strip().lower()
+    def if_(self, input: str, question: str) -> bool:
+        """Ask a yes no question and return a True or False. Perfect for making decisions.
 
-        prompt = f"Reply with only one of [{choice1!r}, {choice2!r}].\n\nInput: {input.strip()}\nAnswer:"
+        Example:
+            review = 'this TV is awful'
+            if llm.if_(review, "is this a positive review?"):
+                print("good sentiment")
+            else:
+                print("bad sentiment")
+        """
+        prompt = f"""
+        Here is an input:
+        <input>
+        {input.strip()}
+        </input>
+
+        And a question:
+        <question>
+        {question.strip()}
+        </question>
+
+        Answer with only 'yes' or 'no'.
+        """
 
         response = self.chat(prompt).strip().lower()
-
-        if response == choice1:
-            return True
-        elif response == choice2:
-            return False
-        else:
-            # fallback: assume choice1 if unclear
-            return True
+        return "yes" in response
 
     def classify(self, input: str, *choices: str) -> str:
         """Returns the label the model chooses from the given options.
@@ -451,12 +459,26 @@ class LLM:
             llm.classify("This product sucks.", "positive", "negative") → "negative"
         """
         normalized_choices = [c.strip().lower() for c in choices]
-        prompt = f"Reply with only one of {normalized_choices!r}.\n\nInput: {input.strip()}\nAnswer:"
+        choices_str = ", ".join(normalized_choices)
+        prompt = f"""
+        You are given this input
+        <input>
+        {input}
+        </input>
+
+        And the following choices:
+        <choices>
+        {choices_str}
+        </choices>
+
+        Answer with only one of the choices
+        """
 
         response = self.chat(prompt).strip().lower()
 
         if response in normalized_choices:
             return response
+
         # fallback: return first choice if not matched
         return normalized_choices[0]
 
