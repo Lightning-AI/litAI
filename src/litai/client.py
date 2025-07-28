@@ -436,12 +436,12 @@ class LLM:
                 print("bad sentiment")
         """
         prompt = f"""
-        Here is an input: 
+        Here is an input:
         <input>
         {input.strip()}
         </input>
 
-        And a question: 
+        And a question:
         <question>
         {question.strip()}
         </question>
@@ -450,7 +450,7 @@ class LLM:
         """
 
         response = self.chat(prompt).strip().lower()
-        return 'yes' in response
+        return "yes" in response
 
     def classify(self, input: str, *choices: str) -> str:
         """Returns the label the model chooses from the given options.
@@ -459,9 +459,9 @@ class LLM:
             llm.classify("This product sucks.", "positive", "negative") → "negative"
         """
         normalized_choices = [c.strip().lower() for c in choices]
-        choices_str = ', '.join(normalized_choices)
+        choices_str = ", ".join(normalized_choices)
         prompt = f"""
-        You are given this input 
+        You are given this input
         <input>
         {input}
         </input>

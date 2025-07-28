@@ -293,16 +293,17 @@ def test_authenticate_method(monkeypatch):
 def test_llm_if_method(mock_sdkllm_class):
     """Test the LLM if_ method."""
     from litai.client import LLM as LLMCLIENT
+
     LLMCLIENT._sdkllm_cache.clear()
 
     # Instantiate LLM first
     llm = LLM(model="openai/gpt-4")
-    
+
     # Get the actual mock instance used by llm
     mock_sdkllm_instance = mock_sdkllm_class.return_value
 
     # Test case where the condition is true
-    mock_sdkllm_instance.chat.side_effect = ["yes", "no", " Yes "] # Use side_effect for multiple calls
+    mock_sdkllm_instance.chat.side_effect = ["yes", "no", " Yes "]  # Use side_effect for multiple calls
     assert llm.if_("this review is great", "is this a positive review?") is True
 
     # Test case where the condition is false
@@ -316,13 +317,14 @@ def test_llm_if_method(mock_sdkllm_class):
 def test_llm_classify_method(mock_sdkllm_class):
     """Test the LLM classify method."""
     from litai.client import LLM as LLMCLIENT
+
     LLMCLIENT._sdkllm_cache.clear()
 
     llm = LLM(model="openai/gpt-4")
 
     # Get the actual mock instance used by llm
     mock_sdkllm_instance = mock_sdkllm_class.return_value
-    
+
     # Use side_effect to return different values for sequential calls
     mock_sdkllm_instance.chat.side_effect = ["positive", "negative", "neutral"]
 
