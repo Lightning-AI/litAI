@@ -426,9 +426,7 @@ class LLM:
         return self._llm.list_conversations()
 
     def if_(self, input: str, choice1: Optional[str] = None, choice2: Optional[str] = None) -> bool:
-        """Returns True if the model selects the first choice, False otherwise.
-        Defaults to a yes/no binary decision.
-        """
+        """Returns True if the model selects the first choice, False otherwise. Defaults to a yes/no binary decision."""
         choice1 = (choice1 or "yes").strip().lower()
         choice2 = (choice2 or "no").strip().lower()
 
@@ -438,11 +436,10 @@ class LLM:
 
         if response == choice1:
             return True
-        elif response == choice2:
+        if response == choice2:  # noqa: SIM103
             return False
-        else:
-            # fallback: assume choice1 if unclear
-            return True
+        # fallback: assume choice1 if unclear
+        return True
 
     def classify(self, input: str, *choices: str) -> str:
         """Returns the label the model chooses from the given options.

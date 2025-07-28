@@ -293,9 +293,10 @@ def test_authenticate_method(monkeypatch):
 def test_llm_if_method(mock_llm_class):
     """Test the LLM if_ method."""
     from litai.client import LLM as LLMCLIENT
+
     LLMCLIENT._sdkllm_cache.clear()
     mock_llm_instance = MagicMock()
-    
+
     # Test case where the condition is true
     mock_llm_instance.chat.return_value = "yes"
     mock_llm_class.return_value = mock_llm_instance
@@ -311,7 +312,7 @@ def test_llm_if_method(mock_llm_class):
         stream=False,
         full_response=False,
     )
-    
+
     # Test case where the condition is false
     mock_llm_instance.chat.return_value = "no"
     assert llm.if_("is it false?") is False
@@ -325,18 +326,20 @@ def test_llm_if_method(mock_llm_class):
         stream=False,
         full_response=False,
     )
-    
+
     # Test case with different capitalization/spacing
     mock_llm_instance.chat.return_value = " Yes "
     assert llm.if_("is it a positive response?") is True
+
 
 @patch("litai.client.SDKLLM")
 def test_llm_classify_method(mock_llm_class):
     """Test the LLM classify method."""
     from litai.client import LLM as LLMCLIENT
+
     LLMCLIENT._sdkllm_cache.clear()
     mock_llm_instance = MagicMock()
-    
+
     # Test a simple classification
     mock_llm_instance.chat.return_value = "positive"
     mock_llm_class.return_value = mock_llm_instance
@@ -344,7 +347,10 @@ def test_llm_classify_method(mock_llm_class):
     result = llm.classify("this movie was great!", "positive", "negative")
     assert result == "positive"
     mock_llm_instance.chat.assert_called_with(
-        prompt="this movie was great!\n\nclassify the input as one of these: positive, negative. reply with only the class.",
+        prompt=(
+            "this movie was great!\n\nclassify the input as one of these: "
+            "positive, negative. reply with only the class."
+        ),
         system_prompt=None,
         max_completion_tokens=500,
         images=None,
@@ -359,7 +365,10 @@ def test_llm_classify_method(mock_llm_class):
     result = llm.classify("this movie was awful.", "positive", "negative")
     assert result == "negative"
     mock_llm_instance.chat.assert_called_with(
-        prompt="this movie was awful.\n\nclassify the input as one of these: positive, negative. reply with only the class.",
+        prompt=(
+            "this movie was awful.\n\nclassify the input as one of these: "
+            "positive, negative. reply with only the class."
+        ),
         system_prompt=None,
         max_completion_tokens=500,
         images=None,
@@ -374,7 +383,10 @@ def test_llm_classify_method(mock_llm_class):
     result = llm.classify("it was okay.", "positive", "negative", "neutral")
     assert result == "neutral"
     mock_llm_instance.chat.assert_called_with(
-        prompt="it was okay.\n\nclassify the input as one of these: positive, negative, neutral. reply with only the class.",
+        prompt=(
+            "it was okay.\n\nclassify the input as one of these: positive,"
+            " negative, neutral. reply with only the class."
+        ),
         system_prompt=None,
         max_completion_tokens=500,
         images=None,
