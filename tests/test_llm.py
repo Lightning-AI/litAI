@@ -290,48 +290,50 @@ def test_authenticate_method(monkeypatch):
 
 
 @patch("litai.client.SDKLLM")
-def test_llm_if_method(mock_llm_class):
+def test_llm_if_method(mock_sdkllm_class):
     """Test the LLM if_ method."""
     from litai.client import LLM as LLMCLIENT
     LLMCLIENT._sdkllm_cache.clear()
-    mock_llm_instance = MagicMock()
 
+    # Instantiate LLM first
     llm = LLM(model="openai/gpt-4")
+    
+    # Get the actual mock instance used by llm
+    mock_sdkllm_instance = mock_sdkllm_class.return_value
 
     # Test case where the condition is true
-    mock_llm_instance.chat.return_value = "yes"
-    mock_llm_class.return_value = mock_llm_instance
+    mock_sdkllm_instance.chat.side_effect = ["yes", "no", " Yes "] # Use side_effect for multiple calls
     assert llm.if_("this review is great", "is this a positive review?") is True
 
     # Test case where the condition is false
-    mock_llm_instance.chat.return_value = "no"
     assert llm.if_("this review is terrible", "is this a positive review?") is False
 
     # Test case with different capitalization/spacing
-    mock_llm_instance.chat.return_value = " Yes "
     assert llm.if_("the product is amazing", "is it a positive response?") is True
 
+
 @patch("litai.client.SDKLLM")
-def test_llm_classify_method(mock_llm_class):
+def test_llm_classify_method(mock_sdkllm_class):
     """Test the LLM classify method."""
     from litai.client import LLM as LLMCLIENT
     LLMCLIENT._sdkllm_cache.clear()
-    mock_llm_instance = MagicMock()
 
     llm = LLM(model="openai/gpt-4")
 
+    # Get the actual mock instance used by llm
+    mock_sdkllm_instance = mock_sdkllm_class.return_value
+    
+    # Use side_effect to return different values for sequential calls
+    mock_sdkllm_instance.chat.side_effect = ["positive", "negative", "neutral"]
+
     # Test a simple classification
-    mock_llm_instance.chat.return_value = "positive"
-    mock_llm_class.return_value = mock_llm_instance
     result = llm.classify("this movie was great!", "positive", "negative")
     assert result == "positive"
 
     # Test another classification
-    mock_llm_instance.chat.return_value = "negative"
     result = llm.classify("this movie was awful.", "positive", "negative")
     assert result == "negative"
 
     # Test with multiple classes
-    mock_llm_instance.chat.return_value = "neutral"
     result = llm.classify("it was okay.", "positive", "negative", "neutral")
     assert result == "neutral"
