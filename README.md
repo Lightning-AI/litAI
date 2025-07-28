@@ -145,7 +145,7 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 ✅ [Async support](https://lightning.ai/docs/litai/features/async-litai/)     
 ✅ [Auto retries on failure](https://lightning.ai/docs/litai/features/fallback-retry/)    
 ✅ [Auto model switch on failure](https://lightning.ai/docs/litai/features/fallback-retry/)    
-✅ [Switch models](https://lightning.ai/docs/litai/features/models/)    
+✅ [Switch models](https://lightning.ai/docs/litai/features/models/#switch-models-dynamically)    
 ✅ [Multi-turn conversation logs](https://lightning.ai/docs/litai/features/multi-turn-conversation/)    
 ✅ [Streaming](https://lightning.ai/docs/litai/features/streaming/)    
 ✅ Bring your own model (connect your API keys, coming soon...)    
