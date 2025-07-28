@@ -425,6 +425,41 @@ class LLM:
             raise ValueError("No model loaded")
         return self._llm.list_conversations()
 
+    def if_(self, input: str, choice1: Optional[str] = None, choice2: Optional[str] = None) -> bool:
+        """Returns True if the model selects the first choice, False otherwise.
+        Defaults to a yes/no binary decision.
+        """
+        choice1 = (choice1 or "yes").strip().lower()
+        choice2 = (choice2 or "no").strip().lower()
+
+        prompt = f"Reply with only one of [{choice1!r}, {choice2!r}].\n\nInput: {input.strip()}\nAnswer:"
+
+        response = self.chat(prompt).strip().lower()
+
+        if response == choice1:
+            return True
+        elif response == choice2:
+            return False
+        else:
+            # fallback: assume choice1 if unclear
+            return True
+
+    def classify(self, input: str, *choices: str) -> str:
+        """Returns the label the model chooses from the given options.
+
+        Example:
+            llm.classify("This product sucks.", "positive", "negative") → "negative"
+        """
+        normalized_choices = [c.strip().lower() for c in choices]
+        prompt = f"Reply with only one of {normalized_choices!r}.\n\nInput: {input.strip()}\nAnswer:"
+
+        response = self.chat(prompt).strip().lower()
+
+        if response in normalized_choices:
+            return response
+        # fallback: return first choice if not matched
+        return normalized_choices[0]
+
     def __repr__(self) -> str:
         """Returns a string representation of the LLM instance.
 
