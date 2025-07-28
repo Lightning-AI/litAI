@@ -13,7 +13,6 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
-        exclude: README.md
       - id: check-case-conflict
       - id: check-yaml
       - id: check-toml
@@ -49,3 +48,8 @@ repos:
         args: ["--fix"]
       - id: ruff-format
       - id: ruff
+
+exclude: |
+  (?x)(
+      ^README.md
+  )
