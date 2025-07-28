@@ -326,7 +326,7 @@ def test_llm_classify_method(mock_sdkllm_class):
     # Use side_effect to return different values for sequential calls
     mock_sdkllm_instance.chat.side_effect = ["positive", "negative", "neutral"]
 
-    # Test a simple classification
+    # Test simple classification
     result = llm.classify("this movie was great!", "positive", "negative")
     assert result == "positive"
 
