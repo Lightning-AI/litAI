@@ -93,7 +93,7 @@ from litai import LLM
 
 llm = LLM(model="openai/gpt-3.5-turbo")
 
-product_review = "This TV has terrible picture quality and the sound cuts out constantly."
+product_review = "This TV is terrible."
 response = llm.chat(f"Is this review good or bad? Reply only with 'good' or 'bad': {product_review}").strip().lower()
 
 if response == "good":
@@ -111,7 +111,8 @@ from litai import LLM
 llm = LLM()
 
 # shortcut for agentic if statement (can do this yourself with llm.chat if needed)
-if llm.if_('this TV is amazing', "is this a positive review?"):
+product_review = "This TV is terrible."
+if llm.if_(product_review, "is this a positive review?"):
     print("bad review")
 else:
     print("good review")
