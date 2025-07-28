@@ -441,6 +441,7 @@ class LLM:
         elif response == choice2:
             return False
         else:
+
             # fallback: assume choice1 if unclear
             return True
 
@@ -457,6 +458,7 @@ class LLM:
 
         if response in normalized_choices:
             return response
+
         # fallback: return first choice if not matched
         return normalized_choices[0]
 
