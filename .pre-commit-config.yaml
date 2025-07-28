@@ -42,17 +42,6 @@ repos:
         # https://prettier.io/docs/en/options.html#print-width
         args: ["--print-width=120"]
 
-  - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.22
-    hooks:
-      - id: mdformat
-        args: ["--number"]
-        additional_dependencies:
-          - mdformat-gfm
-          - mdformat-black
-          - mdformat_frontmatter
-        exclude: CHANGELOG.md README.md
-
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.11.13
     hooks:
