@@ -15,7 +15,7 @@ def test_initialization_with_config_file(monkeypatch):
     monkeypatch.setattr("litai.client.SDKLLM", mock_llm_instance)
     LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
     assert os.getenv("LIGHTNING_API_KEY") == "my-key"
-    assert os.getenv("LIGHTNING_USER_ID") == "my-user_id"
+    assert os.getenv("LIGHTNING_USER_ID") == "my-user-id"
 
 
 @patch("litai.client.SDKLLM")
