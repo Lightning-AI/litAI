@@ -452,18 +452,19 @@ class LLM:
         response = self.chat(prompt).strip().lower()
         return "yes" in response
 
-    def classify(self, input: str, *choices: str) -> str:
-        """Returns the label the model chooses from the given options.
+    def classify(self, input: str, choices: List[str]) -> str:
+        """Returns the label the model chooses from the given list of options.
 
         Example:
-            llm.classify("This product sucks.", "positive", "negative") → "negative"
+            llm.classify("This product sucks.", ["positive", "negative", "neutral"]) → "negative"
         """
         normalized_choices = [c.strip().lower() for c in choices]
         choices_str = ", ".join(normalized_choices)
+
         prompt = f"""
-        You are given this input
+        You are given this input:
         <input>
-        {input}
+        {input.strip()}
         </input>
 
         And the following choices:
@@ -471,8 +472,8 @@ class LLM:
         {choices_str}
         </choices>
 
-        Answer with only one of the choices
-        """
+        Answer with only one of the choices.
+        """.strip()
 
         response = self.chat(prompt).strip().lower()
 
