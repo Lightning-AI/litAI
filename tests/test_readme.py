@@ -205,6 +205,9 @@ def test_readme(tmp_path, killall):
 
     for i, code in enumerate(tqdm(code_blocks)):
         # Replace LLM with MockLLM in the code block
+        if "from litai import LLM" not in code:
+            print(f"Skipping non LitAI code block: {i}")
+            continue
         modified_code = _replace_llm_with_mockllm(code)
 
         file = d / f"{i}.py"
