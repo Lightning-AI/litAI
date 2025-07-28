@@ -329,13 +329,13 @@ def test_llm_classify_method(mock_sdkllm_class):
     mock_sdkllm_instance.chat.side_effect = ["positive", "negative", "neutral"]
 
     # Test simple classification
-    result = llm.classify("this movie was great!", "positive", "negative")
+    result = llm.classify("this movie was great!", ["positive", "negative"])
     assert result == "positive"
 
     # Test another classification
-    result = llm.classify("this movie was awful.", "positive", "negative")
+    result = llm.classify("this movie was awful.", ["positive", "negative"])
     assert result == "negative"
 
     # Test with multiple classes
-    result = llm.classify("it was okay.", "positive", "negative", "neutral")
+    result = llm.classify("it was okay.", ["positive", "negative", "neutral"])
     assert result == "neutral"
