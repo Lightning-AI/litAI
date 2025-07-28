@@ -459,7 +459,20 @@ class LLM:
             llm.classify("This product sucks.", "positive", "negative") → "negative"
         """
         normalized_choices = [c.strip().lower() for c in choices]
-        prompt = f"Reply with only one of {normalized_choices!r}.\n\nInput: {input.strip()}\nAnswer:"
+        choices_str = ', '.join(normalized_choices)
+        prompt = f"""
+        You are given this input 
+        <input>
+        {input}
+        </input>
+
+        And the following choices:
+        <choices>
+        {choices_str}
+        </choices>
+
+        Answer with only one of the choices
+        """
 
         response = self.chat(prompt).strip().lower()
 
