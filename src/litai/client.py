@@ -256,6 +256,10 @@ class LLM:
                 print(verbose_sdk_error_log(e, verbose=self._verbose))
             raise e
 
+    def context_length(self, model: Optional[str] = None) -> int:
+        self._wait_for_model()
+        return self._llm.context_length(model)
+
     def chat(  # noqa: D417
         self,
         prompt: str,
