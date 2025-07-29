@@ -257,6 +257,7 @@ class LLM:
             raise e
 
     def context_length(self, model: Optional[str] = None) -> int:
+        """Returns the context length of the specified model."""
         self._wait_for_model()
         return self._llm.context_length(model)
 
