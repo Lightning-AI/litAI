@@ -68,6 +68,22 @@ def test_cloudy_models_preload(mock_sdkllm):
 
 
 @patch("litai.client.SDKLLM")
+def test_llm_context_length(mock_llm_class):
+    """Test LigtningLLM context length."""
+    from litai.client import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.context_length.return_value = 8000
+
+    mock_llm_class.return_value = mock_llm_instance
+
+    llm = LLM(model="openai/gpt-4")
+
+    assert llm.context_length() == 8000
+
+
+@patch("litai.client.SDKLLM")
 def test_llm_chat(mock_llm_class):
     """Test LigtningLLM chat."""
     from litai.client import LLM as LLMCLIENT
