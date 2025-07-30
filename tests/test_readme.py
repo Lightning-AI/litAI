@@ -100,6 +100,9 @@ class MockLLM(LLM):
     def reset_conversation(self, name: str) -> None:
         return None
 
+    def call_tool(self, response: str, tools: Optional[List[LitTool]] = None) -> Optional[str]:
+        return "Final response"
+
 
 @pytest.fixture
 def killall():
@@ -139,7 +142,7 @@ def _replace_llm_with_mockllm(code: str) -> str:
 
     # Add import for MockLLM
     if "from tests.test_readme import MockLLM" not in code:
-        code = "from tests.test_readme import MockLLM\n" + code
+        code = "from tests.test_readme import MockLLM\nfrom litai import tool, LitTool\n" + code
         code = "import sys\nsys.path.append('.')\n" + code
 
     return code

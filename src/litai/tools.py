@@ -17,11 +17,13 @@ import json
 from inspect import signature
 from typing import Any, Callable, Dict, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LitTool(BaseModel):
     """A tool is a function that can be used to interact with the world."""
+
+    model_config = ConfigDict(extra="allow")
 
     name: Optional[str] = Field(default="")
     description: Optional[str] = Field(default="")
