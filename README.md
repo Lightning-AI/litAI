@@ -76,7 +76,7 @@ With LitAI there’s nothing new to learn - just write raw Python and sprinkle i
 <br/>
 
 # Examples
-What we ***love*** about LitAI is that you can build agents, chatbots and apps in plain Python - no heavy frameworks or magic. Agents can be just simple Python programs with a few decisions made by a model.   
+What we ***love*** about LitAI is that if you know Python, you already know LitAI - just sprinkle a few "smart" agent decisions.
 
 ### Agent
 Here's a simple agent that tells you the latest news
