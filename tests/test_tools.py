@@ -171,3 +171,14 @@ def test_decorator_with_parentheses():
     assert schema["parameters"]["properties"]["detailed"]["type"] == "bool"
     assert schema["parameters"]["required"] == ["service"]
     assert isinstance(get_status, LitTool)
+
+
+def test_tool_setup():
+    class TestTool(LitTool):
+        def setup(self) -> None:
+            self.state = 1
+
+    tool_instance = TestTool()
+    assert tool_instance.state == 1, "State initialized with 1"
+    tool_instance.state += 1
+    assert tool_instance.state == 2, "State not incremented. Should be 2"
