@@ -164,9 +164,9 @@ Models can only reply with text, but tool calling lets them get real-world data 
 `@tool`: Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
 
 ```python
-from litai import LLM
+from litai import LLM, tool
 
-@litai.tool
+@tool
 def get_weather(location: str):
     return f"The weather in {location} is sunny"
 
