@@ -18,9 +18,9 @@ LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one
 
 <div align='center'>
 <pre>
-✅ Use any AI model (OpenAI, etc.) ✅ Tools               ✅ 20+ public models      
-✅ Bring your model API keys       ✅ No subscription     ✅ Unified usage dashboard
-✅ Auto retries and fallback       ✅ No MLOps glue code  ✅ Start instantly        
+✅ Use any AI model (OpenAI, etc.) ✅ Create & share tools ✅ 20+ public models      
+✅ Bring your model API keys       ✅ No subscription      ✅ Unified usage dashboard
+✅ Auto retries and fallback       ✅ No MLOps glue code   ✅ Start instantly        
 </pre>
 </div>  
 
