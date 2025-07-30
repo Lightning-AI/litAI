@@ -233,6 +233,7 @@ from litai import LLM, LitTool
 
 class FAQTool(LitTool):
     def __init__(self):
+        super().__init__()
         self.faq = {
             "pricing": "You can view our pricing plans on the website.",
             "support": "Our support team is available 24/7 via chat.",
