@@ -14,7 +14,7 @@
 """Tools for the LLM."""
 
 import json
-from inspect import signature
+from inspect import Signature, signature
 from typing import Any, Callable, Dict, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -40,7 +40,7 @@ class LitTool(BaseModel):
         """Run the tool."""
         raise NotImplementedError("Subclasses must implement this method")
 
-    def _get_signature(self):
+    def _get_signature(self) -> Signature:
         """Get the signature to use for parameter extraction. Override this in subclasses."""
         return signature(self.run)
 
@@ -98,7 +98,7 @@ def tool(func: Optional[Callable] = None) -> Union[LitTool, Callable]:
             def run(self, *args: Any, **kwargs: Any) -> Any:
                 return f(*args, **kwargs)
 
-            def _get_signature(self):
+            def _get_signature(self) -> Signature:
                 """Override to return the signature of the wrapped function."""
                 return signature(f)
 
