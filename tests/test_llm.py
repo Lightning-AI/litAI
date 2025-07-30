@@ -1,12 +1,13 @@
 """LitAI main tests."""
 
+import json
 import os
 import re
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from litai import LLM
+from litai import LLM, tool
 
 
 def test_initialization_with_config_file(monkeypatch):
@@ -355,3 +356,18 @@ def test_llm_classify_method(mock_sdkllm_class):
     # Test with multiple classes
     result = llm.classify("it was okay.", ["positive", "negative", "neutral"])
     assert result == "neutral"
+
+
+def test_llm_call_tool():
+    """Test the LLM call_tool method."""
+    response = json.dumps({"tool": "test_tool", "parameters": {"message": "How do I get a refund?"}})
+
+    @tool
+    def test_tool(message: str) -> str:
+        return f"Tool received: {message}"
+
+    llm = LLM(model="openai/gpt-4")
+
+    with patch("litai.llm.SDKLLM.chat", return_value=response):
+        result = llm.call_tool(response, tools=[test_tool])
+    assert result == "Tool received: How do I get a refund?"
