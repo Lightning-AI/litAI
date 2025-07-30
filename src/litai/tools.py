@@ -84,7 +84,6 @@ def tool(func: Callable) -> LitTool:
             return f"The weather in {location} is sunny"
     """
 
-    # Create a dynamic class that inherits from LitTool
     class FunctionTool(LitTool):
         def run(self, *args: Any, **kwargs: Any) -> Any:
             return func(*args, **kwargs)
@@ -93,13 +92,8 @@ def tool(func: Callable) -> LitTool:
             """Override to return the signature of the wrapped function."""
             return signature(func)
 
-    # Set the class name based on the function name for proper tool naming
     FunctionTool.__name__ = func.__name__
-
-    # Create and return an instance
     tool_instance = FunctionTool()
-
-    # Override the name and description
     tool_instance.name = "".join(["_" + c.lower() if c.isupper() else c for c in func.__name__]).lstrip("_")
     if func.__doc__:
         tool_instance.description = func.__doc__.strip()
