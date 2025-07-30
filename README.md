@@ -3,7 +3,7 @@
 <h2>
   Chat with any AI model with one line of Python.
   <br/>
-  Build agents, chatbots, and apps that just work with no downtime.
+  Build agents, chatbots, and apps with tool use, that work with no downtime.
 </h2>    
 
 <img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
@@ -12,15 +12,15 @@
 
 </div>
 
-LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. LitAI handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or writing wrapper code.
+LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. LitAI handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or writing wrapper code. It supports tool use without clunky, magical abstractions on top.
 
 &#160;
 
 <div align='center'>
 <pre>
-✅ Use any AI model (OpenAI, etc.) ✅ 20+ public models  ✅ Bring your model API keys
-✅ Unified usage dashboard         ✅ No subscription    ✅ Auto retries and fallback
-✅ Deploy dedicated models on-prem ✅ Start instantly    ✅ No MLOps glue code       
+✅ Use any AI model (OpenAI, etc.) ✅ Tools               ✅ 20+ public models      
+✅ Bring your model API keys       ✅ No subscription     ✅ Unified usage dashboard
+✅ Auto retries and fallback       ✅ No MLOps glue code  ✅ Start instantly        
 </pre>
 </div>  
 
@@ -37,6 +37,7 @@ LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one
 <p align="center">
   <a href="#quick-start">Quick start</a> •
   <a href="#key-features">Features</a> •
+  <a href="#tools">Tools</a> •
   <a href="#examples">Examples</a> •
   <a href="#performance">Performance</a> •
   <a href="#faq">FAQ</a> •
@@ -155,7 +156,55 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 
 # Advanced features
 
-### Auto fallbacks and retries
+### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
+Models can only reply with text, but tool calling lets them get real-world data or act, like checking calendars or sending messages, which allows AI apps to actually do things, not just talk. There are 2 ways to create tools in LitAI.
+
+Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
+
+```python
+from litai import LLM
+
+@litai.tool
+def get_weather(location: str):
+    return f"The weather in {location} is sunny"
+
+llm = LLM(model="openai/gpt-4")
+
+response = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
+
+result = llm.call_tool(response, tools=[get_weather])
+# The weather in London is sunny
+```
+
+For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
+```python
+from litai import LLM, LitTool
+
+class FAQTool(LitTool):
+    def __init__(self):
+        self.faq = {
+            "pricing": "You can view our pricing plans on the website.",
+            "support": "Our support team is available 24/7 via chat.",
+            "refund": "Refunds are available within 30 days of purchase."
+        }
+
+    def run(self, question: str) -> str:
+        keyword = question.lower()
+        for topic, answer in self.faq.items():
+            if topic in keyword:
+                return answer
+        return "Sorry, I couldn't find an answer for that."
+
+tool = FAQTool()
+
+llm = LLM(model="openai/gpt-4")
+response = llm.chat("How do I get a refund?", tools=[tool])
+result = llm.call_tool(response, tools=[tool])
+
+print(result)  # → "Refunds are available within 30 days of purchase."
+```
+
+### Auto fallbacks and retries ([docs](https://lightning.ai/docs/litai/features/fallback-retry))
 
 Model APIs can flake or can have outages. LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
 
