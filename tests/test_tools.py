@@ -134,3 +134,31 @@ def test_decorator_json_mode():
     assert isinstance(json_schema, str)
     assert "test_func" in json_schema
     assert "param" in json_schema
+
+
+def test_decorator_with_parentheses():
+    """Test @tool() pattern with parentheses."""
+
+    @tool()
+    def get_status(service: str, detailed: bool = False) -> str:
+        """Get service status."""
+        if detailed:
+            return f"Service {service} is running with full details"
+        return f"Service {service} is running"
+
+    assert isinstance(get_status, LitTool)
+    assert get_status.name == "get_status"
+    assert get_status.description == "Get service status."
+
+    # Test execution
+    result = get_status.run(service="api")
+    assert result == "Service api is running"
+
+    result_detailed = get_status.run(service="db", detailed=True)
+    assert result_detailed == "Service db is running with full details"
+
+    # Test schema
+    schema = get_status.as_tool()
+    assert schema["parameters"]["properties"]["service"]["type"] == "str"
+    assert schema["parameters"]["properties"]["detailed"]["type"] == "bool"
+    assert schema["parameters"]["required"] == ["service"]

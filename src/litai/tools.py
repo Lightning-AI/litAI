@@ -69,8 +69,10 @@ class LitTool(BaseModel):
         }
 
 
-def tool(func: Callable) -> LitTool:
+def tool(func: Optional[Callable] = None) -> Union[LitTool, Callable]:
     """Decorator to convert a function into a LitTool instance.
+
+    Can be used as @tool or @tool().
 
     Args:
         func: The function to convert into a tool.
@@ -82,20 +84,32 @@ def tool(func: Callable) -> LitTool:
         @tool
         def get_weather(location: str) -> str:
             return f"The weather in {location} is sunny"
+
+        # Or with parentheses:
+        @tool()
+        def get_weather(location: str) -> str:
+            return f"The weather in {location} is sunny"
     """
 
-    class FunctionTool(LitTool):
-        def run(self, *args: Any, **kwargs: Any) -> Any:
-            return func(*args, **kwargs)
+    def _create_tool(f: Callable) -> LitTool:
+        class FunctionTool(LitTool):
+            def run(self, *args: Any, **kwargs: Any) -> Any:
+                return f(*args, **kwargs)
 
-        def _get_signature(self):
-            """Override to return the signature of the wrapped function."""
-            return signature(func)
+            def _get_signature(self):
+                """Override to return the signature of the wrapped function."""
+                return signature(f)
 
-    FunctionTool.__name__ = func.__name__
-    tool_instance = FunctionTool()
-    tool_instance.name = "".join(["_" + c.lower() if c.isupper() else c for c in func.__name__]).lstrip("_")
-    if func.__doc__:
-        tool_instance.description = func.__doc__.strip()
+        FunctionTool.__name__ = f.__name__
+        tool_instance = FunctionTool()
+        tool_instance.name = "".join(["_" + c.lower() if c.isupper() else c for c in f.__name__]).lstrip("_")
+        if f.__doc__:
+            tool_instance.description = f.__doc__.strip()
 
-    return tool_instance
+        return tool_instance
+
+    if func is None:
+        # Called as @tool()
+        return _create_tool
+    # Called as @tool
+    return _create_tool(func)
