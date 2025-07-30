@@ -156,6 +156,8 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 
 # Advanced features
 
+<br/>
+
 ### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
 Models can only reply with text, but tool calling lets them get real-world data or act, like checking calendars or sending messages, which allows AI apps to actually do things, not just talk. There are 2 ways to create tools in LitAI.
 
@@ -207,6 +209,8 @@ print(result)  # → "Refunds are available within 30 days of purchase."
 
 ##### Note: LitAI also supports any tool that is a pydantic BaseModel.
 
+<br/>
+
 ### Auto fallbacks and retries ([docs](https://lightning.ai/docs/litai/features/fallback-retry))
 
 Model APIs can flake or can have outages. LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
@@ -222,6 +226,8 @@ llm = LLM(
 
 print(llm.chat("What is a fun fact about space?"))
 ```
+
+<br/>
 
 <details>
   <summary>Streaming</summary>
