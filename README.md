@@ -71,7 +71,7 @@ Agent frameworks are great for demos - but they’re hard to learn, full of cust
 
 With LitAI there’s nothing new to learn - just write raw Python and sprinkle in `.chat()`, `.if_()`, or `.classify()` as needed to make the program smart and agentic. LitAI gives you lightweight, minimal building blocks you’d end up building yourself: model calls, retries, fallbacks, tool use, memory, streaming - all in clean, testable code. You promps stay pure without YAML, wrappers or surprises. Just code that works the way you expect.
 
-[Full comparison](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
+[Compare vs agent frameworks](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
 
 <br/>
 
