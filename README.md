@@ -12,7 +12,7 @@
 
 </div>
 
-LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. LitAI handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or writing wrapper code. Tool use is built in, with no magic and no frameworks - just clean, testable Python code.
+LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. It handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or heavy, opaque frameworks. Tool use is built in, with no magic - just clean, testable, raw Python code.
 
 &#160;
 
