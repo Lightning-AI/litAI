@@ -55,9 +55,10 @@ class LitTool(BaseModel):
 
     def as_tool(self, json_mode: bool = False) -> Union[str, Dict[str, Any]]:
         """Returns the schema of the tool.
+
         If json_mode is True, returns the schema as a JSON string.
         Otherwise, returns the schema as a dictionary.
-        """  # noqa: D205
+        """
         if json_mode:
             return json.dumps(self.as_tool(), indent=2)
 
@@ -82,6 +83,7 @@ def tool(func: Callable) -> LitTool:
         def get_weather(location: str) -> str:
             return f"The weather in {location} is sunny"
     """
+
     # Create a dynamic class that inherits from LitTool
     class FunctionTool(LitTool):
         def run(self, *args: Any, **kwargs: Any) -> Any:
