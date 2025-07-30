@@ -145,9 +145,9 @@ def get_weather(location: str):
 
 llm = LLM(model="openai/gpt-4")
 
-response = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
+chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
 
-result = llm.call_tool(response, tools=[get_weather])
+result = llm.call_tool(chosen_tool, tools=[get_weather])
 # The weather in London is sunny
 ```
 
@@ -220,9 +220,9 @@ def get_weather(location: str):
 
 llm = LLM(model="openai/gpt-4")
 
-response = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
+chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
 
-result = llm.call_tool(response, tools=[get_weather])
+result = llm.call_tool(chosen_tool, tools=[get_weather])
 # The weather in London is sunny
 ```
   
