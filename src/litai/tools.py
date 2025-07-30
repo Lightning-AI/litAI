@@ -35,6 +35,11 @@ class LitTool(BaseModel):
             cls.description = cls.run.__doc__.strip()
 
         cls.name = "".join(["_" + c.lower() if c.isupper() else c for c in cls.__name__]).lstrip("_")
+        cls.setup(cls)
+
+    def setup(self) -> None:
+        """Use this method to store states."""
+        pass
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
         """Run the tool."""
