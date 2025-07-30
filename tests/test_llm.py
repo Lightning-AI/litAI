@@ -1,4 +1,4 @@
-"""LightningLLM main tests."""
+"""LitAI main tests."""
 
 import os
 import re
@@ -12,13 +12,13 @@ from litai import LLM
 def test_initialization_with_config_file(monkeypatch):
     """Test LigtningLLM config."""
     mock_llm_instance = MagicMock()
-    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_instance)
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_instance)
     LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
     assert os.getenv("LIGHTNING_API_KEY") == "my-key"
     assert os.getenv("LIGHTNING_USER_ID") == "my-user-id"
 
 
-@patch("litai.client.SDKLLM")
+@patch("litai.llm.SDKLLM")
 def test_invalid_model(mock_llm_class):
     """Test invalid model name."""
     dummy_model_name = "dummy-model"
@@ -33,7 +33,7 @@ def test_invalid_model(mock_llm_class):
 def test_default_model(monkeypatch):
     """Test default model name."""
     mock_llm_instance = MagicMock()
-    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_instance)
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_instance)
     warning_message = "No model was provided, defaulting to openai/gpt-4o"
     with pytest.warns(UserWarning, match=re.escape(warning_message)):
         llm = LLM()
@@ -41,7 +41,7 @@ def test_default_model(monkeypatch):
         assert llm.model == "openai/gpt-4o"
 
 
-@patch("litai.client.SDKLLM")
+@patch("litai.llm.SDKLLM")
 def test_cloudy_models_preload(mock_sdkllm):
     """Test that CLOUDY_MODELS are preloaded during LLM initialization."""
     cloudy_models = {
@@ -52,7 +52,7 @@ def test_cloudy_models_preload(mock_sdkllm):
         "google/gemini-2.5-pro",
         "google/gemini-2.5-flash",
     }
-    from litai.client import LLM as LLMCLIENT
+    from litai.llm import LLM as LLMCLIENT
 
     LLMCLIENT._sdkllm_cache.clear()
     llm = LLM()
@@ -67,10 +67,10 @@ def test_cloudy_models_preload(mock_sdkllm):
     assert set(enable_async_param) == {True, False}
 
 
-@patch("litai.client.SDKLLM")
+@patch("litai.llm.SDKLLM")
 def test_llm_chat(mock_llm_class):
     """Test LigtningLLM chat."""
-    from litai.client import LLM as LLMCLIENT
+    from litai.llm import LLM as LLMCLIENT
 
     LLMCLIENT._sdkllm_cache.clear()
     mock_llm_instance = MagicMock()
@@ -130,7 +130,7 @@ def test_model_override(monkeypatch):
             return mock_override
         raise ValueError(f"Unknown model: {name}")
 
-    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_constructor)
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_constructor)
 
     llm = LLM(
         model="default-model",
@@ -159,7 +159,7 @@ def test_model_override(monkeypatch):
 
 def test_fallback_models(monkeypatch):
     """Test fallback model logic when main model fails."""
-    from litai.client import LLM as LLMCLIENT
+    from litai.llm import LLM as LLMCLIENT
 
     LLMCLIENT._sdkllm_cache.clear()
     mock_main_model = MagicMock()
@@ -181,7 +181,7 @@ def test_fallback_models(monkeypatch):
             return mock_fallback_model
         raise ValueError(f"Unknown model: {name}")
 
-    monkeypatch.setattr("litai.client.SDKLLM", mock_llm_constructor)
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_constructor)
 
     llm = LLM(
         model="main-model",
@@ -213,7 +213,7 @@ async def test_llm_async_chat(monkeypatch):
     mock_sdkllm.name = "mock-model"
     mock_sdkllm.chat = AsyncMock(return_value="Hello, async world!")
 
-    monkeypatch.setattr("litai.client.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
+    monkeypatch.setattr("litai.llm.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
 
     llm = LLM(model="mock-model", enable_async=True)
     result = await llm.chat("Hi there", conversation="async-test")
@@ -232,7 +232,7 @@ def test_get_history(monkeypatch, capsys):
         ]
     )
 
-    monkeypatch.setattr("litai.client.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
+    monkeypatch.setattr("litai.llm.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
 
     llm = LLM(model="mock-model")
 

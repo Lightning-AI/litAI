@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""LLM client class."""
+"""LLM class."""
 
 import datetime
 import json
@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 class LLM:
     """⚡ LLM.
 
-    Developer-first LLM client.
+    Developer-first LLM.
     - Simple for beginners.
     - Flexible for pros.
 
@@ -84,7 +84,7 @@ class LLM:
         verbose: int = 0,
         full_response: Optional[bool] = None,
     ) -> None:
-        """Initializes the LLM client.
+        """Initializes the LLM.
 
         Args:
             model (Optional[str]): The main model to use. Defaults to openai/gpt-4o.
