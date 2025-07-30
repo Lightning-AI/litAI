@@ -184,8 +184,6 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 
 # Advanced features
 
-<br/>
-
 ### Auto fallbacks and retries ([docs](https://lightning.ai/docs/litai/features/fallback-retry))
 
 Model APIs can flake or can have outages. LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
