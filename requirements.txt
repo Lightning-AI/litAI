@@ -1,1 +1,1 @@
-lightning_sdk == 2025.07.22
+lightning_sdk == 2025.07.30rc0
