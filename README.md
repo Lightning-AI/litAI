@@ -424,7 +424,7 @@ print(llm.get_history("story"))  # View all messages from the 'story' thread
 <br/>
 
 # Performance
-LitAI does smart routing across a global network of servers. As a result, it only adds 25ms of overhead for an API call.   
+LitAI does smart routing across a global network of servers - it only adds 25ms of overhead for an API call.   
 
 <br/>
 
