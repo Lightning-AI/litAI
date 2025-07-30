@@ -3,7 +3,7 @@
 <h2>
   Chat with any AI model with one line of Python.
   <br/>
-  Build agents, chatbots, and apps with tool use, that work with no downtime.
+  Build agents and apps in pure Python. Full control. Zero magic.
 </h2>    
 
 <img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
@@ -12,7 +12,7 @@
 
 </div>
 
-LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. LitAI handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or writing wrapper code. It supports tool use without clunky, magical abstractions on top.
+LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. LitAI handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or writing wrapper code. Tool use is built in, with no magic and no frameworks - just clean, testable Python code.
 
 &#160;
 
@@ -65,6 +65,13 @@ print(answer)
 # I'm an AI by OpenAI
 ```
 <br/>
+
+# Why LitAI?
+Agent frameworks are great for demos. They get you up and running fast with built-in agents, tools, and flows. But that speed comes at a cost - deep abstractions, unpredictable behavior, and hidden logic that’s hard to debug. Even simple things like tool calls or prompt formatting get wrapped and rewritten, so you never fully control what the model sees. Most teams eventually hit a wall and rewrite everything in plain Python just to make it work.
+
+LitAI gives you that path from day one. You get the same building blocks - model calls, retries, fallbacks, tool use, memory, streaming - in clean, testable Python. You control every prompt. You write normal code and use .chat(), .if_(), or .classify() where needed. No wrappers. No YAML. No surprises. Just AI that works the way you expect.
+
+[Full comparison](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
 
 # Examples
 What we ***love*** about LitAI is that you can build agents, chatbots and apps in plain Python - no heavy frameworks or magic. Agents can be just simple Python programs with a few decisions made by a model.   
@@ -178,6 +185,9 @@ result = llm.call_tool(response, tools=[get_weather])
 # The weather in London is sunny
 ```
 
+<details>
+  <summary>LitTool for production tools</summary>
+  
 `LitTool`: For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
 
 ```python
@@ -208,6 +218,8 @@ print(result)  # → "Refunds are available within 30 days of purchase."
 ```
 
 ##### Note: LitAI also supports any tool that is a pydantic BaseModel.
+
+</details>  
 
 <br/>
 
