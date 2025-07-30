@@ -123,9 +123,9 @@ llm = LLM()
 # shortcut for agentic if statement (can do this yourself with llm.chat if needed)
 product_review = "This TV is terrible."
 if llm.if_(product_review, "is this a positive review?"):
-    print("bad review")
-else:
     print("good review")
+else:
+    print("bad review")
 
 # shortcut for agentic classification (can do this yourself with llm.chat if needed)
 sentiment = llm.classify("This movie was awful.", ["positive", "negative"])
