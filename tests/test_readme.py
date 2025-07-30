@@ -23,7 +23,7 @@ import pytest
 from tqdm import tqdm
 
 from litai import LLM
-from litai.client import SDKLLM
+from litai.llm import SDKLLM
 from litai.tools import LitTool
 
 
