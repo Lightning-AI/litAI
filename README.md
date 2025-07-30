@@ -67,9 +67,9 @@ print(answer)
 <br/>
 
 # Why LitAI for agents?
-Agent frameworks are great for demos. They get you up and running fast with built-in agents, tools, and flows. But that speed comes at a cost - deep abstractions, unpredictable behavior, and hidden logic that’s hard to debug. Even simple things like tool calls or prompt formatting get wrapped and rewritten, so you never fully control what the model sees. Most teams eventually hit a wall and rewrite everything in plain Python just to make it work.
+Agent frameworks are great for demos - but they’re hard to learn, full of custom syntax, and often unpredictable. They get you up and running fast with built-in agents, tools, and flows, but that speed comes at a cost: deep abstractions, hidden logic, and behavior you can’t easily debug. Even simple things like tool calls or prompt formatting get rewritten behind the scenes. Most teams eventually hit a wall and rebuild everything in plain Python just to make it work.
 
-LitAI gives you that path from day one. You get the same building blocks - model calls, retries, fallbacks, tool use, memory, streaming - in clean, testable Python. You control every prompt. You write normal code and use `.chat()`, `.if_()`, or .`classify()` where needed. No wrappers. No YAML. No surprises. Just AI that works the way you expect.
+LitAI gives you that path from the start. There’s nothing new to learn - just write Python like you already know. You get the same building blocks you’d end up building yourself: model calls, retries, fallbacks, tool use, memory, streaming - all in clean, testable code. You control every prompt. Use `.chat()`, `.if_()`, or `.classify()` when the model should help. No wrappers. No YAML. No surprises. Just code that works the way you expect.
 
 [Full comparison](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
 
