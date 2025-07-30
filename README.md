@@ -133,8 +133,7 @@ print("Sentiment:", sentiment)
 ```
 
 ### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
-Tools allow models to get real-world data or take actions. In LitAI, there is no magic with tool use, agents can decide to call tools, and you can let them call the tools
-automatically, or manually call them for more control. Zero magic, just plain Python.
+Tools allow models to get real-world data or take actions. In LitAI, there is no magic with tool use, agents can decide to call tools (`auto_tool_call=True`), or you can manually call a tool with `llm.call_tool(...)` for full control. Zero magic, just plain Python.
 
 ```python
 from litai import LLM, tool
