@@ -3,7 +3,7 @@
 <h2>
   Chat with any AI model with one line of Python.
   <br/>
-  Build agents and apps in pure Python. Full control. Zero magic.
+  Build agents and apps in pure Python with full control and zero magic.
 </h2>    
 
 <img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
