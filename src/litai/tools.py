@@ -28,6 +28,11 @@ class LitTool(BaseModel):
     name: Optional[str] = Field(default="")
     description: Optional[str] = Field(default="")
 
+    def __init__(self, **kwargs: Any) -> None:
+        """Initialize the tool and call setup."""
+        super().__init__(**kwargs)
+        self.setup()
+
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Initialize the tool."""
         super().__init_subclass__(**kwargs)
@@ -35,7 +40,6 @@ class LitTool(BaseModel):
             cls.description = cls.run.__doc__.strip()
 
         cls.name = "".join(["_" + c.lower() if c.isupper() else c for c in cls.__name__]).lstrip("_")
-        cls.setup(cls)
 
     def setup(self) -> None:
         """Use this method to store states."""
