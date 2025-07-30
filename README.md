@@ -53,7 +53,7 @@ Install LitAI via pip ([more options](https://lightning.ai/docs/litai/home/insta
 ```bash
 pip install litai
 ```
-Add AI to any Python program in 3 lines:   
+Chat with any AI model in 3 lines:
 
 ```python
 from litai import LLM
