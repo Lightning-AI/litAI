@@ -1,0 +1,136 @@
+"""Unit tests for tools module."""
+
+import pytest
+
+from litai import LitTool, tool
+
+
+@pytest.fixture
+def basic_tool_class():
+    class TestTool(LitTool):
+        def run(self, message: str) -> str:
+            """Echo the message."""
+            return f"Echo: {message}"
+
+    return TestTool
+
+
+@pytest.fixture
+def weather_tool_class():
+    class WeatherTool(LitTool):
+        def run(self, location: str, units: str = "celsius") -> str:
+            """Get weather for location."""
+            return f"Weather in {location} ({units})"
+
+    return WeatherTool
+
+
+def test_basic_tool_creation(basic_tool_class):
+    tool_instance = basic_tool_class()
+    assert tool_instance.name == "test_tool"
+    assert tool_instance.description == "Echo the message."
+
+
+def test_tool_schema_generation(weather_tool_class):
+    tool_instance = weather_tool_class()
+    schema = tool_instance.as_tool()
+
+    assert schema["name"] == "weather_tool"
+    assert schema["description"] == "Get weather for location."
+    assert schema["parameters"]["type"] == "object"
+    assert "location" in schema["parameters"]["properties"]
+    assert "units" in schema["parameters"]["properties"]
+    assert schema["parameters"]["required"] == ["location"]
+
+
+def test_tool_execution():
+    class CalculatorTool(LitTool):
+        def run(self, a: int, b: int) -> int:
+            """Add two numbers."""
+            return a + b
+
+    tool_instance = CalculatorTool()
+    result = tool_instance.run(5, 3)
+    assert result == 8, f"Expected 8, got {result}"
+
+
+def test_basic_decorator_usage():
+    @tool
+    def get_weather(location: str) -> str:
+        """Get weather for a location."""
+        return f"Weather in {location} is sunny"
+
+    assert isinstance(get_weather, LitTool)
+    assert get_weather.name == "get_weather"
+    assert get_weather.description == "Get weather for a location."
+
+    # Check schema structure
+    schema = get_weather.as_tool()
+    assert schema["parameters"]["type"] == "object"
+    assert schema["parameters"]["properties"]["location"]["type"] == "str"
+    assert schema["parameters"]["required"] == ["location"]
+
+
+def test_decorator_with_parameters():
+    @tool
+    def calculate(x: int, y: float, operation: str = "add") -> float:
+        """Perform calculation on two numbers."""
+        if operation == "add":
+            return x + y
+        if operation == "multiply":
+            return x * y
+        return 0.0
+
+    schema = calculate.as_tool()
+    assert schema["name"] == "calculate"
+    assert schema["description"] == "Perform calculation on two numbers."
+    assert schema["parameters"]["type"] == "object"
+
+    # Check parameter properties
+    props = schema["parameters"]["properties"]
+    assert len(props) == 3
+    assert props["x"]["type"] == "int"
+    assert props["y"]["type"] == "float"
+    assert props["operation"]["type"] == "str"
+
+    # Check required parameters
+    assert schema["parameters"]["required"] == ["x", "y"]
+
+
+def test_decorator_execution():
+    @tool
+    def greet(name: str, greeting: str = "Hello") -> str:
+        """Greet someone."""
+        return f"{greeting}, {name}!"
+
+    result = greet.run(name="Alice")
+    assert result == "Hello, Alice!"
+
+    result = greet.run(name="Bob", greeting="Hi")
+    assert result == "Hi, Bob!"
+
+
+def test_decorator_without_docstring():
+    @tool
+    def simple_func(value: str) -> str:
+        return value.upper()
+
+    assert simple_func.name == "simple_func"
+    assert simple_func.description == ""
+
+    # Check parameter structure
+    schema = simple_func.as_tool()
+    assert schema["parameters"]["properties"]["value"]["type"] == "str"
+    assert schema["parameters"]["required"] == ["value"]
+
+
+def test_decorator_json_mode():
+    @tool
+    def test_func(param: str) -> str:
+        """Test function."""
+        return param
+
+    json_schema = test_func.as_tool(json_mode=True)
+    assert isinstance(json_schema, str)
+    assert "test_func" in json_schema
+    assert "param" in json_schema
