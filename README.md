@@ -159,7 +159,7 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 ### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
 Models can only reply with text, but tool calling lets them get real-world data or act, like checking calendars or sending messages, which allows AI apps to actually do things, not just talk. There are 2 ways to create tools in LitAI.
 
-Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
+`@tool`: Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
 
 ```python
 from litai import LLM
@@ -176,7 +176,8 @@ result = llm.call_tool(response, tools=[get_weather])
 # The weather in London is sunny
 ```
 
-For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
+`LitTool`: For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
+
 ```python
 from litai import LLM, LitTool
 
@@ -203,6 +204,8 @@ result = llm.call_tool(response, tools=[tool])
 
 print(result)  # → "Refunds are available within 30 days of purchase."
 ```
+
+##### Note: LitAI also supports any tool that is a pydantic BaseModel.
 
 ### Auto fallbacks and retries ([docs](https://lightning.ai/docs/litai/features/fallback-retry))
 
