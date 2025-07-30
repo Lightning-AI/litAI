@@ -130,6 +130,25 @@ sentiment = llm.classify("This movie was awful.", ["positive", "negative"])
 print("Sentiment:", sentiment)
 ```
 
+### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
+Tools allow models to get real-world data or take actions. In LitAI, there is no magic with tool use, agents can decide to call tools, and you can let them call the tools
+automatically, or manually call them for more control. Zero magic, just plain Python.
+
+```python
+from litai import LLM, tool
+
+@tool
+def get_weather(location: str):
+    return f"The weather in {location} is sunny"
+
+llm = LLM(model="openai/gpt-4")
+
+response = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
+
+result = llm.call_tool(response, tools=[get_weather])
+# The weather in London is sunny
+```
+
 <br/>
 
 # Key features
@@ -165,7 +184,29 @@ Track usage and spending in your [Lightning AI](https://lightning.ai/) dashboard
 
 <br/>
 
-### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
+### Auto fallbacks and retries ([docs](https://lightning.ai/docs/litai/features/fallback-retry))
+
+Model APIs can flake or can have outages. LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
+
+```python
+from litai import LLM
+
+llm = LLM(
+    model="openai/gpt-4",
+    fallback_models=["google/gemini-2.5-flash", "anthropic/claude-3-5-sonnet-20240620"],
+    max_retries=4,
+)
+
+print(llm.chat("What is a fun fact about space?"))
+```
+
+<br/>
+
+<details>
+  <summary>Tools</summary>
+
+<br/>
+  
 Models can only reply with text, but tool calling lets them get real-world data or act, like checking calendars or sending messages, which allows AI apps to actually do things, not just talk. There are 2 ways to create tools in LitAI.
 
 `@tool`: Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
@@ -184,9 +225,6 @@ response = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
 result = llm.call_tool(response, tools=[get_weather])
 # The weather in London is sunny
 ```
-
-<details>
-  <summary>LitTool for production tools</summary>
   
 `LitTool`: For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
 
@@ -218,28 +256,7 @@ print(result)  # → "Refunds are available within 30 days of purchase."
 ```
 
 ##### Note: LitAI also supports any tool that is a pydantic BaseModel.
-
-</details>  
-
-<br/>
-
-### Auto fallbacks and retries ([docs](https://lightning.ai/docs/litai/features/fallback-retry))
-
-Model APIs can flake or can have outages. LitAI automatically retries in case of failures. After multiple failures it can automatically fallback to other models in case the provider is down.
-
-```python
-from litai import LLM
-
-llm = LLM(
-    model="openai/gpt-4",
-    fallback_models=["google/gemini-2.5-flash", "anthropic/claude-3-5-sonnet-20240620"],
-    max_retries=4,
-)
-
-print(llm.chat("What is a fun fact about space?"))
-```
-
-<br/>
+</details>
 
 <details>
   <summary>Streaming</summary>
