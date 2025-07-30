@@ -73,6 +73,8 @@ LitAI gives you that path from day one. You get the same building blocks - model
 
 [Full comparison](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
 
+<br/>
+
 # Examples
 What we ***love*** about LitAI is that you can build agents, chatbots and apps in plain Python - no heavy frameworks or magic. Agents can be just simple Python programs with a few decisions made by a model.   
 
