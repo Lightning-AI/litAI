@@ -15,7 +15,7 @@
 
 import json
 from inspect import signature
-from typing import Any, Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 
 from pydantic import BaseModel, Field
 
@@ -38,8 +38,12 @@ class LitTool(BaseModel):
         """Run the tool."""
         raise NotImplementedError("Subclasses must implement this method")
 
+    def _get_signature(self):
+        """Get the signature to use for parameter extraction. Override this in subclasses."""
+        return signature(self.run)
+
     def _extract_parameters(self) -> Dict[str, Any]:
-        sig = signature(self.run)
+        sig = self._get_signature()
         return {
             "type": "object",
             "properties": {
@@ -62,3 +66,40 @@ class LitTool(BaseModel):
             "description": self.description,
             "parameters": self._extract_parameters(),
         }
+
+
+def tool(func: Callable) -> LitTool:
+    """Decorator to convert a function into a LitTool instance.
+
+    Args:
+        func: The function to convert into a tool.
+
+    Returns:
+        LitTool: An instance of LitTool that wraps the function.
+
+    Example:
+        @tool
+        def get_weather(location: str) -> str:
+            return f"The weather in {location} is sunny"
+    """
+    # Create a dynamic class that inherits from LitTool
+    class FunctionTool(LitTool):
+        def run(self, *args: Any, **kwargs: Any) -> Any:
+            return func(*args, **kwargs)
+
+        def _get_signature(self):
+            """Override to return the signature of the wrapped function."""
+            return signature(func)
+
+    # Set the class name based on the function name for proper tool naming
+    FunctionTool.__name__ = func.__name__
+
+    # Create and return an instance
+    tool_instance = FunctionTool()
+
+    # Override the name and description
+    tool_instance.name = "".join(["_" + c.lower() if c.isupper() else c for c in func.__name__]).lstrip("_")
+    if func.__doc__:
+        tool_instance.description = func.__doc__.strip()
+
+    return tool_instance
