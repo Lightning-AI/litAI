@@ -14,9 +14,9 @@
 """Unit tests for tools module."""
 
 import pytest
+from langchain_core.tools import tool as langchain_tool
 
 from litai import LitTool, tool
-from langchain_core.tools import tool as langchain_tool
 
 
 @pytest.fixture
@@ -188,7 +188,7 @@ def test_tool_setup():
 def test_from_langchain():
     @langchain_tool
     def get_weather(city: str) -> str:
-        """Get the weather of a given city"""
+        """Get the weather of a given city."""
         return f"Weather in {city} is sunny."
 
     lit_tool = LitTool.from_langchain(get_weather)
