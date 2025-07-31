@@ -301,7 +301,17 @@ class LLM:
             str: The response from the LLM.
         """
         self._wait_for_model()
-        tools = [tool.as_tool() for tool in tools] if tools else None
+        tools = LitTool.convert_tools(tools)
+        tool_schema = [tool.as_tool() for tool in tools] if tools else None
+        if tool_schema:
+            tool_context = (
+                f"# Available tools:\n{json.dumps(tool_schema, indent=2)}\n\n"
+                "Just return the result of the tool call, do not include any other text."
+            )
+            if system_prompt is None:
+                system_prompt = f"Use the following tools to answer the question:\n\n{tool_context}"
+            else:
+                system_prompt = f"{system_prompt}\n\n{tool_context}"
         if model:
             try:
                 model_key = f"{model}::{self._teamspace}::{self._enable_async}"
@@ -355,6 +365,7 @@ class LLM:
         parsed = json.loads(response)
         tool_name = parsed["tool"]
         tool_args = parsed["parameters"]
+        tools = LitTool.convert_tools(tools)
         for tool in tools:
             if tool.name == tool_name:
                 return tool.run(**tool_args)
