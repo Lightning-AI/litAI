@@ -194,4 +194,23 @@ def test_from_langchain():
     lit_tool = LitTool.from_langchain(get_weather)
     assert isinstance(lit_tool, LitTool)
     assert lit_tool.name == "get_weather"
-    assert lit_tool.description == "Get the weather of a given city"
+    assert lit_tool.description == "Get the weather of a given city."
+    assert lit_tool.as_tool() == {
+        "name": "get_weather",
+        "description": "Get the weather of a given city.",
+        "parameters": get_weather.args_schema.model_json_schema(),
+    }
+
+
+def test_convert_tools_empty():
+    lit_tools = LitTool.convert_tools([])
+    assert len(lit_tools) == 0
+
+
+def test_convert_tools_unsupported_type():
+    def get_weather(city: str) -> str:
+        """Get the weather of a given city."""
+        return f"Weather in {city} is sunny."
+
+    with pytest.raises(TypeError, match="Unsupported tool type: <class 'function'>"):
+        LitTool.convert_tools([get_weather])
