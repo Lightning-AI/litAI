@@ -364,18 +364,36 @@ class LLM:
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
 
     @staticmethod
-    def call_tool(response: str, tools: Optional[List[LitTool]] = None) -> Optional[str]:
+    def call_tool(response: Union[List[dict], dict], tools: Optional[List[LitTool]] = None) -> Optional[List[str]]:
         """Calls a tool with the given response."""
         if tools is None:
             raise ValueError("No tools provided")
 
-        parsed = json.loads(response)
-        tool_name = parsed["tool"]
-        tool_args = parsed["parameters"]
         tools = LitTool.convert_tools(tools)
-        for tool in tools:
-            if tool.name == tool_name:
-                return tool.run(**tool_args)
+
+        results = []
+
+        for tool_response in response:
+            tool_name = tool_response.get("function", {}).get("name")
+            if not tool_name:
+                continue
+            tool_args = tool_response.get("function", {}).get("arguments", {})
+            if isinstance(tool_args, str):
+                try:
+                    tool_args = json.loads(tool_args)
+                except json.JSONDecodeError:
+                    print(f"❌ Failed to parse tool arguments: {tool_args}")
+                    return None
+            if isinstance(tool_args, dict):
+                tool_args = {k: v for k, v in tool_args.items() if v is not None}
+            if isinstance(tool_args, list):
+                tool_args = {f"arg_{i}": v for i, v in enumerate(tool_args)}
+
+            for tool in tools:
+                if tool.name == tool_name:
+                    results.append(tool.run(**tool_args))
+        if len(results) >= 1:
+            return results
         return None
 
     def _dump_debug(
