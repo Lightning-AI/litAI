@@ -14,10 +14,8 @@
 """Tools for the LLM."""
 
 import json
-from typing import List, Any, Union
-
 from inspect import Signature, signature
-from typing import Any, Callable, Dict, Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -85,19 +83,20 @@ class LitTool(BaseModel):
         }
 
     @classmethod
-    def from_langchain(cls, tool: "StructuredTool"):
+    def from_langchain(cls, tool: "StructuredTool") -> "LitTool":
         """Convert a LangChain StructuredTool to a LitTool."""
+
         class LangchainTool(LitTool):
             def setup(self) -> None:
                 super().setup()
-                self.name: str =  tool.name
+                self.name: str = tool.name
                 self.description: str = tool.description
                 self._tool = tool
 
             def run(self, *args: Any, **kwargs: Any) -> Any:
                 return self._tool.func(*args, **kwargs)
 
-            def _extract_parameters(self):
+            def _extract_parameters(self) -> Dict[str, Any]:
                 return self._tool.args_schema.model_json_schema()
 
         return LangchainTool()
@@ -122,17 +121,13 @@ class LitTool(BaseModel):
                 lit_tools.append(tool)
 
             # LangChain StructuredTool - check by type name and module
-            elif (
-                type(tool).__name__ == "StructuredTool" and
-                type(tool).__module__ == "langchain_core.tools.structured"
-            ):
+            elif type(tool).__name__ == "StructuredTool" and type(tool).__module__ == "langchain_core.tools.structured":
                 lit_tools.append(cls.from_langchain(tool))
 
             else:
                 raise TypeError(f"Unsupported tool type: {type(tool)}")
 
         return lit_tools
-
 
 
 def tool(func: Optional[Callable] = None) -> Union[LitTool, Callable]:
