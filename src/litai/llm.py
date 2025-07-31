@@ -207,6 +207,22 @@ class LLM:
                 raise type(e)(f"failed to load model '{self._model}': {str(e)}")
             raise type(e)(error_msg) from e
 
+    def _format_tool_response(self, response: V1ConversationResponseChunk) -> Optional[List[str]]:
+        if response.choices is None or len(response.choices) == 0:
+            return None
+
+        tools = response.choices[0].tool_calls
+        result = []
+        for tool in tools:
+            new_tool = {
+                "function": {
+                    "arguments": tool.function.arguments,
+                    "name": tool.function.name,
+                }
+            }
+            result.append(new_tool)
+        return result
+
     def _model_call(
         self,
         model: SDKLLM,
@@ -242,7 +258,7 @@ class LLM:
                 **kwargs,
             )
             if tools and isinstance(response, V1ConversationResponseChunk):
-                return response.choices[0].tool_calls
+                return self._format_tool_response(response)
             return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
