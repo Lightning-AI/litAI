@@ -16,6 +16,7 @@
 import pytest
 
 from litai import LitTool, tool
+from langchain_core.tools import tool as langchain_tool
 
 
 @pytest.fixture
@@ -182,3 +183,15 @@ def test_tool_setup():
     assert tool_instance.state == 1, "State initialized with 1"
     tool_instance.state += 1
     assert tool_instance.state == 2, "State not incremented. Should be 2"
+
+
+def test_from_langchain():
+    @langchain_tool
+    def get_weather(city: str) -> str:
+        """Get the weather of a given city"""
+        return f"Weather in {city} is sunny."
+
+    lit_tool = LitTool.from_langchain(get_weather)
+    assert isinstance(lit_tool, LitTool)
+    assert lit_tool.name == "get_weather"
+    assert lit_tool.description == "Get the weather of a given city"

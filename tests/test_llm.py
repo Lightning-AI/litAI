@@ -7,6 +7,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from langchain_core.tools import tool as langchain_tool
+
 from litai import LLM, tool
 
 
@@ -410,3 +412,25 @@ def test_dump_debug(mock_makedirs, mock_open):
     assert "Test response" in written_content
     assert "📛 Exception:" in written_content
     assert "Test exception" in written_content
+
+
+
+@patch("litai.llm.SDKLLM")
+def test_call_langchain_tools(mock_sdkllm):
+    mock_sdkllm.return_value.chat.return_value = json.dumps(
+            {
+                "type": "function_call",
+                "tool": "get_weather",
+                "parameters": {"city": "London"}
+            }
+            )
+
+    @langchain_tool
+    def get_weather(city: str) -> str:
+        """Get the weather of a given city"""
+        return f"Weather in {city} is sunny."
+
+
+    llm = LLM()
+    result = llm.chat("how is the weather in London?", tools=[get_weather])
+    assert llm.call_tool(result, tools=[get_weather]) == "Weather in London is sunny."
