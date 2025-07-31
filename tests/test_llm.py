@@ -371,3 +371,46 @@ def test_llm_call_tool():
     with patch("litai.llm.SDKLLM.chat", return_value=response):
         result = llm.call_tool(response, tools=[test_tool])
     assert result == "Tool received: How do I get a refund?"
+
+
+@patch("builtins.open", new_callable=MagicMock)
+@patch("os.makedirs")
+def test_dump_debug(mock_makedirs, mock_open):
+    """Test the LLM dump_debug method."""
+    # Set up the mock file handle for context manager
+    mock_file = MagicMock()
+    mock_open.return_value.__enter__.return_value = mock_file
+
+    logs = []
+    mock_file.write = lambda x: logs.append(x)
+
+    llm = LLM(model="openai/gpt-4")
+    llm._dump_debug(
+        payload={"prompt": "Hello, world!"},
+        headers={"Authorization": "Bearer test-token"},
+        exception=Exception("Test exception"),
+        response=MagicMock(status_code=200, text="Test response"),
+    )
+
+    # Verify that makedirs was called
+    mock_makedirs.assert_called_once_with("llm_debug_logs", exist_ok=True)
+
+    # Verify that open was called with correct parameters
+    mock_open.assert_called_once()
+    call_args = mock_open.call_args
+    assert call_args[0][1] == "w"  # write mode
+    assert call_args[1]["encoding"] == "utf-8"
+
+    # Verify that content was written
+    assert len(logs) > 0
+    written_content = "".join(logs)
+    assert "❌ LLM CALL DEBUG INFO" in written_content
+    assert "Model: openai/gpt-4" in written_content
+    assert "📬 Headers:" in written_content
+    assert "Authorization: Bearer" in written_content  # Should be redacted
+    assert "📤 Payload:" in written_content
+    assert "Hello, world!" in written_content
+    assert "📥 Response status: 200" in written_content
+    assert "Test response" in written_content
+    assert "📛 Exception:" in written_content
+    assert "Test exception" in written_content
