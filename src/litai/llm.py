@@ -302,7 +302,6 @@ class LLM:
         """
         self._wait_for_model()
         tools = [tool.as_tool() for tool in tools] if tools else None
-        print(tools)
         if model:
             try:
                 model_key = f"{model}::{self._teamspace}::{self._enable_async}"
@@ -344,7 +343,6 @@ class LLM:
                     )
                 except Exception:
                     print(f"🔁 Attempt {attempt}/{self.max_retries} failed. Retrying...")
-                    return None
 
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
 
