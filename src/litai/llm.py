@@ -373,6 +373,9 @@ class LLM:
 
         results = []
 
+        if isinstance(response, dict):
+            response = [response]
+
         for tool_response in response:
             tool_name = tool_response.get("function", {}).get("name")
             if not tool_name:

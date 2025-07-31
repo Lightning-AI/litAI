@@ -416,15 +416,21 @@ def test_dump_debug(mock_makedirs, mock_open):
 @patch("litai.llm.SDKLLM")
 def test_call_langchain_tools(mock_sdkllm):
     @langchain_tool
-    def get_weather(city: str) -> str:
+    def get_weather(location: str) -> str:
         """Get the weather of a given city."""
-        return f"Weather in {city} is sunny."
+        return f"Weather in {location} is sunny."
 
     llm = LLM()
     with patch.object(
         llm,
         "chat",
-        return_value=json.dumps({"type": "function_call", "tool": "get_weather", "parameters": {"city": "London"}}),
+        return_value=[
+            {
+                "function": {"arguments": '{\n  "location": "London"\n}', "name": "get_weather"},
+                "id": "call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+                "type": "function",
+            }
+        ],
     ):
         result = llm.chat("how is the weather in London?", tools=[get_weather])
-    assert llm.call_tool(result, tools=[get_weather]) == "Weather in London is sunny."
+    assert llm.call_tool(result, tools=[get_weather]) == ["Weather in London is sunny."]
