@@ -55,10 +55,18 @@ class LitTool(BaseModel):
 
     def _extract_parameters(self) -> Dict[str, Any]:
         sig = self._get_signature()
+        def _get_type_name(annotation):
+            if annotation is None or annotation is sig.empty:
+                return "string"
+            if annotation is str:
+                return "string"
+            if hasattr(annotation, "__name__"):
+                return annotation.__name__
+            return str(annotation)
         return {
             "type": "object",
             "properties": {
-                param.name: {"type": param.annotation.__name__ if param.annotation is not None else "string"}
+                param.name: {"type": _get_type_name(param.annotation)}
                 for param in sig.parameters.values()
             },
             "required": [param.name for param in sig.parameters.values() if param.default is param.empty],
@@ -78,7 +86,7 @@ class LitTool(BaseModel):
             "function": {
                 "name": self.name,
                 "description": self.description,
-                "parameters": json.dumps(self._extract_parameters()),
+                "parameters": self._extract_parameters(),
             }   
         }
 
