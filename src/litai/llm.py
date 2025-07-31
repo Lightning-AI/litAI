@@ -298,6 +298,7 @@ class LLM:
             str: The response from the LLM.
         """
         self._wait_for_model()
+        tools = LitTool.convert_tools(tools)
         tool_schema = [tool.as_tool() for tool in tools] if tools else None
         if tool_schema:
             tool_context = (
@@ -359,6 +360,7 @@ class LLM:
         parsed = json.loads(response)
         tool_name = parsed["tool"]
         tool_args = parsed["parameters"]
+        tools = LitTool.convert_tools(tools)
         for tool in tools:
             if tool.name == tool_name:
                 return tool.run(**tool_args)

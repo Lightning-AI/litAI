@@ -15,9 +15,12 @@
 
 import json
 from inspect import Signature, signature
-from typing import Any, Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
+
+if TYPE_CHECKING:
+    from langchain_core.tools.structured import StructuredTool
 
 
 class LitTool(BaseModel):
@@ -78,6 +81,53 @@ class LitTool(BaseModel):
             "description": self.description,
             "parameters": self._extract_parameters(),
         }
+
+    @classmethod
+    def from_langchain(cls, tool: "StructuredTool") -> "LitTool":
+        """Convert a LangChain StructuredTool to a LitTool."""
+
+        class LangchainTool(LitTool):
+            def setup(self) -> None:
+                super().setup()
+                self.name: str = tool.name
+                self.description: str = tool.description
+                self._tool = tool
+
+            def run(self, *args: Any, **kwargs: Any) -> Any:
+                return self._tool.func(*args, **kwargs)  # type: ignore
+
+            def _extract_parameters(self) -> Dict[str, Any]:
+                return self._tool.args_schema.model_json_schema()  # type: ignore
+
+        return LangchainTool()
+
+    @classmethod
+    def convert_tools(cls, tools: Optional[List[Any]]) -> List["LitTool"]:
+        """Convert a list of tools into LitTool instances.
+
+        - Passes through LitTool instances.
+        - Wraps LangChain StructuredTool objects.
+        - Raises TypeError for unsupported types.
+        """
+        if tools is None:
+            return []
+        if len(tools) == 0:
+            return []
+
+        lit_tools = []
+
+        for tool in tools:
+            if isinstance(tool, LitTool):
+                lit_tools.append(tool)
+
+            # LangChain StructuredTool - check by type name and module
+            elif type(tool).__name__ == "StructuredTool" and type(tool).__module__ == "langchain_core.tools.structured":
+                lit_tools.append(cls.from_langchain(tool))
+
+            else:
+                raise TypeError(f"Unsupported tool type: {type(tool)}")
+
+        return lit_tools
 
 
 def tool(func: Optional[Callable] = None) -> Union[LitTool, Callable]:
