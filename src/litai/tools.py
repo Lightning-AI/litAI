@@ -94,15 +94,15 @@ class LitTool(BaseModel):
                 self._tool = tool
 
             def run(self, *args: Any, **kwargs: Any) -> Any:
-                return self._tool.func(*args, **kwargs)
+                return self._tool.func(*args, **kwargs) # type: ignore
 
             def _extract_parameters(self) -> Dict[str, Any]:
-                return self._tool.args_schema.model_json_schema()
+                return self._tool.args_schema.model_json_schema() # type: ignore
 
         return LangchainTool()
 
     @classmethod
-    def convert_tools(cls, tools: List[Any]) -> List["LitTool"]:
+    def convert_tools(cls, tools: Optional[List[Any]]) -> List["LitTool"]:
         """Convert a list of tools into LitTool instances.
 
         - Passes through LitTool instances.
