@@ -23,6 +23,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import requests
 from lightning_sdk.lightning_cloud import login
+from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
 from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
@@ -225,12 +226,10 @@ class LLM:
             if self._verbose == 2:
                 print(f"⚡️ Using model: {model.name} (Provider: {model.provider})")
 
-            full_response = (
-                (False if self._full_response is None else self._full_response)
-                if full_response is None
-                else full_response
-            )
-            return model.chat(
+            full_response = full_response if full_response is not None else (self._full_response or False)
+            if tools:
+                full_response = True
+            response = model.chat(
                 prompt=prompt,
                 system_prompt=system_prompt,
                 max_completion_tokens=max_completion_tokens,
@@ -238,10 +237,13 @@ class LLM:
                 conversation=conversation,
                 metadata=metadata,
                 stream=stream,
-                full_response=True,
+                full_response=full_response,
                 tools=tools,
                 **kwargs,
             )
+            if tools and isinstance(response, V1ConversationResponseChunk):
+                return response.choices[0].tool_calls
+            return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
             error = handle_http_error(e, model.name)
@@ -343,7 +345,7 @@ class LLM:
                 except Exception as e:
                     raise e
                     print(f"🔁 Attempt {attempt}/{self.max_retries} failed. Retrying...")
-                    return
+                    return None
 
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
 
