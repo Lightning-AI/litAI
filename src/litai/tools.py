@@ -86,6 +86,7 @@ class LitTool(BaseModel):
 
     @classmethod
     def from_langchain(cls, tool: "StructuredTool"):
+        """Convert a LangChain StructuredTool to a LitTool."""
         class LangchainTool(LitTool):
             def setup(self) -> None:
                 super().setup()
