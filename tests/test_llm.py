@@ -407,7 +407,7 @@ def test_dump_debug(mock_makedirs, mock_open):
     assert "❌ LLM CALL DEBUG INFO" in written_content
     assert "Model: openai/gpt-4" in written_content
     assert "📬 Headers:" in written_content
-    assert "Authorization: Bearer" in written_content  # Should be redacted
+    assert "Authorization: Bearer tes..." in written_content  # Should be redacted
     assert "📤 Payload:" in written_content
     assert "Hello, world!" in written_content
     assert "📥 Response status: 200" in written_content
