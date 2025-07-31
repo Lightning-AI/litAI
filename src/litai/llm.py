@@ -342,8 +342,7 @@ class LLM:
                         tools=tools,
                         **kwargs,
                     )
-                except Exception as e:
-                    raise e
+                except Exception:
                     print(f"🔁 Attempt {attempt}/{self.max_retries} failed. Retrying...")
                     return None
 
