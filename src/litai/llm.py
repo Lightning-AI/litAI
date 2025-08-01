@@ -208,9 +208,9 @@ class LLM:
             raise type(e)(error_msg) from e
 
     @staticmethod
-    def _format_tool_response(response: V1ConversationResponseChunk) -> Optional[str]:
+    def _format_tool_response(response: V1ConversationResponseChunk) -> str:
         if response.choices is None or len(response.choices) == 0:
-            return None
+            return ""
 
         tools = response.choices[0].tool_calls
         result = []
@@ -386,6 +386,8 @@ class LLM:
             response = [response]
 
         for tool_response in response:
+            if not isinstance(tool_response, dict):
+                continue
             tool_name = tool_response.get("function", {}).get("name")
             if not tool_name:
                 continue
