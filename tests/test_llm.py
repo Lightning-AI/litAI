@@ -1,6 +1,5 @@
 """LitAI main tests."""
 
-import json
 import os
 import re
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -117,6 +116,7 @@ def test_llm_chat(mock_llm_class):
         stream=False,
         full_response=False,
         my_kwarg="test-kwarg",
+        tools=None,
     )
     test_kwargs = mock_llm_instance.chat.call_args.kwargs
     assert test_kwargs.get("my_kwarg") == "test-kwarg"
@@ -172,6 +172,7 @@ def test_model_override(monkeypatch):
         metadata=None,
         stream=False,
         full_response=True,
+        tools=None,
     )
 
 
@@ -221,6 +222,7 @@ def test_fallback_models(monkeypatch):
         metadata=None,
         stream=False,
         full_response=False,
+        tools=None,
     )
 
 
@@ -361,7 +363,11 @@ def test_llm_classify_method(mock_sdkllm_class):
 
 def test_llm_call_tool():
     """Test the LLM call_tool method."""
-    response = json.dumps({"tool": "test_tool", "parameters": {"message": "How do I get a refund?"}})
+    response = {
+        "function": {"arguments": {"message": "How do I get a refund?"}, "name": "test_tool"},
+        "id": "call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+        "type": "function",
+    }
 
     @tool
     def test_tool(message: str) -> str:
@@ -371,7 +377,7 @@ def test_llm_call_tool():
 
     with patch("litai.llm.SDKLLM.chat", return_value=response):
         result = llm.call_tool(response, tools=[test_tool])
-    assert result == "Tool received: How do I get a refund?"
+    assert result == ["Tool received: How do I get a refund?"]
 
 
 @patch("builtins.open", new_callable=MagicMock)
