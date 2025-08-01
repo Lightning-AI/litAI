@@ -70,7 +70,9 @@ def test_tool_execution():
 
 def test_basic_decorator_usage():
     @tool
-    def get_weather(location: str) -> str:
+    def get_weather(
+        location, country: str = "US", fetch_temperature: bool = False, latitude: float = 0.0, longitude: float = 0.0
+    ) -> str:
         """Get weather for a location."""
         return f"Weather in {location} is sunny"
 
@@ -81,7 +83,11 @@ def test_basic_decorator_usage():
     # Check schema structure
     schema = get_weather.as_tool()
     assert schema["parameters"]["type"] == "object"
-    assert schema["parameters"]["properties"]["location"]["type"] == "str"
+    assert schema["parameters"]["properties"]["location"]["type"] == "string"
+    assert schema["parameters"]["properties"]["country"]["type"] == "string"
+    assert schema["parameters"]["properties"]["fetch_temperature"]["type"] == "boolean"
+    assert schema["parameters"]["properties"]["latitude"]["type"] == "number"
+    assert schema["parameters"]["properties"]["longitude"]["type"] == "number"
     assert schema["parameters"]["required"] == ["location"]
 
 
@@ -103,9 +109,9 @@ def test_decorator_with_parameters():
     # Check parameter properties
     props = schema["parameters"]["properties"]
     assert len(props) == 3
-    assert props["x"]["type"] == "int"
-    assert props["y"]["type"] == "float"
-    assert props["operation"]["type"] == "str"
+    assert props["x"]["type"] == "integer"
+    assert props["y"]["type"] == "number"
+    assert props["operation"]["type"] == "string"
 
     # Check required parameters
     assert schema["parameters"]["required"] == ["x", "y"]
@@ -134,7 +140,7 @@ def test_decorator_without_docstring():
 
     # Check parameter structure
     schema = simple_func.as_tool()
-    assert schema["parameters"]["properties"]["value"]["type"] == "str"
+    assert schema["parameters"]["properties"]["value"]["type"] == "string"
     assert schema["parameters"]["required"] == ["value"]
 
 
@@ -168,8 +174,8 @@ def test_decorator_with_parentheses():
     assert result_detailed == "Service db is running with full details"
 
     schema = get_status.as_tool()
-    assert schema["parameters"]["properties"]["service"]["type"] == "str"
-    assert schema["parameters"]["properties"]["detailed"]["type"] == "bool"
+    assert schema["parameters"]["properties"]["service"]["type"] == "string"
+    assert schema["parameters"]["properties"]["detailed"]["type"] == "boolean"
     assert schema["parameters"]["required"] == ["service"]
     assert isinstance(get_status, LitTool)
 
