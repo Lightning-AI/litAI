@@ -59,7 +59,7 @@ class LitTool(BaseModel):
     def _extract_parameters(self) -> Dict[str, Any]:
         sig = self._get_signature()
 
-        def _get_type_name(annotation):
+        def _get_type_name(annotation: Any) -> str:
             if annotation is None or annotation is sig.empty:
                 return "string"
             if annotation is str:

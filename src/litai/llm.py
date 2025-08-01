@@ -208,7 +208,7 @@ class LLM:
             raise type(e)(error_msg) from e
 
     @staticmethod
-    def _format_tool_response(response: V1ConversationResponseChunk) -> Optional[List[str]]:
+    def _format_tool_response(response: V1ConversationResponseChunk) -> Optional[List[Dict[str, Dict[str, Any]]]]:
         if response.choices is None or len(response.choices) == 0:
             return None
 
@@ -222,7 +222,7 @@ class LLM:
                 }
             }
             result.append(new_tool)
-        return result
+        return json.dumps(result)
 
     def _model_call(
         self,
@@ -235,7 +235,7 @@ class LLM:
         metadata: Optional[Dict[str, str]],
         stream: bool,
         full_response: Optional[bool] = None,
-        tools: Optional[List[LitTool]] = None,
+        tools: Optional[List[Union[str, Dict[str, Any]]]] = None,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -292,7 +292,7 @@ class LLM:
         conversation: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None,
         stream: bool = False,
-        tools: Optional[List[LitTool]] = None,
+        tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -318,8 +318,8 @@ class LLM:
             str: The response from the LLM.
         """
         self._wait_for_model()
-        tools = LitTool.convert_tools(tools)
-        tools = [tool.as_tool() for tool in tools] if tools else None
+        converted_tools = LitTool.convert_tools(tools)
+        processed_tools = [tool.as_tool() for tool in converted_tools] if converted_tools else None
         if model:
             try:
                 model_key = f"{model}::{self._teamspace}::{self._enable_async}"
@@ -337,7 +337,7 @@ class LLM:
                     conversation=conversation,
                     metadata=metadata,
                     stream=stream,
-                    tools=tools,
+                    tools=processed_tools,
                     **kwargs,
                 )
             except Exception:
@@ -356,7 +356,7 @@ class LLM:
                         conversation=conversation,
                         metadata=metadata,
                         stream=stream,
-                        tools=tools,
+                        tools=processed_tools,
                         **kwargs,
                     )
                 except Exception:
@@ -365,10 +365,18 @@ class LLM:
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
 
     @staticmethod
-    def call_tool(response: Union[List[dict], dict], tools: Optional[List[LitTool]] = None) -> Optional[List[str]]:
+    def call_tool(
+        response: Union[List[dict], dict, str], tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None
+    ) -> Optional[List[str]]:
         """Calls a tool with the given response."""
         if tools is None:
             raise ValueError("No tools provided")
+
+        if isinstance(response, str):
+            try:
+                response = json.loads(response)
+            except json.JSONDecodeError:
+                raise ValueError("Tool response is not a valid JSON string")
 
         tools = LitTool.convert_tools(tools)
 

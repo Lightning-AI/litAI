@@ -1,5 +1,6 @@
 """LitAI main tests."""
 
+import json
 import os
 import re
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -369,11 +370,11 @@ def test_llm_classify_method(mock_sdkllm_class):
 
 def test_llm_call_tool():
     """Test the LLM call_tool method."""
-    response = {
+    response = json.dumps({
         "function": {"arguments": {"message": "How do I get a refund?"}, "name": "test_tool"},
         "id": "call_n9TzrTVu9Bkqq9SEMqgTR2jN",
         "type": "function",
-    }
+    })
 
     @tool
     def test_tool(message: str) -> str:
@@ -384,6 +385,20 @@ def test_llm_call_tool():
     with patch("litai.llm.SDKLLM.chat", return_value=response):
         result = llm.call_tool(response, tools=[test_tool])
     assert result == ["Tool received: How do I get a refund?"]
+
+
+@patch("litai.llm.SDKLLM")
+def test_llm_call_tool_with_invalid_json(mock_sdkllm):
+    """Test the LLM call_tool method."""
+    response = "invalid json"
+
+    @tool
+    def test_tool(message: str) -> str:
+        return f"Tool received: {message}"
+
+    llm = LLM(model="openai/gpt-4")
+    with pytest.raises(ValueError, match="Tool response is not a valid JSON string"):
+        llm.call_tool(response, tools=[test_tool])
 
 
 @patch("builtins.open", new_callable=MagicMock)
@@ -436,13 +451,13 @@ def test_call_langchain_tools(mock_sdkllm):
     with patch.object(
         llm,
         "chat",
-        return_value=[
+        return_value=json.dumps([
             {
                 "function": {"arguments": '{\n  "location": "London"\n}', "name": "get_weather"},
                 "id": "call_n9TzrTVu9Bkqq9SEMqgTR2jN",
                 "type": "function",
             }
-        ],
+        ]),
     ):
         result = llm.chat("how is the weather in London?", tools=[get_weather])
     assert llm.call_tool(result, tools=[get_weather]) == ["Weather in London is sunny."]
@@ -463,11 +478,11 @@ def test_format_tool_response():
     )
 
     result = LLM._format_tool_response(response)
-    assert result == [
+    assert result == json.dumps([
         {
             "function": {"arguments": {"message": "How do I get a refund?"}, "name": "test_tool"},
         }
-    ]
+    ])
 
 
 @patch("litai.llm.SDKLLM")
@@ -496,4 +511,4 @@ def test_model_call_with_tools(mock_sdkllm):
         object="",
     )
     result = llm._model_call(mock_sdkllm, "Hello, world!", None, 100, None, None, None, False, tools=[get_weather])
-    assert result == [{"function": {"arguments": {"location": "London"}, "name": "get_weather"}}]
+    assert result == json.dumps([{"function": {"arguments": {"location": "London"}, "name": "get_weather"}}])
