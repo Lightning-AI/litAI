@@ -208,7 +208,7 @@ class LLM:
             raise type(e)(error_msg) from e
 
     @staticmethod
-    def _format_tool_response(response: V1ConversationResponseChunk) -> Optional[List[Dict[str, Dict[str, Any]]]]:
+    def _format_tool_response(response: V1ConversationResponseChunk) -> Optional[str]:
         if response.choices is None or len(response.choices) == 0:
             return None
 
