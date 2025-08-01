@@ -90,9 +90,12 @@ class LitTool(BaseModel):
             return json.dumps(self.as_tool(), indent=2)
 
         return {
-            "name": self.name,
-            "description": self.description,
-            "parameters": self._extract_parameters(),
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self._extract_parameters(),
+            },
         }
 
     @classmethod
