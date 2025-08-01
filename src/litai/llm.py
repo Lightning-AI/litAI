@@ -390,8 +390,6 @@ class LLM:
                     return None
             if isinstance(tool_args, dict):
                 tool_args = {k: v for k, v in tool_args.items() if v is not None}
-            if isinstance(tool_args, list):
-                tool_args = {f"arg_{i}": v for i, v in enumerate(tool_args)}
 
             for tool in tools:
                 if tool.name == tool_name:
