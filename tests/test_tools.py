@@ -143,7 +143,7 @@ def test_decorator_without_docstring():
 
     # Check parameter structure
     schema = simple_func.as_tool()
-    assert schema["function"]["parameters"]["properties"]["value"]["type"] == "str"
+    assert schema["function"]["parameters"]["properties"]["value"]["type"] == "string"
     assert schema["function"]["parameters"]["required"] == ["value"]
 
 
@@ -177,8 +177,8 @@ def test_decorator_with_parentheses():
     assert result_detailed == "Service db is running with full details"
 
     schema = get_status.as_tool()
-    assert schema["function"]["parameters"]["properties"]["service"]["type"] == "str"
-    assert schema["function"]["parameters"]["properties"]["detailed"]["type"] == "bool"
+    assert schema["function"]["parameters"]["properties"]["service"]["type"] == "string"
+    assert schema["function"]["parameters"]["properties"]["detailed"]["type"] == "boolean"
     assert schema["function"]["parameters"]["required"] == ["service"]
     assert isinstance(get_status, LitTool)
 
