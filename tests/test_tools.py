@@ -70,7 +70,9 @@ def test_tool_execution():
 
 def test_basic_decorator_usage():
     @tool
-    def get_weather(location: str) -> str:
+    def get_weather(
+        location, country: str = "US", fetch_temperature: bool = False, latitude: float = 0.0, longitude: float = 0.0
+    ) -> str:
         """Get weather for a location."""
         return f"Weather in {location} is sunny"
 
@@ -82,6 +84,10 @@ def test_basic_decorator_usage():
     schema = get_weather.as_tool()
     assert schema["parameters"]["type"] == "object"
     assert schema["parameters"]["properties"]["location"]["type"] == "string"
+    assert schema["parameters"]["properties"]["country"]["type"] == "string"
+    assert schema["parameters"]["properties"]["fetch_temperature"]["type"] == "boolean"
+    assert schema["parameters"]["properties"]["latitude"]["type"] == "number"
+    assert schema["parameters"]["properties"]["longitude"]["type"] == "number"
     assert schema["parameters"]["required"] == ["location"]
 
 
