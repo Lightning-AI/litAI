@@ -7,6 +7,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from langchain_core.tools import tool as langchain_tool
+from lightning_sdk.lightning_cloud.openapi import (
+    V1ConversationResponseChunk,
+    V1FunctionCall,
+    V1ResponseChoice,
+    V1ToolCall,
+)
 
 from litai import LLM, tool
 
@@ -117,6 +123,7 @@ def test_llm_chat(mock_llm_class):
         stream=False,
         full_response=False,
         my_kwarg="test-kwarg",
+        tools=None,
     )
     test_kwargs = mock_llm_instance.chat.call_args.kwargs
     assert test_kwargs.get("my_kwarg") == "test-kwarg"
@@ -172,6 +179,7 @@ def test_model_override(monkeypatch):
         metadata=None,
         stream=False,
         full_response=True,
+        tools=None,
     )
 
 
@@ -221,6 +229,7 @@ def test_fallback_models(monkeypatch):
         metadata=None,
         stream=False,
         full_response=False,
+        tools=None,
     )
 
 
@@ -361,7 +370,11 @@ def test_llm_classify_method(mock_sdkllm_class):
 
 def test_llm_call_tool():
     """Test the LLM call_tool method."""
-    response = json.dumps({"tool": "test_tool", "parameters": {"message": "How do I get a refund?"}})
+    response = json.dumps({
+        "function": {"arguments": {"message": "How do I get a refund?"}, "name": "test_tool"},
+        "id": "call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+        "type": "function",
+    })
 
     @tool
     def test_tool(message: str) -> str:
@@ -371,7 +384,21 @@ def test_llm_call_tool():
 
     with patch("litai.llm.SDKLLM.chat", return_value=response):
         result = llm.call_tool(response, tools=[test_tool])
-    assert result == "Tool received: How do I get a refund?"
+    assert result == ["Tool received: How do I get a refund?"]
+
+
+@patch("litai.llm.SDKLLM")
+def test_llm_call_tool_with_invalid_json(mock_sdkllm):
+    """Test the LLM call_tool method."""
+    response = "invalid json"
+
+    @tool
+    def test_tool(message: str) -> str:
+        return f"Tool received: {message}"
+
+    llm = LLM(model="openai/gpt-4")
+    with pytest.raises(ValueError, match="Tool response is not a valid JSON string"):
+        llm.call_tool(response, tools=[test_tool])
 
 
 @patch("builtins.open", new_callable=MagicMock)
@@ -416,15 +443,72 @@ def test_dump_debug(mock_makedirs, mock_open):
 @patch("litai.llm.SDKLLM")
 def test_call_langchain_tools(mock_sdkllm):
     @langchain_tool
-    def get_weather(city: str) -> str:
+    def get_weather(location: str) -> str:
         """Get the weather of a given city."""
-        return f"Weather in {city} is sunny."
+        return f"Weather in {location} is sunny."
 
     llm = LLM()
     with patch.object(
         llm,
         "chat",
-        return_value=json.dumps({"type": "function_call", "tool": "get_weather", "parameters": {"city": "London"}}),
+        return_value=json.dumps([
+            {
+                "function": {"arguments": '{\n  "location": "London"\n}', "name": "get_weather"},
+                "id": "call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+                "type": "function",
+            }
+        ]),
     ):
         result = llm.chat("how is the weather in London?", tools=[get_weather])
-    assert llm.call_tool(result, tools=[get_weather]) == "Weather in London is sunny."
+    assert llm.call_tool(result, tools=[get_weather]) == ["Weather in London is sunny."]
+
+
+def test_format_tool_response():
+    """Test the LLM format_tool_response method."""
+    tools = [
+        V1ToolCall(
+            function=V1FunctionCall(arguments={"message": "How do I get a refund?"}, name="test_tool"),
+            id="call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+            type="function",
+        )
+    ]
+    choices = [V1ResponseChoice(delta=None, finish_reason="stop", index=0, tool_calls=tools)]
+    response = V1ConversationResponseChunk(
+        choices=choices, conversation_id="", executable=True, id="", object="", stats={}, throughput=0.0, usage=None
+    )
+
+    result = LLM._format_tool_response(response)
+    assert result == json.dumps([
+        {
+            "function": {"arguments": {"message": "How do I get a refund?"}, "name": "test_tool"},
+        }
+    ])
+
+
+@patch("litai.llm.SDKLLM")
+def test_model_call_with_tools(mock_sdkllm):
+    """Test the LLM model_call method with tools."""
+
+    @langchain_tool
+    def get_weather(location: str) -> str:
+        """Get the weather of a given city."""
+        return f"Weather in {location} is sunny."
+
+    llm = LLM(model="openai/gpt-4")
+
+    tools = [
+        V1ToolCall(
+            function=V1FunctionCall(arguments={"location": "London"}, name="get_weather"),
+            id="call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+            type="function",
+        )
+    ]
+    mock_sdkllm.chat.return_value = V1ConversationResponseChunk(
+        choices=[V1ResponseChoice(delta=None, finish_reason="stop", index=0, tool_calls=tools)],
+        conversation_id="",
+        executable=True,
+        id="",
+        object="",
+    )
+    result = llm._model_call(mock_sdkllm, "Hello, world!", None, 100, None, None, None, False, tools=[get_weather])
+    assert result == json.dumps([{"function": {"arguments": {"location": "London"}, "name": "get_weather"}}])

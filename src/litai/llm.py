@@ -23,6 +23,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import requests
 from lightning_sdk.lightning_cloud import login
+from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
 from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
@@ -206,6 +207,23 @@ class LLM:
                 raise type(e)(f"failed to load model '{self._model}': {str(e)}")
             raise type(e)(error_msg) from e
 
+    @staticmethod
+    def _format_tool_response(response: V1ConversationResponseChunk) -> str:
+        if response.choices is None or len(response.choices) == 0:
+            return ""
+
+        tools = response.choices[0].tool_calls
+        result = []
+        for tool in tools:
+            new_tool = {
+                "function": {
+                    "arguments": tool.function.arguments,
+                    "name": tool.function.name,
+                }
+            }
+            result.append(new_tool)
+        return json.dumps(result)
+
     def _model_call(
         self,
         model: SDKLLM,
@@ -217,6 +235,7 @@ class LLM:
         metadata: Optional[Dict[str, str]],
         stream: bool,
         full_response: Optional[bool] = None,
+        tools: Optional[List[Union[str, Dict[str, Any]]]] = None,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -224,13 +243,10 @@ class LLM:
             if self._verbose == 2:
                 print(f"⚡️ Using model: {model.name} (Provider: {model.provider})")
 
-            full_response = (
-                (False if self._full_response is None else self._full_response)
-                if full_response is None
-                else full_response
-            )
-
-            return model.chat(
+            full_response = full_response if full_response is not None else (self._full_response or False)
+            if tools:
+                full_response = True
+            response = model.chat(
                 prompt=prompt,
                 system_prompt=system_prompt,
                 max_completion_tokens=max_completion_tokens,
@@ -239,8 +255,12 @@ class LLM:
                 metadata=metadata,
                 stream=stream,
                 full_response=full_response,
+                tools=tools,
                 **kwargs,
             )
+            if tools and isinstance(response, V1ConversationResponseChunk):
+                return self._format_tool_response(response)
+            return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
             error = handle_http_error(e, model.name)
@@ -272,7 +292,7 @@ class LLM:
         conversation: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None,
         stream: bool = False,
-        tools: Optional[List[LitTool]] = None,
+        tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -298,17 +318,8 @@ class LLM:
             str: The response from the LLM.
         """
         self._wait_for_model()
-        tools = LitTool.convert_tools(tools)
-        tool_schema = [tool.as_tool() for tool in tools] if tools else None
-        if tool_schema:
-            tool_context = (
-                f"# Available tools:\n{json.dumps(tool_schema, indent=2)}\n\n"
-                "Just return the result of the tool call, do not include any other text."
-            )
-            if system_prompt is None:
-                system_prompt = f"Use the following tools to answer the question:\n\n{tool_context}"
-            else:
-                system_prompt = f"{system_prompt}\n\n{tool_context}"
+        converted_tools = LitTool.convert_tools(tools)
+        processed_tools = [tool.as_tool() for tool in converted_tools] if converted_tools else None
         if model:
             try:
                 model_key = f"{model}::{self._teamspace}::{self._enable_async}"
@@ -326,6 +337,7 @@ class LLM:
                     conversation=conversation,
                     metadata=metadata,
                     stream=stream,
+                    tools=processed_tools,
                     **kwargs,
                 )
             except Exception:
@@ -344,6 +356,7 @@ class LLM:
                         conversation=conversation,
                         metadata=metadata,
                         stream=stream,
+                        tools=processed_tools,
                         **kwargs,
                     )
                 except Exception:
@@ -352,18 +365,47 @@ class LLM:
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
 
     @staticmethod
-    def call_tool(response: str, tools: Optional[List[LitTool]] = None) -> Optional[str]:
+    def call_tool(
+        response: Union[List[dict], dict, str], tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None
+    ) -> Optional[List[str]]:
         """Calls a tool with the given response."""
         if tools is None:
             raise ValueError("No tools provided")
 
-        parsed = json.loads(response)
-        tool_name = parsed["tool"]
-        tool_args = parsed["parameters"]
+        if isinstance(response, str):
+            try:
+                response = json.loads(response)
+            except json.JSONDecodeError:
+                raise ValueError("Tool response is not a valid JSON string")
+
         tools = LitTool.convert_tools(tools)
-        for tool in tools:
-            if tool.name == tool_name:
-                return tool.run(**tool_args)
+
+        results = []
+
+        if isinstance(response, dict):
+            response = [response]
+
+        for tool_response in response:
+            if not isinstance(tool_response, dict):
+                continue
+            tool_name = tool_response.get("function", {}).get("name")
+            if not tool_name:
+                continue
+            tool_args = tool_response.get("function", {}).get("arguments", {})
+            if isinstance(tool_args, str):
+                try:
+                    tool_args = json.loads(tool_args)
+                except json.JSONDecodeError:
+                    print(f"❌ Failed to parse tool arguments: {tool_args}")
+                    return None
+            if isinstance(tool_args, dict):
+                tool_args = {k: v for k, v in tool_args.items() if v is not None}
+
+            for tool in tools:
+                if tool.name == tool_name:
+                    results.append(tool.run(**tool_args))
+        if len(results) >= 1:
+            return results
         return None
 
     def _dump_debug(
