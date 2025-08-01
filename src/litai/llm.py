@@ -207,7 +207,8 @@ class LLM:
                 raise type(e)(f"failed to load model '{self._model}': {str(e)}")
             raise type(e)(error_msg) from e
 
-    def _format_tool_response(self, response: V1ConversationResponseChunk) -> Optional[List[str]]:
+    @staticmethod
+    def _format_tool_response(response: V1ConversationResponseChunk) -> Optional[List[str]]:
         if response.choices is None or len(response.choices) == 0:
             return None
 

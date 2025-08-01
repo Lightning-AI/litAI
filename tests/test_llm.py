@@ -6,6 +6,12 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from langchain_core.tools import tool as langchain_tool
+from lightning_sdk.lightning_cloud.openapi import (
+    V1ConversationResponseChunk,
+    V1FunctionCall,
+    V1ResponseChoice,
+    V1ToolCall,
+)
 
 from litai import LLM, tool
 
@@ -440,3 +446,25 @@ def test_call_langchain_tools(mock_sdkllm):
     ):
         result = llm.chat("how is the weather in London?", tools=[get_weather])
     assert llm.call_tool(result, tools=[get_weather]) == ["Weather in London is sunny."]
+
+
+def test_format_tool_response():
+    """Test the LLM format_tool_response method."""
+    tools = [
+        V1ToolCall(
+            function=V1FunctionCall(arguments={"message": "How do I get a refund?"}, name="test_tool"),
+            id="call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+            type="function",
+        )
+    ]
+    choices = [V1ResponseChoice(delta=None, finish_reason="stop", index=0, tool_calls=tools)]
+    response = V1ConversationResponseChunk(
+        choices=choices, conversation_id="", executable=True, id="", object="", stats={}, throughput=0.0, usage=None
+    )
+
+    result = LLM._format_tool_response(response)
+    assert result == [
+        {
+            "function": {"arguments": {"message": "How do I get a refund?"}, "name": "test_tool"},
+        }
+    ]
