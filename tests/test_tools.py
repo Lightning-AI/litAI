@@ -49,12 +49,13 @@ def test_tool_schema_generation(weather_tool_class):
     tool_instance = weather_tool_class()
     schema = tool_instance.as_tool()
 
-    assert schema["name"] == "weather_tool"
-    assert schema["description"] == "Get weather for location."
-    assert schema["parameters"]["type"] == "object"
-    assert "location" in schema["parameters"]["properties"]
-    assert "units" in schema["parameters"]["properties"]
-    assert schema["parameters"]["required"] == ["location"]
+    assert schema["type"] == "function"
+    assert schema["function"]["name"] == "weather_tool"
+    assert schema["function"]["description"] == "Get weather for location."
+    assert schema["function"]["parameters"]["type"] == "object"
+    assert "location" in schema["function"]["parameters"]["properties"]
+    assert "units" in schema["function"]["parameters"]["properties"]
+    assert schema["function"]["parameters"]["required"] == ["location"]
 
 
 def test_tool_execution():
@@ -80,9 +81,10 @@ def test_basic_decorator_usage():
 
     # Check schema structure
     schema = get_weather.as_tool()
-    assert schema["parameters"]["type"] == "object"
-    assert schema["parameters"]["properties"]["location"]["type"] == "str"
-    assert schema["parameters"]["required"] == ["location"]
+    assert schema["type"] == "function"
+    assert schema["function"]["parameters"]["type"] == "object"
+    assert schema["function"]["parameters"]["properties"]["location"]["type"] == "str"
+    assert schema["function"]["parameters"]["required"] == ["location"]
 
 
 def test_decorator_with_parameters():
@@ -96,19 +98,20 @@ def test_decorator_with_parameters():
         return 0.0
 
     schema = calculate.as_tool()
-    assert schema["name"] == "calculate"
-    assert schema["description"] == "Perform calculation on two numbers."
-    assert schema["parameters"]["type"] == "object"
+    assert schema["type"] == "function"
+    assert schema["function"]["name"] == "calculate"
+    assert schema["function"]["description"] == "Perform calculation on two numbers."
+    assert schema["function"]["parameters"]["type"] == "object"
 
     # Check parameter properties
-    props = schema["parameters"]["properties"]
+    props = schema["function"]["parameters"]["properties"]
     assert len(props) == 3
     assert props["x"]["type"] == "int"
     assert props["y"]["type"] == "float"
     assert props["operation"]["type"] == "str"
 
     # Check required parameters
-    assert schema["parameters"]["required"] == ["x", "y"]
+    assert schema["function"]["parameters"]["required"] == ["x", "y"]
 
 
 def test_decorator_execution():
@@ -134,8 +137,8 @@ def test_decorator_without_docstring():
 
     # Check parameter structure
     schema = simple_func.as_tool()
-    assert schema["parameters"]["properties"]["value"]["type"] == "str"
-    assert schema["parameters"]["required"] == ["value"]
+    assert schema["function"]["parameters"]["properties"]["value"]["type"] == "str"
+    assert schema["function"]["parameters"]["required"] == ["value"]
 
 
 def test_decorator_json_mode():
@@ -168,9 +171,9 @@ def test_decorator_with_parentheses():
     assert result_detailed == "Service db is running with full details"
 
     schema = get_status.as_tool()
-    assert schema["parameters"]["properties"]["service"]["type"] == "str"
-    assert schema["parameters"]["properties"]["detailed"]["type"] == "bool"
-    assert schema["parameters"]["required"] == ["service"]
+    assert schema["function"]["parameters"]["properties"]["service"]["type"] == "str"
+    assert schema["function"]["parameters"]["properties"]["detailed"]["type"] == "bool"
+    assert schema["function"]["parameters"]["required"] == ["service"]
     assert isinstance(get_status, LitTool)
 
 
@@ -196,9 +199,12 @@ def test_from_langchain():
     assert lit_tool.name == "get_weather"
     assert lit_tool.description == "Get the weather of a given city."
     assert lit_tool.as_tool() == {
-        "name": "get_weather",
-        "description": "Get the weather of a given city.",
-        "parameters": get_weather.args_schema.model_json_schema(),
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the weather of a given city.",
+            "parameters": get_weather.args_schema.model_json_schema(),
+        },
     }
 
 
