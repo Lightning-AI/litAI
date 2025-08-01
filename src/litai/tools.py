@@ -64,6 +64,12 @@ class LitTool(BaseModel):
                 return "string"
             if annotation is str:
                 return "string"
+            if annotation is int:
+                return "integer"
+            if annotation is float:
+                return "number"
+            if annotation is bool:
+                return "boolean"
             if hasattr(annotation, "__name__"):
                 return annotation.__name__
             return str(annotation)

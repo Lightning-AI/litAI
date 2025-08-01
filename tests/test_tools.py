@@ -71,7 +71,9 @@ def test_tool_execution():
 
 def test_basic_decorator_usage():
     @tool
-    def get_weather(location: str) -> str:
+    def get_weather(
+        location, country: str = "US", fetch_temperature: bool = False, latitude: float = 0.0, longitude: float = 0.0
+    ) -> str:
         """Get weather for a location."""
         return f"Weather in {location} is sunny"
 
@@ -84,6 +86,10 @@ def test_basic_decorator_usage():
     assert schema["type"] == "function"
     assert schema["function"]["parameters"]["type"] == "object"
     assert schema["function"]["parameters"]["properties"]["location"]["type"] == "string"
+    assert schema["function"]["parameters"]["properties"]["country"]["type"] == "string"
+    assert schema["function"]["parameters"]["properties"]["fetch_temperature"]["type"] == "boolean"
+    assert schema["function"]["parameters"]["properties"]["latitude"]["type"] == "number"
+    assert schema["function"]["parameters"]["properties"]["longitude"]["type"] == "number"
     assert schema["function"]["parameters"]["required"] == ["location"]
 
 
@@ -106,8 +112,8 @@ def test_decorator_with_parameters():
     # Check parameter properties
     props = schema["function"]["parameters"]["properties"]
     assert len(props) == 3
-    assert props["x"]["type"] == "int"
-    assert props["y"]["type"] == "float"
+    assert props["x"]["type"] == "integer"
+    assert props["y"]["type"] == "number"
     assert props["operation"]["type"] == "string"
 
     # Check required parameters
@@ -172,7 +178,7 @@ def test_decorator_with_parentheses():
 
     schema = get_status.as_tool()
     assert schema["function"]["parameters"]["properties"]["service"]["type"] == "string"
-    assert schema["function"]["parameters"]["properties"]["detailed"]["type"] == "bool"
+    assert schema["function"]["parameters"]["properties"]["detailed"]["type"] == "boolean"
     assert schema["function"]["parameters"]["required"] == ["service"]
     assert isinstance(get_status, LitTool)
 
