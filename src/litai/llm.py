@@ -324,7 +324,7 @@ class LLM:
             conversation_history (Dict[str, List[Dict[str, Any]]]): A dictionary to store conversation history,
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
-            auto_call_tools (bool): Whether to call the tool. Defaults to False.
+            auto_call_tools (bool): Tools will be executed automatically whenever applicable. Defaults to False. 
             **kwargs (Any): Additional keyword arguments
 
         Returns:
