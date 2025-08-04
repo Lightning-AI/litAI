@@ -209,24 +209,25 @@ class LLM:
 
     @staticmethod
     def _format_tool_response(
-        response: V1ConversationResponseChunk, call_tools: bool = True, tools: Optional[List[LitTool]] = None
+        response: V1ConversationResponseChunk, call_tools: bool = True, lit_tools: Optional[List[LitTool]] = None
     ) -> Union[str, List[Dict[str, Any]]]:
         if response.choices is None or len(response.choices) == 0:
             return ""
 
-        tools = response.choices[0].tool_calls
+        tool_calls = response.choices[0].tool_calls
         result = []
-        for tool in tools:
+        for tool_call in tool_calls:
             new_tool = {
                 "function": {
-                    "arguments": tool.function.arguments,
-                    "name": tool.function.name,
+                    "arguments": tool_call.function.arguments,
+                    "name": tool_call.function.name,
                 }
             }
             result.append(new_tool)
-        if call_tools:
-            return LLM.call_tool(result, tools)
-        return json.dumps(result)
+        result = json.dumps(result)
+        if call_tools and lit_tools:
+            return LLM.call_tool(result, lit_tools)
+        return result
 
     def _model_call(
         self,
@@ -240,6 +241,7 @@ class LLM:
         stream: bool,
         full_response: Optional[bool] = None,
         tools: Optional[List[Union[str, Dict[str, Any]]]] = None,
+        lit_tools: Optional[List[LitTool]] = None,
         call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
@@ -266,7 +268,8 @@ class LLM:
             if tools and isinstance(response, V1ConversationResponseChunk):
                 if len(response.choices[0].tool_calls) == 0:
                     return response.choices[0].delta.content
-                return self._format_tool_response(response, call_tools, tools)
+                breakpoint()
+                return self._format_tool_response(response, call_tools, lit_tools)
             return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
@@ -327,8 +330,8 @@ class LLM:
             str: The response from the LLM.
         """
         self._wait_for_model()
-        converted_tools = LitTool.convert_tools(tools)
-        processed_tools = [tool.as_tool() for tool in converted_tools] if converted_tools else None
+        lit_tools = LitTool.convert_tools(tools)
+        processed_tools = [tool.as_tool() for tool in lit_tools] if lit_tools else None
         if model:
             try:
                 model_key = f"{model}::{self._teamspace}::{self._enable_async}"
@@ -347,6 +350,7 @@ class LLM:
                     metadata=metadata,
                     stream=stream,
                     tools=processed_tools,
+                    lit_tools=lit_tools,
                     call_tools=call_tools,
                     **kwargs,
                 )
@@ -367,10 +371,12 @@ class LLM:
                         metadata=metadata,
                         stream=stream,
                         tools=processed_tools,
+                        lit_tools=lit_tools,
                         call_tools=call_tools,
                         **kwargs,
                     )
-                except Exception:
+                except Exception as e:
+                    raise e
                     print(f"🔁 Attempt {attempt}/{self.max_retries} failed. Retrying...")
 
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
@@ -392,7 +398,6 @@ class LLM:
         tools = LitTool.convert_tools(tools)
 
         results = []
-
         if isinstance(response, dict):
             response = [response]
 
