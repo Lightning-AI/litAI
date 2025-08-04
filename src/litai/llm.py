@@ -418,9 +418,11 @@ class LLM:
             for tool in tools:
                 if tool.name == tool_name:
                     results.append(tool.run(**tool_args))
-        if len(results) >= 1:
-            return results
-        return None
+
+        if len(results) == 0:
+            return None
+
+        return results if len(results) > 1 else results[0]
 
     def _dump_debug(
         self,

@@ -512,3 +512,44 @@ def test_model_call_with_tools(mock_sdkllm):
     )
     result = llm._model_call(mock_sdkllm, "Hello, world!", None, 100, None, None, None, False, tools=[get_weather])
     assert result == json.dumps([{"function": {"arguments": {"location": "London"}, "name": "get_weather"}}])
+
+
+@patch("litai.llm.SDKLLM")
+def test_model_call_with_tools_auto_call(mock_sdkllm):
+    """Test the LLM model_call method with tools and auto call."""
+
+    @langchain_tool
+    def get_weather(location: str) -> str:
+        """Get the weather of a given city."""
+        return f"Weather in {location} is sunny."
+
+    llm = LLM(model="openai/gpt-4")
+
+    tools = [
+        V1ToolCall(
+            function=V1FunctionCall(arguments={"location": "London"}, name="get_weather"),
+            id="call_n9TzrTVu9Bkqq9SEMqgTR2jN",
+            type="function",
+        )
+    ]
+    mock_sdkllm.chat.return_value = V1ConversationResponseChunk(
+        choices=[V1ResponseChoice(delta=None, finish_reason="stop", index=0, tool_calls=tools)],
+        conversation_id="",
+        executable=True,
+        id="",
+        object="",
+    )
+    result = llm._model_call(
+        mock_sdkllm,
+        "Hello, world!",
+        None,
+        100,
+        None,
+        None,
+        None,
+        False,
+        tools=[get_weather],
+        call_tools=True,
+        lit_tools=[get_weather],
+    )
+    assert result == "Weather in London is sunny."
