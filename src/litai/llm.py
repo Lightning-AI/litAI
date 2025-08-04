@@ -263,8 +263,9 @@ class LLM:
                 tools=tools,
                 **kwargs,
             )
-            breakpoint()
             if tools and isinstance(response, V1ConversationResponseChunk):
+                if len(response.choices[0].tool_calls) == 0:
+                    return response.choices[0].delta.content
                 return self._format_tool_response(response, call_tools, tools)
             return response
         except requests.exceptions.HTTPError as e:
