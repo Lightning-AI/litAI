@@ -147,7 +147,6 @@ llm = LLM(model="openai/gpt-4")
 result = llm.chat("What's the weather in Tokyo?", tools=[get_weather], call_tools=True)
 # The weather in Tokyo is sunny
 
-
 chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
 result = llm.call_tool(chosen_tool, tools=[get_weather])
 # The weather in London is sunny
