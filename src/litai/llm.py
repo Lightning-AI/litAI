@@ -268,7 +268,6 @@ class LLM:
             if tools and isinstance(response, V1ConversationResponseChunk):
                 if len(response.choices[0].tool_calls) == 0:
                     return response.choices[0].delta.content
-                breakpoint()
                 return self._format_tool_response(response, call_tools, lit_tools)
             return response
         except requests.exceptions.HTTPError as e:
@@ -375,8 +374,7 @@ class LLM:
                         call_tools=call_tools,
                         **kwargs,
                     )
-                except Exception as e:
-                    raise e
+                except Exception:
                     print(f"🔁 Attempt {attempt}/{self.max_retries} failed. Retrying...")
 
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
