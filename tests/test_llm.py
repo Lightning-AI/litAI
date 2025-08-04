@@ -549,7 +549,7 @@ def test_model_call_with_tools_auto_call(mock_sdkllm):
         None,
         False,
         tools=get_weather,
-        call_tools=True,
+        auto_call_tools=True,
         lit_tools=[get_weather],
     )
     assert result == "Weather in London is sunny."
