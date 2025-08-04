@@ -133,7 +133,7 @@ print("Sentiment:", sentiment)
 ```
 
 ### Tools ([docs](https://lightning.ai/docs/litai/features/tools))
-Tools allow models to get real-world data or take actions. In LitAI, there is no magic with tool use, agents can decide to call tools (`auto_tool_calls=True`), or you can manually call a tool with `llm.call_tool(...)` for full control. Zero magic, just plain Python.
+Tools allow models to get real-world data or take actions. In LitAI, there is no magic with tool use, agents can decide to call tools (`auto_tool_call=True`), or you can manually call a tool with `llm.call_tool(...)` for full control. Zero magic, just plain Python.
 
 ```python
 from litai import LLM, tool
@@ -144,10 +144,8 @@ def get_weather(location: str):
 
 llm = LLM(model="openai/gpt-4")
 
-result = llm.chat("What's the weather in Tokyo?", tools=[get_weather], auto_tool_calls=True)
-# The weather in Tokyo is sunny
-
 chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
+
 result = llm.call_tool(chosen_tool, tools=[get_weather])
 # The weather in London is sunny
 ```
