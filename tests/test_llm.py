@@ -548,7 +548,7 @@ def test_model_call_with_tools_auto_call(mock_sdkllm):
         None,
         None,
         False,
-        tools=[get_weather],
+        tools=get_weather,
         call_tools=True,
         lit_tools=[get_weather],
     )
