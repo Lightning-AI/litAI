@@ -19,7 +19,7 @@ import logging
 import os
 import threading
 import warnings
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud import login
@@ -28,6 +28,9 @@ from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
 from litai.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+
+if TYPE_CHECKING:
+    from langchain_core.tools import StructuredTool
 
 CLOUDY_MODELS = {
     "openai/gpt-4o",
@@ -239,7 +242,7 @@ class LLM:
         metadata: Optional[Dict[str, str]],
         stream: bool,
         full_response: Optional[bool] = None,
-        tools: Optional[List[Union[str, Dict[str, Any]]]] = None,
+        tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
         lit_tools: Optional[List[LitTool]] = None,
         call_tools: bool = False,
         **kwargs: Any,
@@ -300,7 +303,7 @@ class LLM:
         conversation: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None,
         stream: bool = False,
-        tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None,
+        tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
         call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
@@ -380,7 +383,7 @@ class LLM:
 
     @staticmethod
     def call_tool(
-        response: Union[List[dict], dict, str], tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None
+        response: Union[List[dict], dict, str], tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None
     ) -> Optional[str]:
         """Calls a tool with the given response."""
         if tools is None:
