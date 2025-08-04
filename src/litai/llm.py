@@ -244,7 +244,7 @@ class LLM:
         full_response: Optional[bool] = None,
         tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
         lit_tools: Optional[List[LitTool]] = None,
-        call_tools: bool = False,
+        auto_call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -270,7 +270,7 @@ class LLM:
             if tools and isinstance(response, V1ConversationResponseChunk):
                 if len(response.choices[0].tool_calls) == 0:
                     return response.choices[0].delta.content
-                return self._format_tool_response(response, call_tools, lit_tools)
+                return self._format_tool_response(response, auto_call_tools, lit_tools)
             return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
@@ -304,7 +304,7 @@ class LLM:
         metadata: Optional[Dict[str, str]] = None,
         stream: bool = False,
         tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
-        call_tools: bool = False,
+        auto_call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -324,7 +324,7 @@ class LLM:
             conversation_history (Dict[str, List[Dict[str, Any]]]): A dictionary to store conversation history,
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
-            call_tool (bool): Whether to call the tool. Defaults to False.
+            auto_call_tools (bool): Tools will be executed automatically whenever applicable. Defaults to False. 
             **kwargs (Any): Additional keyword arguments
 
         Returns:
@@ -352,7 +352,7 @@ class LLM:
                     stream=stream,
                     tools=processed_tools,
                     lit_tools=lit_tools,
-                    call_tools=call_tools,
+                    auto_call_tools=auto_call_tools,
                     **kwargs,
                 )
             except Exception:
@@ -373,7 +373,7 @@ class LLM:
                         stream=stream,
                         tools=processed_tools,
                         lit_tools=lit_tools,
-                        call_tools=call_tools,
+                        auto_call_tools=auto_call_tools,
                         **kwargs,
                     )
                 except Exception:
