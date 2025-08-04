@@ -152,7 +152,7 @@ result = llm.call_tool(chosen_tool, tools=[get_weather])
 # The weather in London is sunny
 ```
 
-Choose automatic or manual tool calling based on production needs. `auto_tool_call=True` is great for quick demos, but can obscure when and why a tool runs which can lead to surprises in production. `llm.call_tool(...)` gives you full control to decide when tools execute, making it easier to log, debug, test, and audit. This clarity is critical for reliability, safety, and trust in real-world systems.
+Choose automatic or manual tool calling based on production needs. `auto_tool_calls=True` is great for quick demos, but can obscure when and why a tool runs which can lead to surprises in production. `llm.call_tool(...)` gives you full control to decide when tools execute, making it easier to log, debug, test, and audit. This clarity is critical for reliability, safety, and trust in real-world systems.
 
 <br/>
 
