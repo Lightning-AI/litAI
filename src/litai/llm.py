@@ -210,7 +210,7 @@ class LLM:
     @staticmethod
     def _format_tool_response(
         response: V1ConversationResponseChunk, call_tools: bool = True, lit_tools: Optional[List[LitTool]] = None
-    ) -> Union[str, List[Dict[str, Any]]]:
+    ) -> str:
         if response.choices is None or len(response.choices) == 0:
             return ""
 
@@ -224,10 +224,9 @@ class LLM:
                 }
             }
             result.append(new_tool)
-        result = json.dumps(result)
         if call_tools and lit_tools:
-            return LLM.call_tool(result, lit_tools)
-        return result
+            return LLM.call_tool(result, lit_tools) or ""
+        return json.dumps(result)
 
     def _model_call(
         self,
@@ -382,7 +381,7 @@ class LLM:
     @staticmethod
     def call_tool(
         response: Union[List[dict], dict, str], tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None
-    ) -> Optional[List[str]]:
+    ) -> Optional[str]:
         """Calls a tool with the given response."""
         if tools is None:
             raise ValueError("No tools provided")
@@ -422,7 +421,7 @@ class LLM:
         if len(results) == 0:
             return None
 
-        return results if len(results) > 1 else results[0]
+        return json.dumps(results) if len(results) > 1 else results[0]
 
     def _dump_debug(
         self,
