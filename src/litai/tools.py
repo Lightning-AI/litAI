@@ -15,7 +15,7 @@
 
 import json
 from inspect import Signature, signature
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Sequence, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -118,7 +118,7 @@ class LitTool(BaseModel):
         return LangchainTool()
 
     @classmethod
-    def convert_tools(cls, tools: Optional[List[Any]]) -> List["LitTool"]:
+    def convert_tools(cls, tools: Optional[Sequence[Union["LitTool", "StructuredTool"]]]) -> List["LitTool"]:
         """Convert a list of tools into LitTool instances.
 
         - Passes through LitTool instances.

@@ -19,7 +19,7 @@ import logging
 import os
 import threading
 import warnings
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud import login
@@ -28,6 +28,9 @@ from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
 from litai.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+
+if TYPE_CHECKING:
+    from langchain_core.tools import StructuredTool
 
 CLOUDY_MODELS = {
     "openai/gpt-4o",
@@ -208,20 +211,24 @@ class LLM:
             raise type(e)(error_msg) from e
 
     @staticmethod
-    def _format_tool_response(response: V1ConversationResponseChunk) -> str:
+    def _format_tool_response(
+        response: V1ConversationResponseChunk, call_tools: bool = True, lit_tools: Optional[List[LitTool]] = None
+    ) -> str:
         if response.choices is None or len(response.choices) == 0:
             return ""
 
-        tools = response.choices[0].tool_calls
+        tool_calls = response.choices[0].tool_calls
         result = []
-        for tool in tools:
+        for tool_call in tool_calls:
             new_tool = {
                 "function": {
-                    "arguments": tool.function.arguments,
-                    "name": tool.function.name,
+                    "arguments": tool_call.function.arguments,
+                    "name": tool_call.function.name,
                 }
             }
             result.append(new_tool)
+        if call_tools and lit_tools:
+            return LLM.call_tool(result, lit_tools) or ""
         return json.dumps(result)
 
     def _model_call(
@@ -235,7 +242,9 @@ class LLM:
         metadata: Optional[Dict[str, str]],
         stream: bool,
         full_response: Optional[bool] = None,
-        tools: Optional[List[Union[str, Dict[str, Any]]]] = None,
+        tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
+        lit_tools: Optional[List[LitTool]] = None,
+        call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -259,7 +268,9 @@ class LLM:
                 **kwargs,
             )
             if tools and isinstance(response, V1ConversationResponseChunk):
-                return self._format_tool_response(response)
+                if len(response.choices[0].tool_calls) == 0:
+                    return response.choices[0].delta.content
+                return self._format_tool_response(response, call_tools, lit_tools)
             return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
@@ -292,7 +303,8 @@ class LLM:
         conversation: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None,
         stream: bool = False,
-        tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None,
+        tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
+        call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -312,14 +324,15 @@ class LLM:
             conversation_history (Dict[str, List[Dict[str, Any]]]): A dictionary to store conversation history,
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
+            call_tool (bool): Whether to call the tool. Defaults to False.
             **kwargs (Any): Additional keyword arguments
 
         Returns:
             str: The response from the LLM.
         """
         self._wait_for_model()
-        converted_tools = LitTool.convert_tools(tools)
-        processed_tools = [tool.as_tool() for tool in converted_tools] if converted_tools else None
+        lit_tools = LitTool.convert_tools(tools)
+        processed_tools = [tool.as_tool() for tool in lit_tools] if lit_tools else None
         if model:
             try:
                 model_key = f"{model}::{self._teamspace}::{self._enable_async}"
@@ -338,6 +351,8 @@ class LLM:
                     metadata=metadata,
                     stream=stream,
                     tools=processed_tools,
+                    lit_tools=lit_tools,
+                    call_tools=call_tools,
                     **kwargs,
                 )
             except Exception:
@@ -357,6 +372,8 @@ class LLM:
                         metadata=metadata,
                         stream=stream,
                         tools=processed_tools,
+                        lit_tools=lit_tools,
+                        call_tools=call_tools,
                         **kwargs,
                     )
                 except Exception:
@@ -366,8 +383,8 @@ class LLM:
 
     @staticmethod
     def call_tool(
-        response: Union[List[dict], dict, str], tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None
-    ) -> Optional[List[str]]:
+        response: Union[List[dict], dict, str], tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None
+    ) -> Optional[str]:
         """Calls a tool with the given response."""
         if tools is None:
             raise ValueError("No tools provided")
@@ -381,7 +398,6 @@ class LLM:
         tools = LitTool.convert_tools(tools)
 
         results = []
-
         if isinstance(response, dict):
             response = [response]
 
@@ -404,9 +420,11 @@ class LLM:
             for tool in tools:
                 if tool.name == tool_name:
                     results.append(tool.run(**tool_args))
-        if len(results) >= 1:
-            return results
-        return None
+
+        if len(results) == 0:
+            return None
+
+        return json.dumps(results) if len(results) > 1 else results[0]
 
     def _dump_debug(
         self,
