@@ -518,7 +518,7 @@ def test_model_call_with_tools(mock_sdkllm):
 def test_model_call_with_tools_auto_call(mock_sdkllm):
     """Test the LLM model_call method with tools and auto call."""
 
-    @langchain_tool
+    @tool
     def get_weather(location: str) -> str:
         """Get the weather of a given city."""
         return f"Weather in {location} is sunny."
