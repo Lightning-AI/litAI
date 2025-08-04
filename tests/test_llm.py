@@ -384,7 +384,7 @@ def test_llm_call_tool():
 
     with patch("litai.llm.SDKLLM.chat", return_value=response):
         result = llm.call_tool(response, tools=[test_tool])
-    assert result == ["Tool received: How do I get a refund?"]
+    assert result == "Tool received: How do I get a refund?"
 
 
 @patch("litai.llm.SDKLLM")
@@ -460,7 +460,7 @@ def test_call_langchain_tools(mock_sdkllm):
         ]),
     ):
         result = llm.chat("how is the weather in London?", tools=[get_weather])
-    assert llm.call_tool(result, tools=[get_weather]) == ["Weather in London is sunny."]
+    assert llm.call_tool(result, tools=[get_weather]) == "Weather in London is sunny."
 
 
 def test_format_tool_response():
