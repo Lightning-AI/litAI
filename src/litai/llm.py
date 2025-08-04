@@ -208,7 +208,9 @@ class LLM:
             raise type(e)(error_msg) from e
 
     @staticmethod
-    def _format_tool_response(response: V1ConversationResponseChunk) -> str:
+    def _format_tool_response(
+        response: V1ConversationResponseChunk, call_tools: bool = True, tools: Optional[List[LitTool]] = None
+    ) -> Union[str, List[Dict[str, Any]]]:
         if response.choices is None or len(response.choices) == 0:
             return ""
 
@@ -222,6 +224,8 @@ class LLM:
                 }
             }
             result.append(new_tool)
+        if call_tools:
+            return LLM.call_tool(result, tools)
         return json.dumps(result)
 
     def _model_call(
@@ -236,6 +240,7 @@ class LLM:
         stream: bool,
         full_response: Optional[bool] = None,
         tools: Optional[List[Union[str, Dict[str, Any]]]] = None,
+        call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -258,8 +263,9 @@ class LLM:
                 tools=tools,
                 **kwargs,
             )
+            breakpoint()
             if tools and isinstance(response, V1ConversationResponseChunk):
-                return self._format_tool_response(response)
+                return self._format_tool_response(response, call_tools, tools)
             return response
         except requests.exceptions.HTTPError as e:
             print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
@@ -293,6 +299,7 @@ class LLM:
         metadata: Optional[Dict[str, str]] = None,
         stream: bool = False,
         tools: Optional[List[Union[LitTool, Dict[str, Any]]]] = None,
+        call_tools: bool = False,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -312,6 +319,7 @@ class LLM:
             conversation_history (Dict[str, List[Dict[str, Any]]]): A dictionary to store conversation history,
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
+            call_tool (bool): Whether to call the tool. Defaults to False.
             **kwargs (Any): Additional keyword arguments
 
         Returns:
@@ -338,6 +346,7 @@ class LLM:
                     metadata=metadata,
                     stream=stream,
                     tools=processed_tools,
+                    call_tools=call_tools,
                     **kwargs,
                 )
             except Exception:
@@ -357,6 +366,7 @@ class LLM:
                         metadata=metadata,
                         stream=stream,
                         tools=processed_tools,
+                        call_tools=call_tools,
                         **kwargs,
                     )
                 except Exception:
