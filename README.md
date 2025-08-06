@@ -53,12 +53,12 @@ Install LitAI via pip ([more options](https://lightning.ai/docs/litai/home/insta
 ```bash
 pip install litai
 ```
-Chat with any AI model in 3 lines:
+[Get your API key [here](https://lightning.ai/) and chat with any AI model in 3 lines:
 
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-4", api_key="<YOUR_LIGHTNING_AI_API_KEY>")
 answer = llm.chat("who are you?")
 print(answer)
 
