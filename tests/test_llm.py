@@ -21,9 +21,8 @@ def test_initialization_with_config_file(monkeypatch):
     """Test LitAI config."""
     mock_llm_instance = MagicMock()
     monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_instance)
-    LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
+    LLM(model="openai/gpt-4", api_key="my-key")
     assert os.getenv("LIGHTNING_API_KEY") == "my-key"
-    assert os.getenv("LIGHTNING_USER_ID") == "my-user-id"
 
 
 @patch("litai.llm.SDKLLM")
@@ -296,14 +295,13 @@ def test_authenticate_method(monkeypatch):
     monkeypatch.setattr("litai.llm.login.Auth", mock_auth_constructor)
 
     # Test case 1: Both api_key and user_id provided
-    LLM(model="openai/gpt-4", lightning_api_key="my-key", lightning_user_id="my-user-id")
+    LLM(model="openai/gpt-4", api_key="my-key")
 
     # Verify that the authentication was not called
     mock_auth.authenticate.assert_not_called()
 
     # Verify that environment variables were set
     assert os.getenv("LIGHTNING_API_KEY") == "my-key"
-    assert os.getenv("LIGHTNING_USER_ID") == "my-user-id"
 
     # Test case 2: Neither api_key nor user_id provided
     mock_auth.reset_mock()

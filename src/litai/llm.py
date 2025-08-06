@@ -82,8 +82,7 @@ class LLM:
         fallback_models: Optional[List[str]] = None,
         teamspace: Optional[str] = None,
         max_retries: int = 3,
-        lightning_api_key: Optional[str] = None,
-        lightning_user_id: Optional[str] = None,
+        api_key: Optional[str] = None,
         enable_async: Optional[bool] = False,
         verbose: int = 0,
         full_response: Optional[bool] = None,
@@ -96,26 +95,15 @@ class LLM:
                                                    if the main model fails. Defaults to None.
             teamspace (Optional[List[str]]): Teamspace used for billing.
             max_retries (int): The maximum number of retries for API requests. Defaults to 3.
-            lightning_api_key (Optional[str]): The API key for Lightning AI. Defaults to None.
-            lightning_user_id (Optional[str]): The user ID for Lightning AI. Defaults to None.
+            api_key (Optional[str]): The API key for Lightning AI. Defaults to None.
             enable_async (Optional[bool]): Enable async requests. Defaults to True.
             verbose (int): Verbosity level for logging. Defaults to 0. Must be 0, 1, or 2.
             full_response (bool): Whether the entire response should be returned from the chat
         """
-        if (lightning_api_key is None) != (lightning_user_id is None):
-            missing_param = "lightning_api_key" if lightning_api_key is None else "lightning_user_id"
-            raise ValueError(
-                f"Missing required parameter: '{missing_param}'. "
-                "Both 'lightning_api_key' and 'lightning_user_id' must be provided together. "
-                "Either provide both or none.\n"
-                "To find the API key and user ID, go to the Global Settings page in your Lightning account."
-            )
+        if api_key is not None:
+            os.environ["LIGHTNING_API_KEY"] = api_key
 
-        if lightning_api_key is not None and lightning_user_id is not None:
-            os.environ["LIGHTNING_API_KEY"] = lightning_api_key
-            os.environ["LIGHTNING_USER_ID"] = lightning_user_id
-
-        if os.environ.get("LIGHTNING_API_KEY") is None and os.environ.get("LIGHTNING_USER_ID") is None:
+        if os.environ.get("LIGHTNING_API_KEY") is None:
             self._authenticate()
 
         if verbose not in [0, 1, 2]:
