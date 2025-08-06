@@ -85,7 +85,7 @@ Here's a simple agent that tells you the latest news
 import re, requests
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4o")
+llm = LLM(model="openai/gpt-4o", api_key="<LAI_API_KEY>")
 
 website_url = "https://text.npr.org/"
 website_text = re.sub(r'<[^>]+>', ' ', requests.get(website_url).text)
@@ -101,7 +101,7 @@ That way, 90% of the logic stays deterministic, and the model only steps in when
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-3.5-turbo")
+llm = LLM()
 
 product_review = "This TV is terrible."
 response = llm.chat(f"Is this review good or bad? Reply only with 'good' or 'bad': {product_review}").strip().lower()
