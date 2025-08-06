@@ -53,7 +53,7 @@ Install LitAI via pip ([more options](https://lightning.ai/docs/litai/home/insta
 ```bash
 pip install litai
 ```
-[Get your API key [here](https://lightning.ai/) and chat with any AI model in 3 lines:
+Get your API key [here](https://lightning.ai/) and chat with any AI model in 3 lines:
 
 ```python
 from litai import LLM
