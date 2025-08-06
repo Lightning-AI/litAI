@@ -12,7 +12,7 @@
 
 </div>
 
-LitAI is a router for LLMs and the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. It handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or heavy, opaque frameworks. Tool use is built in, with no magic - just clean, testable, raw Python code.
+LitAI is a router for LLMs and the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line. It handles retries, fallback, unifies billing, and logging - so you can build agents, chatbots, apps without flaky APIs or heavy, opaque frameworks. Tool use is built in, with no magic - just clean, testable, raw Python code.
 
 &#160;
 
