@@ -3,7 +3,7 @@
 <h2>
   Chat with any AI model with one line of Python.
   <br/>
-  Build agents and apps in pure Python with full control and zero magic.
+  Router for LLMs. Build agents and apps in pure Python with full control and zero magic.
 </h2>    
 
 <img alt="Lightning" src="https://github.com/user-attachments/assets/0d0b40a7-d7b9-4b59-a0b6-51ba865e5211" width="800px" style="max-width: 100%;">
@@ -12,7 +12,7 @@
 
 </div>
 
-LitAI is the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. It handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or heavy, opaque frameworks. Tool use is built in, with no magic - just clean, testable, raw Python code.
+LitAI is a router for LLMs and the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line of Python. It handles retries, fallback, billing, and logging - so you can build agents, chatbots, or apps without managing flaky APIs or heavy, opaque frameworks. Tool use is built in, with no magic - just clean, testable, raw Python code.
 
 &#160;
 
