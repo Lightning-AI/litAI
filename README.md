@@ -18,9 +18,9 @@ LitAI is a router for LLMs and the easiest way to chat with any model (ChatGPT, 
 
 <div align='center'>
 <pre>
-✅ Use any AI model (OpenAI, etc.) ✅ Create & share tools ✅ 20+ public models      
-✅ Bring your model API keys       ✅ No subscription      ✅ Unified usage dashboard
-✅ Auto retries and fallback       ✅ No MLOps glue code   ✅ Start instantly        
+✅ Use any AI model (OpenAI, etc.) ✅ Unified billing dashboards ✅ 20+ public models
+✅ Bring your model API keys       ✅ No subscription            ✅ Tool use         
+✅ Auto retries and fallback       ✅ No MLOps glue code         ✅ Start instantly  
 </pre>
 </div>  
 
