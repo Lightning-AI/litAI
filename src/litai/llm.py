@@ -22,7 +22,6 @@ import warnings
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 import requests
-from lightning_sdk.lightning_cloud import login
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
 from lightning_sdk.llm import LLM as SDKLLM
 
@@ -103,9 +102,6 @@ class LLM:
         if api_key is not None:
             os.environ["LIGHTNING_API_KEY"] = api_key
 
-        if os.environ.get("LIGHTNING_API_KEY") is None:
-            self._authenticate()
-
         if verbose not in [0, 1, 2]:
             raise ValueError("Verbose must be 0, 1, or 2.")
         self._verbose = verbose
@@ -128,17 +124,6 @@ class LLM:
         self._load_exception: Optional[BaseException] = None
 
         threading.Thread(target=self._load_models, daemon=True).start()
-
-    def _authenticate(self) -> None:
-        auth = login.Auth()
-        try:
-            auth.authenticate()
-            user_api_key = auth.api_key
-            user_id = auth.user_id
-            os.environ["LIGHTNING_API_KEY"] = user_api_key
-            os.environ["LIGHTNING_USER_ID"] = user_id
-        except ConnectionError as e:
-            raise e
 
     @property
     def model(self) -> str:
