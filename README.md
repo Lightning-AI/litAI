@@ -58,7 +58,7 @@ Get your API key [here](https://lightning.ai/sign-up?okbhrt=x334uv8t7v) and chat
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4", api_key="<YOUR_LIGHTNING_AI_API_KEY>")
+llm = LLM(model="openai/gpt-4", api_key="<LIGHTNING_API_KEY>")
 answer = llm.chat("who are you?")
 print(answer)
 
