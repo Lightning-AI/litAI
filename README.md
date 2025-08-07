@@ -85,7 +85,7 @@ Here's a simple agent that tells you the latest news
 import re, requests
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4o", api_key="<LAI_API_KEY>")
+llm = LLM(model="openai/gpt-4o", api_key="<LIGHTNING_API_KEY>")
 
 website_url = "https://text.npr.org/"
 website_text = re.sub(r'<[^>]+>', ' ', requests.get(website_url).text)
