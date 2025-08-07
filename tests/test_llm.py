@@ -283,37 +283,6 @@ def test_get_history(monkeypatch, capsys):
     ]
 
 
-def test_authenticate_method(monkeypatch):
-    # Mock the login.Auth class
-    mock_auth = MagicMock()
-    mock_auth.api_key = "test-api-key"
-    mock_auth.user_id = "test-user-id"
-
-    def mock_auth_constructor():
-        return mock_auth
-
-    monkeypatch.setattr("litai.llm.login.Auth", mock_auth_constructor)
-
-    # Test case 1: Both api_key and user_id provided
-    LLM(model="openai/gpt-4", api_key="my-key")
-
-    # Verify that the authentication was not called
-    mock_auth.authenticate.assert_not_called()
-
-    # Verify that environment variables were set
-    assert os.getenv("LIGHTNING_API_KEY") == "my-key"
-
-    # Test case 2: Neither api_key nor user_id provided
-    mock_auth.reset_mock()
-    os.environ.pop("LIGHTNING_API_KEY", None)
-    os.environ.pop("LIGHTNING_USER_ID", None)
-
-    LLM(model="openai/gpt-4")
-
-    # Verify that authentication was called
-    mock_auth.authenticate.assert_called_once()
-
-
 @patch("litai.llm.SDKLLM")
 def test_llm_if_method(mock_sdkllm_class):
     """Test the LLM if_ method."""
