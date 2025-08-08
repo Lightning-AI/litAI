@@ -244,10 +244,10 @@ print(completion.choices[0].message.content)
 
 | Billing Target | `api_key` Format | Description | Example |
 | :--- | :--- | :--- | :--- |
-| **Personal Wallet** | `LIGHTNING_API_KEY` | Bills the user's personal wallet (unallocated credits) associated with the API key. | `...` |
-| **User's Teamspace** | `LIGHTNING_API_KEY/{USERNAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace that belongs directly to the user. Use this format when you are not part of an organization. | `.../my-username/research` |
-| **Organization Teamspace** | `LIGHTNING_API_KEY/{ORG_NAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace's wallet within an organization. The user must be a member of both the organization and the teamspace. | `.../lit-labs/production-apps` |
-| **Organization Unallocated** | `LIGHTNING_API_KEY/{ORG_NAME}` | Bills the organization's general wallet (unallocated credits). The user must be a member of the organization. | `.../lit-labs` |
+| **Personal Wallet** | `LIGHTNING_API_KEY` | Bills the user's personal wallet (unallocated credits) associated with the API key. | `f7...c60` |
+| **User's Teamspace** | `LIGHTNING_API_KEY/{USERNAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace that belongs directly to the user. Use this format when you are not part of an organization. | `f7...c60/my-username/research` |
+| **Organization Teamspace** | `LIGHTNING_API_KEY/{ORG_NAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace's wallet within an organization. The user must be a member of both the organization and the teamspace. | `f7...c60/lit-labs/production-apps` |
+| **Organization Unallocated** | `LIGHTNING_API_KEY/{ORG_NAME}` | Bills the organization's general wallet (unallocated credits). The user must be a member of the organization. | `f7...c60/lit-labs` |
 
 </details>
 
