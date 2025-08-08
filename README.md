@@ -236,6 +236,8 @@ print(completion.choices[0].message.content)
 <details>
 <summary>Billing and Usage Tracking</summary>
 
+<br/>
+
 **Note:** These billing rules apply when you use LitAI's OpenAI-compatible endpoint with the `openai` Python library (`from openai import OpenAI`).
 
 Your `api_key` format decides **where the cost of API calls is charged**—to you personally, to one of your team workspaces, or to an organization’s workspace.
