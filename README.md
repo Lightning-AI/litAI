@@ -53,19 +53,19 @@ Install LitAI via pip ([more options](https://lightning.ai/docs/litai/home/insta
 ```bash
 pip install litai
 ```
-Get your API key [here](https://lightning.ai/sign-up?okbhrt=x334uv8t7v) and chat with any AI model in 3 lines:
+Get your API key [here](https://lightning.ai/sign-up?okbhrt=x334uv8t7v) and chat with any AI model:
 
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-5", api_key="<LIGHTNING_API_KEY>")
+llm = LLM(model="openai/gpt-5", api_key="<LIGHTNING_API_KEY>", fallback_models=['google/gemini-2.5-pro'])
 answer = llm.chat("who are you?")
 print(answer)
 
 # I'm an AI by OpenAI
 ```
 
-LitAI is also [OpenAI compatible](#openai-compatible)
+If the main model fails 3 times it will call the second one. LitAI is also [OpenAI compatible](#openai-compatible)
 
 <br/>
 
