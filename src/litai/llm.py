@@ -19,14 +19,18 @@ import logging
 import os
 import threading
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
 from lightning_sdk.llm import LLM as SDKLLM
+from lightning_sdk.llm.public_assistants import PUBLIC_MODELS
 
 from litai.tools import LitTool
 from litai.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+
+# Create the ModelLiteral type alias for autocompletion
+ModelLiteral = Literal[*PUBLIC_MODELS.keys()]
 
 if TYPE_CHECKING:
     from langchain_core.tools import StructuredTool
@@ -77,7 +81,7 @@ class LLM:
 
     def __init__(
         self,
-        model: Optional[str] = None,
+        model: Optional[ModelLiteral] = None,
         fallback_models: Optional[List[str]] = None,
         teamspace: Optional[str] = None,
         max_retries: int = 3,
