@@ -233,8 +233,6 @@ completion = client.chat.completions.create(
 print(completion.choices[0].message.content)
 ```
 
-Here’s a simplified, friendlier version in markdown that removes insider terms like “wallet,” “unallocated,” “allocated,” and “users,” while making it clear for someone outside Lightning.
-
 ---
 
 <details>
