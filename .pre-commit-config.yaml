@@ -49,6 +49,14 @@ repos:
       - id: ruff-format
       - id: ruff
 
+  - repo: local
+    hooks:
+      - id: gen-models
+        name: Generate model literals
+        entry: python src/litai/gen_models.py
+        language: system
+        pass_filenames: false
+
 exclude: |
   (?x)(
       ^README.md
