@@ -234,6 +234,40 @@ print(completion.choices[0].message.content)
 ```
 
 <details>
+<summary>Granular billing</summary>
+
+<br/>
+
+Organize billing for API calls at organization, teamspace and user level.
+
+# Example
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://lightning.ai/api/v1",
+  api_key="LIGHTNING_API_KEY/organization/teamspace",
+)
+
+completion = client.chat.completions.create(
+  model="openai/gpt-4o",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is a fun fact about space?"
+    }
+  ]
+)
+
+print(completion.choices[0].message.content)
+```
+
+Read all the [formats here](https://lightning.ai/docs/litai/features/granular-billing)
+
+</details>
+
+<details>
   <summary>Tools</summary>
 
 <br/>
