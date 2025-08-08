@@ -233,23 +233,30 @@ completion = client.chat.completions.create(
 print(completion.choices[0].message.content)
 ```
 
+Here’s a simplified, friendlier version in markdown that removes insider terms like “wallet,” “unallocated,” “allocated,” and “users,” while making it clear for someone outside Lightning.
+
+---
+
 <details>
-  <summary>Billing and Usage Tracking</summary>
+<summary>Billing and Usage Tracking</summary>
 
-  **Note:** The billing formats described below apply specifically when using LitAI's OpenAI-compatible endpoint with the `openai` Python library (`from openai import OpenAI`).
+**Note:** These billing rules apply when you use LitAI's OpenAI-compatible endpoint with the `openai` Python library (`from openai import OpenAI`).
 
-  When using this method, the format of your `api_key` precisely controls how your usage is billed. This flexible system allows costs to be allocated to a personal account, a user-owned teamspace, a specific teamspace within an organization, or an organization's general unallocated credits.
+Your `api_key` format decides **where the cost of API calls is charged**—to you personally, to one of your team workspaces, or to an organization’s workspace.
 
-  This tiered billing structure provides users and organizations with the ability to effectively manage and monitor their AI development expenses.
-
-| Billing Target | `api_key` Format | Description | Example |
-| :--- | :--- | :--- | :--- |
-| **Personal Wallet (unallocated credits)** | `LIGHTNING_API_KEY` | Bills the user's personal wallet (unallocated credits) associated with the API key. | `f7...c60` |
-| **User's Teamspace** | `LIGHTNING_API_KEY/{USERNAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace that belongs directly to the user. Use this format when you are not part of an organization. | `f7...c60/my-username/research` |
-| **Organization Teamspace** | `LIGHTNING_API_KEY/{ORG_NAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace's wallet within an organization. The user must be a member of both the organization and the teamspace. | `f7...c60/lit-labs/production-apps` |
-| **Organization (unallocated credits)** | `LIGHTNING_API_KEY/{ORG_NAME}` | Bills the organization's general wallet (unallocated credits). The user must be a member of the organization. | `f7...c60/lit-labs` |
+| Where charges go            | `api_key` format                                | When to use it                                                         | Example                             |
+| :-------------------------- | :---------------------------------------------- | :--------------------------------------------------------------------- | :---------------------------------- |
+| **Your personal account**   | `LIGHTNING_API_KEY`                             | Costs are charged to your own account.                                 | `f7...c60`                          |
+| **Your personal workspace** | `LIGHTNING_API_KEY/{USERNAME}/{WORKSPACE_NAME}` | Charge a specific workspace you created (not part of an organization). | `f7...c60/my-username/research`     |
+| **Organization workspace**  | `LIGHTNING_API_KEY/{ORG_NAME}/{WORKSPACE_NAME}` | Charge a specific workspace inside an organization you belong to.      | `f7...c60/lit-labs/production-apps` |
+| **Organization account**    | `LIGHTNING_API_KEY/{ORG_NAME}`                  | Costs are charged to the organization as a whole.                      | `f7...c60/lit-labs`                 |
 
 </details>
+
+---
+
+If you want, I can also make an **even shorter, one-paragraph version** that explains the whole thing without the table. That would make it ultra beginner-friendly.
+
 
 <details>
   <summary>Tools</summary>
