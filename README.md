@@ -234,6 +234,80 @@ print(completion.choices[0].message.content)
 ```
 
 <details>
+  <summary>Billing and Usage Tracking</summary>
+
+  **Note:** The billing formats described below apply specifically when using LitAI's OpenAI-compatible endpoint with the `openai` Python library (`from openai import OpenAI`).
+
+  When using this method, the format of your `api_key` precisely controls how your usage is billed. This flexible system allows costs to be allocated to a personal account, a user-owned teamspace, a specific teamspace within an organization, or an organization's general unallocated credits.
+
+  This tiered billing structure provides users and organizations with the ability to effectively manage and monitor their AI development expenses.
+
+| Billing Target | `api_key` Format | Description | Example |
+| :--- | :--- | :--- | :--- |
+| **Personal Wallet** | `LIGHTNING_API_KEY` | Bills the user's personal wallet associated with the API key. | `pl_01H8X6...` |
+| **User's Teamspace** | `LIGHTNING_API_KEY/{USERNAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace that belongs directly to the user. Use this format when you are not part of an organization. | `pl_01H8X6.../my-username/research` |
+| **Organization Teamspace** | `LIGHTNING_API_KEY/{ORG_NAME}/{TEAMSPACE_NAME}` | Bills a specific teamspace's wallet within an organization. The user must be a member of both the organization and the teamspace. | `pl_01H8X6.../lit-labs/production-apps` |
+| **Organization Unallocated** | `LIGHTNING_API_KEY/{ORG_NAME}` | Bills the organization's general wallet (unallocated credits). The user must be a member of the organization. | `pl_01H8X6.../lit-labs` |
+
+</details>
+
+<details>
+  <summary>Tools</summary>
+
+<br/>
+  
+Models can only reply with text, but tool calling lets them get real-world data or act, like checking calendars or sending messages, which allows AI apps to actually do things, not just talk. There are 2 ways to create tools in LitAI.
+
+`@tool`: Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
+
+```python
+from litai import LLM, tool
+
+@tool
+def get_weather(location: str):
+    return f"The weather in {location} is sunny"
+
+llm = LLM(model="openai/gpt-4")
+
+chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
+
+result = llm.call_tool(chosen_tool, tools=[get_weather])
+# The weather in London is sunny
+```
+  
+`LitTool`: For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
+
+```python
+from litai import LLM, LitTool
+
+class FAQTool(LitTool):
+    def setup(self):
+        self.faq = {
+            "pricing": "You can view our pricing plans on the website.",
+            "support": "Our support team is available 24/7 via chat.",
+            "refund": "Refunds are available within 30 days of purchase."
+        }
+
+    def run(self, question: str) -> str:
+        keyword = question.lower()
+        for topic, answer in self.faq.items():
+            if topic in keyword:
+                return answer
+        return "Sorry, I couldn't find an answer for that."
+
+tool = FAQTool()
+
+llm = LLM(model="openai/gpt-4")
+response = llm.chat("How do I get a refund?", tools=[tool])
+result = llm.call_tool(response, tools=[tool])
+
+print(result)  # → "Refunds are available within 30 days of purchase."
+```
+
+##### Note: LitAI also supports any tool that is a pydantic BaseModel.
+</details>
+
+<details>
   <summary>Tools</summary>
 
 <br/>
