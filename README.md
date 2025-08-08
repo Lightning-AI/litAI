@@ -149,9 +149,11 @@ def get_weather(location: str):
 
 llm = LLM(model="openai/gpt-5")
 
+# OPTION A: automatic tool call
 result = llm.chat("What's the weather in Tokyo?", tools=[get_weather], auto_call_tools=True)
 # The weather in Tokyo is sunny
 
+# OPTION B: manually call tools for more control
 chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
 result = llm.call_tool(chosen_tool, tools=[get_weather])
 # The weather in London is sunny
