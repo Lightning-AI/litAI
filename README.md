@@ -308,62 +308,6 @@ print(result)  # → "Refunds are available within 30 days of purchase."
 </details>
 
 <details>
-  <summary>Tools</summary>
-
-<br/>
-  
-Models can only reply with text, but tool calling lets them get real-world data or act, like checking calendars or sending messages, which allows AI apps to actually do things, not just talk. There are 2 ways to create tools in LitAI.
-
-`@tool`: Turn any function into a tool with `litai.tool` decorator - useful when you just need a quick, simple tool.   
-
-```python
-from litai import LLM, tool
-
-@tool
-def get_weather(location: str):
-    return f"The weather in {location} is sunny"
-
-llm = LLM(model="openai/gpt-4")
-
-chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
-
-result = llm.call_tool(chosen_tool, tools=[get_weather])
-# The weather in London is sunny
-```
-  
-`LitTool`: For more production-ready tools that encapsulate more logic, maintain state and can be shared across programs, use `LitTool`: 
-
-```python
-from litai import LLM, LitTool
-
-class FAQTool(LitTool):
-    def setup(self):
-        self.faq = {
-            "pricing": "You can view our pricing plans on the website.",
-            "support": "Our support team is available 24/7 via chat.",
-            "refund": "Refunds are available within 30 days of purchase."
-        }
-
-    def run(self, question: str) -> str:
-        keyword = question.lower()
-        for topic, answer in self.faq.items():
-            if topic in keyword:
-                return answer
-        return "Sorry, I couldn't find an answer for that."
-
-tool = FAQTool()
-
-llm = LLM(model="openai/gpt-4")
-response = llm.chat("How do I get a refund?", tools=[tool])
-result = llm.call_tool(response, tools=[tool])
-
-print(result)  # → "Refunds are available within 30 days of purchase."
-```
-
-##### Note: LitAI also supports any tool that is a pydantic BaseModel.
-</details>
-
-<details>
   <summary>Streaming</summary>
 
 <br/>
