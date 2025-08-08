@@ -64,6 +64,9 @@ print(answer)
 
 # I'm an AI by OpenAI
 ```
+
+LitAI is also [OpenAI compatible](#openai-compatible)
+
 <br/>
 
 # Why LitAI for agents and routing LLMs?
@@ -205,6 +208,31 @@ print(llm.chat("What is a fun fact about space?"))
 
 <br/>
 
+### OpenAI compatible
+For those who already have their own SDK to call LLMs (like the OpenAI sdk), you can still use LitAI via the `https://lightning.ai/api/v1` endpoint,
+which will track usage, billing, etc...
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://lightning.ai/api/v1",
+  api_key="LIGHTNING_API_KEY",
+)
+
+completion = client.chat.completions.create(
+  model="openai/gpt-4o",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is a fun fact about space?"
+    }
+  ]
+)
+
+print(completion.choices[0].message.content)
+```
+
 <details>
   <summary>Tools</summary>
 
@@ -276,36 +304,6 @@ llm = LLM(model="openai/gpt-4")
 for chunk in llm.chat("hello", stream=True):
     print(chunk, end="", flush=True)
 ````
-</details>
-
-<details>
-  <summary>Use your own client (like OpenAI)</summary>
-
-<br/>
-
-For those who already have their own SDK to call LLMs (like the OpenAI sdk), you can still use LitAI via the `https://lightning.ai/api/v1` endpoint,
-which will track usage, billing, etc...
-
-```python
-from openai import OpenAI
-
-client = OpenAI(
-  base_url="https://lightning.ai/api/v1",
-  api_key="LIGHTNING_API_KEY",
-)
-
-completion = client.chat.completions.create(
-  model="openai/gpt-4o",
-  messages=[
-    {
-      "role": "user",
-      "content": "What is a fun fact about space?"
-    }
-  ]
-)
-
-print(completion.choices[0].message.content)
-```
 </details>
 
 <details>
