@@ -1,1 +1,1 @@
-lightning_sdk == 2025.08.06rc2
+lightning_sdk >= 2025.08.07
