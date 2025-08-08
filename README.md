@@ -240,13 +240,13 @@ print(completion.choices[0].message.content)
 
 **Note:** These billing rules apply when you use LitAI's OpenAI-compatible endpoint with the `openai` Python library (`from openai import OpenAI`).
 
-Your `api_key` format decides **where the cost of API calls is charged**—to you personally, to one of your team workspaces, or to an organization’s workspace.
+Your `api_key` format decides **where the cost of API calls is charged**—to you personally, to one of your teamspaces, or to an organization’s teamspace.
 
 | Where charges go            | `api_key` format                                | When to use it                                                         | Example                             |
 | :-------------------------- | :---------------------------------------------- | :--------------------------------------------------------------------- | :---------------------------------- |
 | **Your personal account**   | `LIGHTNING_API_KEY`                             | Costs are charged to your own account.                                 | `f7...c60`                          |
-| **Your personal workspace** | `LIGHTNING_API_KEY/{USERNAME}/{WORKSPACE_NAME}` | Charge a specific workspace you created (not part of an organization). | `f7...c60/my-username/research`     |
-| **Organization workspace**  | `LIGHTNING_API_KEY/{ORG_NAME}/{WORKSPACE_NAME}` | Charge a specific workspace inside an organization you belong to.      | `f7...c60/lit-labs/production-apps` |
+| **Your personal teamspace** | `LIGHTNING_API_KEY/{USERNAME}/{TEAMSPACE_NAME}` | Charge a specific teamspace you created (not part of an organization). | `f7...c60/my-username/research`     |
+| **Organization teamspace**  | `LIGHTNING_API_KEY/{ORG_NAME}/{TEAMSPACE_NAME}` | Charge a specific teamspace inside an organization you belong to.      | `f7...c60/lit-labs/production-apps` |
 | **Organization account**    | `LIGHTNING_API_KEY/{ORG_NAME}`                  | Costs are charged to the organization as a whole.                      | `f7...c60/lit-labs`                 |
 
 </details>
