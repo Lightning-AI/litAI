@@ -104,23 +104,6 @@ ModelLiteral = Literal[
     {model_literals}
 ]
 """
-    # The `code` string in Python has a trailing newline by default from the f-string.
-    # To be safe, we'll strip any trailing whitespace from both strings for comparison.
-    # code = code.strip()
-
-    # path = Path("src/litai/utils/supported_public_models.py")
-
-    # Read the existing file if it exists, and normalize line endings and trailing whitespace.
-    # existing = None
-    # if path.exists():
-    #     existing = path.read_text(encoding="utf-8").replace("\r\n", "\n").strip()
-
-    # if existing == code:
-    #     print("supported_public_models.py is up to date.")
-    #     return 0
-    # Write the new file with standardized line endings and a final newline.
-    # It's a common convention for Python files to end with a newline.
-    # Adding one here ensures consistency with most linters.
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(code + "\n")
     print("Wrote src/litai/utils/supported_public_models.py")
