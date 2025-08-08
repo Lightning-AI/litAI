@@ -12,7 +12,9 @@
 
 </div>
 
-LitAI is an LLM router ([OpenAI format](#openai-compatible)) and the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line. It handles retries, fallback, unifies billing, and logging. It's also a minimal agent framework with tool use and no magic - just clean, testable, raw Python code. Build agents, chatbots, apps without flaky APIs or heavy, opaque frameworks.
+LitAI is an LLM router ([OpenAI format](#openai-compatible)) and the easiest way to chat with any model (ChatGPT, Anthropic, etc) in one line. It handles retries, fallback, unifies billing, and logging. It's also a minimal agent framework with tool use and no magic - just clean, testable, raw Python code. Build agents, chatbots, apps without flaky APIs or heavy, opaque frameworks. 
+
+Pay for any model with your [Lightning AI](https://lightning.ai/) credits without additional fees or subscriptions.
 
 &#160;
 
