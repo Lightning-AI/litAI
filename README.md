@@ -233,8 +233,6 @@ completion = client.chat.completions.create(
 print(completion.choices[0].message.content)
 ```
 
----
-
 <details>
 <summary>Billing and Usage Tracking</summary>
 
@@ -250,11 +248,6 @@ Your `api_key` format decides **where the cost of API calls is charged**—to yo
 | **Organization account**    | `LIGHTNING_API_KEY/{ORG_NAME}`                  | Costs are charged to the organization as a whole.                      | `f7...c60/lit-labs`                 |
 
 </details>
-
----
-
-If you want, I can also make an **even shorter, one-paragraph version** that explains the whole thing without the table. That would make it ultra beginner-friendly.
-
 
 <details>
   <summary>Tools</summary>
