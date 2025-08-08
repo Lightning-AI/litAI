@@ -48,6 +48,15 @@ def test_default_model(monkeypatch):
         assert llm.model == "openai/gpt-4o"
 
 
+def test_billing(monkeypatch):
+    """Test billing."""
+    mock_llm_instance = MagicMock()
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_instance)
+    llm = LLM(model="openai/gpt-4", billing="my-org/my-teamspace")
+
+    assert llm._teamspace == "my-org/my-teamspace"
+
+
 @patch("litai.llm.SDKLLM")
 def test_cloudy_models_preload(mock_sdkllm):
     """Test that CLOUDY_MODELS are preloaded during LLM initialization."""
@@ -327,7 +336,7 @@ def test_llm_classify_method(mock_sdkllm_class):
     assert result == "positive"
 
     # Test another classification
-    result = llm.classify("this movie was awful.", ["positive", "negative"])
+    result = llm.classify("this movie was really bad.", ["positive", "negative"])
     assert result == "negative"
 
     # Test with multiple classes
