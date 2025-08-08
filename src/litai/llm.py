@@ -80,7 +80,7 @@ class LLM:
         self,
         model: Optional[ModelLiteral] = None,
         fallback_models: Optional[List[str]] = None,
-        teamspace: Optional[str] = None,
+        billing: Optional[str] = None,
         max_retries: int = 3,
         api_key: Optional[str] = None,
         enable_async: Optional[bool] = False,
@@ -93,7 +93,7 @@ class LLM:
             model (Optional[str]): The main model to use. Defaults to openai/gpt-4o.
             fallback_models (Optional[List[str]]): A list of fallback models to use
                                                    if the main model fails. Defaults to None.
-            teamspace (Optional[List[str]]): Teamspace used for billing.
+            billing (Optional[List[str]]): Teamspace used for billing.
             max_retries (int): The maximum number of retries for API requests. Defaults to 3.
             api_key (Optional[str]): The API key for Lightning AI. Defaults to None.
             enable_async (Optional[bool]): Enable async requests. Defaults to True.
@@ -113,7 +113,7 @@ class LLM:
 
         self._model = model
         self._fallback_models = fallback_models or []
-        self._teamspace = teamspace
+        self._teamspace = billing
         self._enable_async = enable_async
         self._verbose = verbose
         self.max_retries = max_retries
