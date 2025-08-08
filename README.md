@@ -234,20 +234,36 @@ print(completion.choices[0].message.content)
 ```
 
 <details>
-<summary>Billing and Usage Tracking</summary>
+<summary>Granular billing</summary>
 
 <br/>
 
-**Note:** These billing rules apply when you use LitAI's OpenAI-compatible endpoint with the `openai` Python library (`from openai import OpenAI`).
+Organize billing for API calls at organization, teamspace and user level.
 
-Your `api_key` format decides **where the cost of API calls is charged**—to you personally, to one of your teamspaces, or to an organization’s teamspace.
+# Example
 
-| Where charges go            | `api_key` format                                | When to use it                                                         | Example                             |
-| :-------------------------- | :---------------------------------------------- | :--------------------------------------------------------------------- | :---------------------------------- |
-| **Your personal account**   | `LIGHTNING_API_KEY`                             | Costs are charged to your own account.                                 | `f7...c60`                          |
-| **Your personal teamspace** | `LIGHTNING_API_KEY/{USERNAME}/{TEAMSPACE_NAME}` | Charge a specific teamspace you created (not part of an organization). | `f7...c60/my-username/research`     |
-| **Organization teamspace**  | `LIGHTNING_API_KEY/{ORG_NAME}/{TEAMSPACE_NAME}` | Charge a specific teamspace inside an organization you belong to.      | `f7...c60/lit-labs/production-apps` |
-| **Organization account**    | `LIGHTNING_API_KEY/{ORG_NAME}`                  | Costs are charged to the organization as a whole.                      | `f7...c60/lit-labs`                 |
+```python
+from openai import OpenAI
+
+client = OpenAI(
+  base_url="https://lightning.ai/api/v1",
+  api_key="LIGHTNING_API_KEY/lightning-ai/research",
+)
+
+completion = client.chat.completions.create(
+  model="openai/gpt-4o",
+  messages=[
+    {
+      "role": "user",
+      "content": "What is a fun fact about space?"
+    }
+  ]
+)
+
+print(completion.choices[0].message.content)
+```
+
+Read all the [formats here](https://lightning.ai/docs/litai/features/granular-billing)
 
 </details>
 
