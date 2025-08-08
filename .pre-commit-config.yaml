@@ -49,6 +49,15 @@ repos:
       - id: ruff-format
       - id: ruff
 
+  - repo: local
+    hooks:
+      - id: gen-models
+        name: Generate model literals
+        entry: sh -c 'python src/litai/utils/update_model_list.py && git add src/litai/utils/supported_public_models.py'
+        language: python
+        additional_dependencies: [lightning-sdk]
+        pass_filenames: false
+
 exclude: |
   (?x)(
       ^README.md

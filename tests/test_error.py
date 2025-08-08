@@ -3,7 +3,7 @@
 from requests.exceptions import HTTPError
 from requests.models import Response
 
-from litai.utils import ModelCallError, handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+from litai.utils.utils import ModelCallError, handle_http_error, verbose_http_error_log, verbose_sdk_error_log
 
 
 def mock_http_error(

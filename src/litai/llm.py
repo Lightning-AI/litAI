@@ -26,7 +26,8 @@ from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
 from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
-from litai.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+from litai.utils.supported_public_models import ModelLiteral
+from litai.utils.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
 
 if TYPE_CHECKING:
     from langchain_core.tools import StructuredTool
@@ -77,7 +78,7 @@ class LLM:
 
     def __init__(
         self,
-        model: Optional[str] = None,
+        model: Optional[ModelLiteral] = None,
         fallback_models: Optional[List[str]] = None,
         teamspace: Optional[str] = None,
         max_retries: int = 3,
