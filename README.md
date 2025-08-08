@@ -58,7 +58,7 @@ Get your API key [here](https://lightning.ai/sign-up?okbhrt=x334uv8t7v) and chat
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4", api_key="<LIGHTNING_API_KEY>")
+llm = LLM(model="openai/gpt-5", api_key="<LIGHTNING_API_KEY>")
 answer = llm.chat("who are you?")
 print(answer)
 
@@ -88,7 +88,7 @@ Here's a simple agent that tells you the latest news
 import re, requests
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4o", api_key="<LIGHTNING_API_KEY>")
+llm = LLM(model="openai/gpt-5-mini", api_key="<LIGHTNING_API_KEY>")
 
 website_url = "https://text.npr.org/"
 website_text = re.sub(r'<[^>]+>', ' ', requests.get(website_url).text)
@@ -145,7 +145,7 @@ from litai import LLM, tool
 def get_weather(location: str):
     return f"The weather in {location} is sunny"
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 
 result = llm.chat("What's the weather in Tokyo?", tools=[get_weather], auto_call_tools=True)
 # The weather in Tokyo is sunny
@@ -198,7 +198,7 @@ Model APIs can flake or can have outages. LitAI automatically retries in case of
 from litai import LLM
 
 llm = LLM(
-    model="openai/gpt-4",
+    model="openai/gpt-5",
     fallback_models=["google/gemini-2.5-flash", "anthropic/claude-3-5-sonnet-20240620"],
     max_retries=4,
 )
@@ -221,7 +221,7 @@ client = OpenAI(
 )
 
 completion = client.chat.completions.create(
-  model="openai/gpt-4o",
+  model="openai/gpt-5-mini",
   messages=[
     {
       "role": "user",
@@ -251,7 +251,7 @@ client = OpenAI(
 )
 
 completion = client.chat.completions.create(
-  model="openai/gpt-4o",
+  model="openai/gpt-5-mini",
   messages=[
     {
       "role": "user",
@@ -283,7 +283,7 @@ from litai import LLM, tool
 def get_weather(location: str):
     return f"The weather in {location} is sunny"
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 
 chosen_tool = llm.chat("What's the weather in Tokyo?", tools=[get_weather])
 
@@ -313,7 +313,7 @@ class FAQTool(LitTool):
 
 tool = FAQTool()
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 response = llm.chat("How do I get a refund?", tools=[tool])
 result = llm.call_tool(response, tools=[tool])
 
@@ -334,7 +334,7 @@ is the mechanism that allows you to do this.
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 for chunk in llm.chat("hello", stream=True):
     print(chunk, end="", flush=True)
 ````
@@ -354,7 +354,7 @@ import asyncio
 from litai import LLM
 
 async def main():
-    llm = LLM(model="openai/gpt-4", teamspace="lightning-ai/litai", enable_async=True)
+    llm = LLM(model="openai/gpt-5", teamspace="lightning-ai/litai", enable_async=True)
     print(await llm.chat("who are you?"))
 
 
@@ -378,7 +378,7 @@ Each conversation is identified by a unique name. LitAI stores conversation hist
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 
 # Continue a conversation across multiple turns
 llm.chat("What is Lightning AI?", conversation="intro")
@@ -393,7 +393,7 @@ Create multiple named conversations for different tasks.
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 
 llm.chat("Summarize this text", conversation="summarizer")
 llm.chat("What's a RAG pipeline?", conversation="research")
@@ -416,9 +416,9 @@ Set a default model when initializing `LLM` and override it with the `model` par
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 
-# Uses the default model (openai/gpt-4)
+# Uses the default model (openai/gpt-5)
 print(llm.chat("Who created you?"))
 # >> I am a large language model, trained by OpenAI.
 
@@ -443,7 +443,7 @@ the first question and a more expensive model for something that requires more i
 ```python
 from litai import LLM
 
-llm = LLM(model="openai/gpt-4")
+llm = LLM(model="openai/gpt-5")
 
 # use a cheap model for this question
 llm.chat("Is this a number or word: '5'", model="google/gemini-2.5-flash", conversation="story")
