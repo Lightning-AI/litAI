@@ -522,7 +522,7 @@ Buy Lightning AI credits on Lightning to pay for the APIs.
 <details>
   <summary>Do you add fees?</summary>
 
-At this moment we don't add fees on top of the API calls, but that might change in the future.
+We charge exactly what the underlying model provider charges.
 </details>
 
 <details>
