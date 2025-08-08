@@ -119,6 +119,7 @@ ignore-init-module-imports = true
 "__about__.py" = ["D100"]
 "__init__.py" = ["D100"]
 "tests/**/*.py" = ["D100", "D101", "D102", "D103", "D107"]
+"src/litai/utils/__init__.py" = ["D100"]
 
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
