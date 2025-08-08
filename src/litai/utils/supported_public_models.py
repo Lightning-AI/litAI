@@ -37,6 +37,9 @@ MODELS: Final = (
     "lightning-ai/gpt-oss-20b",
     "openai/gpt-4",
     "openai/gpt-4o",
+    "openai/gpt-5-2025-08-07",
+    "openai/gpt-5-mini-2025-08-07",
+    "openai/gpt-5-nano-2025-08-07",
     "openai/o3-mini",
 )
 ModelLiteral = Literal[
@@ -48,5 +51,8 @@ ModelLiteral = Literal[
     "lightning-ai/gpt-oss-20b",
     "openai/gpt-4",
     "openai/gpt-4o",
+    "openai/gpt-5-2025-08-07",
+    "openai/gpt-5-mini-2025-08-07",
+    "openai/gpt-5-nano-2025-08-07",
     "openai/o3-mini",
 ]

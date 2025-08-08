@@ -51,7 +51,6 @@ def main() -> int:
     if path.exists():
         content = path.read_text(encoding="utf-8")
         match = re.search(r"MODELS: Final = \(([\s\S]*?)\)", content)
-        print("match", match)
         if match:
             tuple_content = match.group(1)
             # Use eval to safely parse the tuple content
