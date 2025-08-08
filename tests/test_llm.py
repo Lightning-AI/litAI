@@ -336,7 +336,7 @@ def test_llm_classify_method(mock_sdkllm_class):
     assert result == "positive"
 
     # Test another classification
-    result = llm.classify("this movie was awful.", ["positive", "negative"])
+    result = llm.classify("this movie was really bad.", ["positive", "negative"])
     assert result == "negative"
 
     # Test with multiple classes
