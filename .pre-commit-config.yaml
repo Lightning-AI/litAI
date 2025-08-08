@@ -55,7 +55,7 @@ repos:
         name: Generate model literals
         entry: sh -c 'python src/litai/utils/update_model_list.py && git add src/litai/utils/supported_public_models.py'
         language: python
-        additional_dependencies: [lightning-sdk]
+        additional_dependencies: [lightning-sdk>=2025.08.08]
         pass_filenames: false
 
 exclude: |
