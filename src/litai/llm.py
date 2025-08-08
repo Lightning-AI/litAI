@@ -27,7 +27,7 @@ from lightning_sdk.llm import LLM as SDKLLM
 
 from litai._generated_models import ModelLiteral
 from litai.tools import LitTool
-from litai.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+from litai.utils.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
 
 if TYPE_CHECKING:
     from langchain_core.tools import StructuredTool

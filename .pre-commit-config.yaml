@@ -53,7 +53,7 @@ repos:
     hooks:
       - id: gen-models
         name: Generate model literals
-        entry: python src/litai/gen_models.py
+        entry: sh -c 'python src/litai/utils/update_model_list.py && git add src/litai/utils/supported_public_models.py'
         language: system
         pass_filenames: false
 

@@ -37,9 +37,6 @@ filterwarnings = [
 xfail_strict = true
 junit_duration_report = "call"
 
-[tool.setuptools]
-package-data = { "mypkg" = ["_generated_models.py"] }
-
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
