@@ -76,12 +76,12 @@ Juggling model APIs is a mess - flaky endpoints, retries, fallbacks, billing, lo
 
 WIth LitAI there's nothing to learn - if you know Python you already know LitAI. You get both an LLM router and a minimal agent framework in one. Just write normal Python, call any model, and sprinkle in `.chat()`, `.if_()`, or `.classify()` wherever the model should step in. It gives you lightweight, minimal building blocks you’d end up building yourself: model calls, retries, fallbacks, tool use, memory, streaming - all in clean, testable code. No wrappers, no magic - just code that works the way you expect.
 
-[Compare vs agent frameworks](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
+[LitAI vs other agent frameworks](https://lightning.ai/docs/litai/home/why-litai#comparisons)   
 
 <br/>
 
 # Examples
-What we ***love*** about LitAI is that if you know Python, you already know LitAI - just sprinkle a few "smart" agent decisions.
+If you know Python, you already know LitAI 🤯 - just sprinkle a few "smart" agent decisions.
 
 ### Agent
 Here's a simple agent that tells you the latest news
@@ -101,7 +101,7 @@ print(response)
 
 ### Agentic if statement
 We believe the best way to build agents is with normal Python programs and simple **“agentic if statements.”** 
-That way, 90% of the logic stays deterministic, and the model only steps in when needed. No complex abstractions, no framework magic - just code you can trust and debug.
+This keeps 90% of the logic deterministic, and the model only steps in when needed. No complex abstractions, no framework magic - just code you can trust and debug.
 
 ```python
 from litai import LLM
