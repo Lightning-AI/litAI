@@ -72,7 +72,7 @@ Or use your own [OpenAI compatible client](#openai-compatible)
 
 <br/>
 
-# Why LitAI for agents and routing LLMs?
+# Why LitAI?
 Juggling model APIs is a mess - flaky endpoints, retries, fallbacks, billing, logging, picking the right model every time. Agent frameworks promise to help, but they’re hard to learn, full of magic, hard to control, and break down fast in real-world systems. Even simple things like tool calls or prompt formatting get rewritten behind the scenes. Teams end up rebuilding it all in raw Python just to get something they can trust.
 
 WIth LitAI there's nothing to learn - if you know Python you already know LitAI. You get both an LLM router and a minimal agent framework in one. Just write normal Python, call any model, and sprinkle in `.chat()`, `.if_()`, or `.classify()` wherever the model should step in. It gives you lightweight, minimal building blocks you’d end up building yourself: model calls, retries, fallbacks, tool use, memory, streaming - all in clean, testable code. No wrappers, no magic - just code that works the way you expect.
