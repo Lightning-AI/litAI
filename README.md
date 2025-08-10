@@ -61,8 +61,8 @@ Get your API key [here](https://lightning.ai/sign-up?okbhrt=x334uv8t7v) and chat
 from litai import LLM
 
 # 20+ models... "google/gemini-2.5-pro", "lightning-ai/gpt-oss-120b"
-llm1 = LLM(model="openai/gpt-5", api_key="<LIT_API_KEY>")
-answer = llm1.chat("who are you?")
+llm = LLM(model="openai/gpt-5", api_key="<LIT_API_KEY>")
+answer = llm.chat("who are you?")
 print(answer)
 
 # I'm an AI by OpenAI
