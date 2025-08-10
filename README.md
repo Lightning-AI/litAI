@@ -68,7 +68,7 @@ print(answer)
 # I'm an AI by OpenAI
 ```
 
-If the main model fails 3 times it will call the second one. LitAI is also [OpenAI compatible](#openai-compatible)
+Or use your own [OpenAI compatible client](#openai-compatible)
 
 <br/>
 
