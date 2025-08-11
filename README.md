@@ -68,7 +68,7 @@ print(answer)
 # I'm an AI by OpenAI
 ```
 
-Or use your own [OpenAI compatible client](#openai-compatible)
+Or use any [OpenAI compatible client](#openai-compatible)
 
 <br/>
 
