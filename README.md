@@ -252,7 +252,8 @@ from openai import OpenAI
 
 client = OpenAI(
   base_url="https://lightning.ai/api/v1",
-  api_key="LIGHTNING_API_KEY/organization/teamspace",
+  api_key="LIGHTNING_API_KEY",
+  billing="organization/teamspace",
 )
 
 completion = client.chat.completions.create(
