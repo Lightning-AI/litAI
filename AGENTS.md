@@ -193,4 +193,19 @@ Tips:
 
 Configure retries and fallbacks directly on the LLM:
 
+```python
+from litai import LLM
+
+# Configure with 3 retries and a fallback model
+llm = LLM(
+    model="lightning/llama-4",
+    max_retries=3,
+    fallback_models=["openai/gpt-3.5-turbo"]
+)
+
+# If the primary model fails (e.g., network error, rate limit), the SDK will retry up to 3 times.
+# If all retries fail, it will automatically try the fallback model(s) in order.
+
+response = llm.chat("Tell me a joke.")
+print(response)
 ---
