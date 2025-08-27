@@ -195,15 +195,12 @@ Configure retries and fallbacks directly on the LLM:
 
 - Pre-registered model (recommended to start):
   ```python
-    from litai import LLM
-    llm = LLM(model="lightning/llama-4")
-
-    from litai import LLM
   from litai import LLM
+  llm = LLM(model="lightning/llama-4")
 
   # Requires: export LLAMA_API_KEY="<your-api-key>"
   llm = LLM(model="lightning/llama-4")
-  print(llm.chat("Hello!")))
+  print(llm.chat("Hello!"))
   ```
 
 - Extending the registry with your own model:
@@ -236,6 +233,23 @@ Notes:
 
 ---
 
-## 6) Reliability (Retries and Fallbacks)
-
 Configure retries and fallbacks directly on the LLM:
+
+- **Retries:** You can specify how many times the LLM should retry a failed request (e.g., due to network errors or rate limits).
+- **Fallbacks:** You can provide a list of backup models to use if the primary model fails or is unavailable.
+
+Example:
+
+```python
+from litai import LLM
+
+# Configure with 3 retries and a fallback model
+llm = LLM(
+    model="lightning/llama-4",
+    retries=3,
+    fallback_models=["openai/gpt-3.5-turbo"]
+)
+
+# If llama-4 fails, will retry up to 3 times, then try gpt-3.5-turbo
+response = llm.chat("Tell me a joke.")
+print(response)
