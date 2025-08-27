@@ -44,7 +44,7 @@ Key classes:
 - LLM: main chat client and stateful agent wrapper
 - LitTool: base class for defining tools
 - @tool: decorator to turn a Python function into a tool easily
-- LightningLLM: minimal convenience alias to construct an LLM from a single model name
+- LightningLLM: deprecated alias; use LLM instead
 - Models: a registry of model configurations you can extend
 
 ---
@@ -171,7 +171,7 @@ Tools let the model call structured functions with typed parameters.
 
 - Custom tool classes:
   ```python
-  from litai import LitTool
+  from litai import LLM, LitTool
 
   class Add(LitTool):
       def run(self, a: int, b: int) -> int:
@@ -195,6 +195,10 @@ Configure retries and fallbacks directly on the LLM:
 
 - Pre-registered model (recommended to start):
   ```python
+    from litai import LLM
+    llm = LLM(model="lightning/llama-4")
+
+    from litai import LLM
   from litai import LLM
 
   # Requires: export LLAMA_API_KEY="<your-api-key>"
@@ -251,6 +255,11 @@ Configure retries and fallbacks directly on the LLM:
 
 - Conversation state:
   ```python
+    from litai import LLM
+    llm = LLM(model="lightning/llama-4")
+  from litai import LLM
+  llm = LLM(model="lightning/llama-4")
+
   llm.chat("Hi!")                          # turn 1
   llm.chat("Remind me what I said?")       # turn 2
   history = llm.get_history()              # inspect messages so far
@@ -258,12 +267,6 @@ Configure retries and fallbacks directly on the LLM:
   conversations = llm.list_conversations() # list all conversation ids
   ```
 
-- Convenience alias:
-  ```python
-  from litai import LightningLLM
-  llm = LightningLLM("lightning/llama-4")
-  print(llm.chat("Ping"))
-  ```
 
 Notes:
 - The chat API accepts either a single string (converted to a user message) or a list of message dicts with roles: system, user, assistant.
