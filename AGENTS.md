@@ -109,12 +109,6 @@ Typical usage:
   conversations = llm.list_conversations() # list all conversation ids
   ```
 
-- Convenience alias:
-  ```python
-  from litai import LightningLLM
-  llm = LightningLLM("lightning/llama-4")
-  print(llm.chat("Ping"))
-  ```
 
 Notes:
 - The chat API accepts either a single string (converted to a user message) or a list of message dicts with roles: system, user, assistant.
@@ -186,4 +180,4 @@ llm = LLM(
 
 response = llm.chat("Tell me a joke.")
 print(response)
----
+```
