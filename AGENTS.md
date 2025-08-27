@@ -75,28 +75,6 @@ Typical usage:
   print(llm.chat("Hello!"))
   ```
 
-- Extending the registry with your own model:
-  ```python
-  import os
-  from litai import LLM, Models
-  from litai.llm_config import LLMConfig
-
-  # Ensure your env var is set for auth
-  os.environ["MY_MODEL_API_KEY"] = "<your-api-key>"
-
-  # Register a new model entry
-  Models["my/provider-model"] = LLMConfig(
-      name="my/provider-model",
-      url="https://my-chat-endpoint.example.com/v1/chat/completions",
-      api_key_env_var="MY_MODEL_API_KEY",
-      model_name="my-model-identifier",  # optional
-  )
-
-  # Use your newly-registered model
-  llm = LLM(model="my/provider-model")
-  print(llm.chat("Test message"))
-  ```
-
 ---
 
 ## 4) Basic Usage
