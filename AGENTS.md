@@ -45,7 +45,6 @@ Key classes:
 - LitTool: base class for defining tools
 - @tool: decorator to turn a Python function into a tool easily
 - LightningLLM: deprecated alias; use LLM instead
-- Models: a registry of model configurations you can extend
 
 ---
 
@@ -56,10 +55,6 @@ You can select and configure models in two ways:
 - Use a pre-registered model (via Models):
   - Provide the model key (e.g., "lightning/llama-4").
   - Ensure the environment variable required by that model is set for authentication.
-    Example:
-    ```bash
-    export LLAMA_API_KEY="<your-api-key>"
-    ```
 
 - Provide your own configuration source (e.g., a config object or file you load):
   - Each model needs: name, URL (chat completions endpoint), an environment variable name for the API key, and optionally the model_name used by the server.
