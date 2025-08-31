@@ -15,8 +15,17 @@
 
 import pytest
 from langchain_core.tools import tool as langchain_tool
+from pydantic import BaseModel
 
 from litai import LitTool, tool
+
+
+@pytest.fixture
+def weather_tool_model():
+    class WeatherRequest(BaseModel):
+        """Get weather for location."""
+        location: str
+    return WeatherRequest
 
 
 @pytest.fixture
@@ -226,3 +235,38 @@ def test_convert_tools_unsupported_type():
 
     with pytest.raises(TypeError, match="Unsupported tool type: <class 'function'>"):
         LitTool.convert_tools([get_weather])
+
+
+def test_tool_from_model_with_no_description(weather_tool_model):
+    weather_tool_model.__doc__ = None
+
+    lit_tool = LitTool.from_model(weather_tool_model)
+
+    assert isinstance(lit_tool, LitTool)
+    assert lit_tool.name == "WeatherRequest"
+    assert lit_tool.description == ""
+
+    assert lit_tool.as_tool() == {
+        "type": "function",
+        "function": {
+            "name": "WeatherRequest",
+            "description": "",
+            "parameters": weather_tool_model.model_json_schema(),
+        },
+    }
+
+def test_tool_from_model_with_description(weather_tool_model):
+    lit_tool = LitTool.from_model(weather_tool_model)
+
+    assert isinstance(lit_tool, LitTool)
+    assert lit_tool.name == "WeatherRequest"
+    assert lit_tool.description == "Get weather for location."
+
+    assert lit_tool.as_tool() == {
+        "type": "function",
+        "function": {
+            "name": "WeatherRequest",
+            "description": "Get weather for location.",
+            "parameters": weather_tool_model.model_json_schema(),
+        },
+    }
