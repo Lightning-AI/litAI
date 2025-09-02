@@ -126,7 +126,7 @@ class LitTool(BaseModel):
                 self.name = model.__name__
                 self.description = model.__doc__ or ""
     
-            def run(self, *args, **kwargs) -> Any:
+            def run(self, *args, **kwargs) -> Any:  # type: ignore
                 # Default implementation: validate & return an instance
                 return model(*args, **kwargs)
     
