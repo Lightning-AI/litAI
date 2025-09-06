@@ -24,7 +24,9 @@ from litai import LitTool, tool
 def weather_tool_model():
     class WeatherRequest(BaseModel):
         """Get weather for location."""
+
         location: str
+
     return WeatherRequest
 
 
