@@ -124,7 +124,7 @@ def test_llm_chat(mock_llm_class):
     mock_llm_instance.chat.assert_called_once_with(
         prompt="Hello, who are you?",
         system_prompt="You are a helpful assistant.",
-        max_completion_tokens=500,
+        max_completion_tokens=None,
         images=None,
         conversation=None,
         metadata={"user_api": "123456"},
@@ -181,7 +181,7 @@ def test_model_override(monkeypatch):
     mock_override.chat.assert_called_once_with(
         prompt="Hello",
         system_prompt=None,
-        max_completion_tokens=500,
+        max_completion_tokens=None,
         images=None,
         conversation=None,
         metadata=None,
@@ -231,7 +231,7 @@ def test_fallback_models(monkeypatch):
     mock_fallback_model.chat.assert_called_with(
         prompt="Hello",
         system_prompt=None,
-        max_completion_tokens=500,
+        max_completion_tokens=None,
         images=None,
         conversation=None,
         metadata=None,

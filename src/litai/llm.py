@@ -210,7 +210,7 @@ class LLM:
         model: SDKLLM,
         prompt: str,
         system_prompt: Optional[str],
-        max_completion_tokens: int,
+        max_completion_tokens: Optional[int],
         images: Optional[Union[List[str], str]],
         conversation: Optional[str],
         metadata: Optional[Dict[str, str]],
@@ -272,7 +272,7 @@ class LLM:
         prompt: str,
         system_prompt: Optional[str] = None,
         model: Optional[str] = None,
-        max_tokens: int = 500,
+        max_tokens: Optional[int] = None,
         images: Optional[Union[List[str], str]] = None,
         conversation: Optional[str] = None,
         metadata: Optional[Dict[str, str]] = None,
@@ -287,7 +287,7 @@ class LLM:
             prompt (str): The message to send to the LLM.
             system_prompt (str): The system prompt to set the context. Defaults to assistant's default system prompt.
             model (Optional[str]): The model to override. If provided, this model will be prioritized and used.
-            max_tokens (int): The maximum number of tokens for the response. Defaults to 500.
+            max_tokens (int): The maximum number of tokens for the response. Defaults to None.
             images (Optional[Union[List[str], str]]): List of local or public image paths to pass to the model.
             conversation (Optional[str]): The conversation ID for maintaining context. Defaults to None.
             metadata (Optional[dict[str, str]]): Dictionary for storing additional information of the request.
