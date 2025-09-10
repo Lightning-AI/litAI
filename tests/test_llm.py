@@ -1,8 +1,10 @@
 """LitAI main tests."""
 
+import io
 import json
 import os
 import re
+from contextlib import redirect_stdout
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -254,6 +256,44 @@ async def test_llm_async_chat(monkeypatch):
     result = await llm.chat("Hi there", conversation="async-test")
     assert result == "Hello, async world!"
     mock_sdkllm.chat.assert_called_once()
+
+
+@patch("litai.llm.SDKLLM")
+def test_llm_verbosity(mock_llm_class):
+    """Test verbose error handling across different verbosity levels.."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+
+    # verbose = 2
+    llm = LLM(model="openai/gpt-4", verbose=2, max_retries=1)
+
+    stdout_buffer = io.StringIO()
+    with redirect_stdout(stdout_buffer), pytest.raises(RuntimeError, match="LLM call failed"):
+        llm.chat("Hello", max_completion_tokens="")
+
+    output = stdout_buffer.getvalue()
+    assert "[Full traceback]" in output
+
+    # verbose = 1
+    llm = LLM(model="openai/gpt-4", verbose=1, max_retries=1)
+
+    stdout_buffer = io.StringIO()
+    with redirect_stdout(stdout_buffer), pytest.raises(RuntimeError, match="LLM call failed"):
+        llm.chat("Hello", max_completion_tokens="")
+
+    output = stdout_buffer.getvalue()
+    assert "TypeError" in output
+
+    # verbose = 0
+    llm = LLM(model="openai/gpt-4", verbose=0, max_retries=1)
+
+    stdout_buffer = io.StringIO()
+    with redirect_stdout(stdout_buffer), pytest.raises(RuntimeError, match="LLM call failed"):
+        llm.chat("Hello", max_completion_tokens="")
+
+    output = stdout_buffer.getvalue()
+    assert "LitAI ran into an error" in output
 
 
 def test_get_history(monkeypatch, capsys):

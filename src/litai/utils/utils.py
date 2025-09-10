@@ -14,8 +14,11 @@
 """Utility functions for handling model call errors and logging."""
 
 import re
+import traceback
 from typing import Optional
 
+import requests
+from lightning_sdk.llm import LLM as SDKLLM
 from requests import HTTPError
 
 
@@ -38,6 +41,59 @@ class ModelCallError(Exception):
         self.next_steps = next_steps
         self.model_name = model_name
         self.message = message
+
+
+class ErrorLogger:
+    """Centralized error logging with verbose control."""
+
+    def __init__(self, verbose: int):
+        """Initializes ErrorLogger with verbosity level."""
+        self.verbose = verbose
+
+    def log_http_error(self, error: ModelCallError) -> None:
+        """Log HTTP error with appropriate verbosity."""
+        if not self.verbose:
+            return
+
+        parts = []
+
+        if error.status_code:
+            parts.append(f"[Status code {error.status_code}]:")
+        else:
+            parts.append("[Status code unknown]:")
+
+        if error.reason:
+            parts.append(error.reason)
+
+        if error.next_steps:
+            parts.append(error.next_steps)
+
+        if self.verbose >= 2 and error.original_exception:
+            parts.append(f"\n[Original exception: {error.original_exception}]")
+
+        print(" ".join(parts))
+
+    def log_sdk_error(self, e: Exception) -> None:
+        """Log SDK error with appropriate verbosity."""
+        parts = []
+        error_type = type(e).__name__
+
+        # Basic error type at verbose >= 1
+        if self.verbose >= 1:
+            parts.append(f"[Error type] {error_type}")
+
+        # Detailed info at verbose >= 2
+        if self.verbose >= 2:
+            parts.append(f"[Error message] {str(e)}")
+            parts.append(f"[Full traceback]\n{traceback.format_exc()}")
+
+        if self.verbose == 0:
+            parts.append(
+                "LitAI ran into an error while processing the request to the model. "
+                "Please check the error trace for more details."
+            )
+
+        print("\n".join(parts))
 
 
 def extract_token_counts(response_body: str) -> Optional[tuple[int, int]]:
@@ -93,11 +149,36 @@ def verbose_http_error_log(e: ModelCallError, verbose: int) -> str:
 
 def verbose_sdk_error_log(e: Exception, verbose: int) -> str:
     """Formats a generic SDK error for verbose logging."""
+    import traceback
+
     error_type = type(e).__name__
     message = str(e)
+    full_traceback = traceback.format_exc()
 
-    if verbose == 1:
-        return f"[SDK Error] {error_type}"
+    out = []
+
+    if verbose >= 1:
+        out.append(f"[Error type] {error_type}")
     if verbose >= 2:
-        return f"[SDK Error] {error_type}: {message}"
-    return ""
+        out.append(f"[Error message] {message}")
+        out.append(f"[Full traceback]\n{full_traceback}")
+
+    return "\n".join(out)
+
+
+def handle_model_error(e: Exception, model: SDKLLM, attempt: int, max_retries: int, verbose: int) -> None:
+    """Centralized error handling and logging for model calls."""
+    logger = ErrorLogger(verbose)
+    # Log error for every attempt
+    if isinstance(e, requests.exceptions.HTTPError):
+        error = handle_http_error(e, model.name)
+        logger.log_http_error(error)
+    else:
+        logger.log_sdk_error(e)
+
+    if attempt < max_retries - 1:
+        print(f"🔁 Attempt {attempt + 1}/{max_retries} failed. Retrying...")
+    else:
+        print("-" * 50)
+        print(f"❌ All {max_retries} attempts failed for model {model.name}")
+        print("-" * 50)
