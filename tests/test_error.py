@@ -70,5 +70,5 @@ def test_verbose_sdk_error_log_levels():
     e = AttributeError("object has no attribute '_teamspace_id'")
 
     assert verbose_sdk_error_log(e, verbose=0) == ""
-    assert verbose_sdk_error_log(e, verbose=1) == "[SDK Error] AttributeError"
-    assert verbose_sdk_error_log(e, verbose=2) == "[SDK Error] AttributeError: object has no attribute '_teamspace_id'"
+    assert verbose_sdk_error_log(e, verbose=1) == "[Error type] AttributeError"
+    assert "object has no attribute '_teamspace_id" in verbose_sdk_error_log(e, verbose=2)

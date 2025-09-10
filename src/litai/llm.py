@@ -27,7 +27,7 @@ from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
 from litai.utils.supported_public_models import ModelLiteral
-from litai.utils.utils import handle_http_error, verbose_http_error_log, verbose_sdk_error_log
+from litai.utils.utils import handle_model_error
 
 if TYPE_CHECKING:
     from langchain_core.tools import StructuredTool
@@ -222,44 +222,29 @@ class LLM:
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
-        try:
-            if self._verbose == 2:
-                print(f"⚡️ Using model: {model.name} (Provider: {model.provider})")
+        if self._verbose == 2:
+            print(f"⚡️ Using model: {model.name} (Provider: {model.provider})")
 
-            full_response = full_response if full_response is not None else (self._full_response or False)
-            if tools:
-                full_response = True
-            response = model.chat(
-                prompt=prompt,
-                system_prompt=system_prompt,
-                max_completion_tokens=max_completion_tokens,
-                images=images,
-                conversation=conversation,
-                metadata=metadata,
-                stream=stream,
-                full_response=full_response,
-                tools=tools,
-                **kwargs,
-            )
-            if tools and isinstance(response, V1ConversationResponseChunk):
-                if len(response.choices[0].tool_calls) == 0:
-                    return response.choices[0].delta.content
-                return self._format_tool_response(response, auto_call_tools, lit_tools)
-            return response
-        except requests.exceptions.HTTPError as e:
-            print(f"❌ Model '{model.name}' (Provider: {model.provider}) failed.")
-            error = handle_http_error(e, model.name)
-            if self._verbose:
-                print(verbose_http_error_log(error, verbose=self._verbose))
-            raise e
-        except Exception as e:
-            print(
-                f"LitAI ran into an error while processing the request to {model.name}. "
-                "Please check the error trace for more details."
-            )
-            if self._verbose:
-                print(verbose_sdk_error_log(e, verbose=self._verbose))
-            raise e
+        full_response = full_response if full_response is not None else (self._full_response or False)
+        if tools:
+            full_response = True
+        response = model.chat(
+            prompt=prompt,
+            system_prompt=system_prompt,
+            max_completion_tokens=max_completion_tokens,
+            images=images,
+            conversation=conversation,
+            metadata=metadata,
+            stream=stream,
+            full_response=full_response,
+            tools=tools,
+            **kwargs,
+        )
+        if tools and isinstance(response, V1ConversationResponseChunk):
+            if len(response.choices[0].tool_calls) == 0:
+                return response.choices[0].delta.content
+            return self._format_tool_response(response, auto_call_tools, lit_tools)
+        return response
 
     def context_length(self, model: Optional[str] = None) -> int:
         """Returns the context length of the specified model."""
@@ -329,8 +314,9 @@ class LLM:
                     auto_call_tools=auto_call_tools,
                     **kwargs,
                 )
-            except Exception:
+            except Exception as e:
                 print(f"💥 Failed to override with model '{model}'")
+                handle_model_error(e, sdk_model, 0, self.max_retries, self._verbose)
 
         # Retry with fallback models
         for model in self.models:
@@ -350,8 +336,9 @@ class LLM:
                         auto_call_tools=auto_call_tools,
                         **kwargs,
                     )
-                except Exception:
-                    print(f"🔁 Attempt {attempt}/{self.max_retries} failed. Retrying...")
+
+                except Exception as e:
+                    handle_model_error(e, model, attempt, self.max_retries, self._verbose)
 
         raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
 
