@@ -289,11 +289,14 @@ class LLM:
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
             auto_call_tools (bool): Tools will be executed automatically whenever applicable. Defaults to False.
+            reasoning_effort (Optional[Literal["low", "medium", "high"]]): The level of reasoning effort for the model.
             **kwargs (Any): Additional keyword arguments
 
         Returns:
             str: The response from the LLM.
         """
+        if reasoning_effort is not None and reasoning_effort not in ["low", "medium", "high"]:
+            raise ValueError("reasoning_effort must be 'low', 'medium', 'high', or None")
         self._wait_for_model()
         lit_tools = LitTool.convert_tools(tools)
         processed_tools = [tool.as_tool() for tool in lit_tools] if lit_tools else None
