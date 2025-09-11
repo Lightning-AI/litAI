@@ -71,9 +71,8 @@ setup(
     install_requires=_load_requirements(),
     extras_require=_prepare_extras(),
     project_urls={
-        "Bug Tracker": "https://github.com/Lightning-AI/LightningLLM/issues",
-        "Documentation": "https://lightning-ai.github.io/LightningLLM/",
-        "Source Code": "https://github.com/Lightning-AI/LightningLLM",
+        "Bug Tracker": "https://github.com/Lightning-AI/litAI/issues",
+        "Source Code": "https://github.com/Lightning-AI/litAI",
     },
     classifiers=[
         "Environment :: Console",
