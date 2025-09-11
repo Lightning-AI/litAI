@@ -250,7 +250,9 @@ class LLM:
         """Returns the context length of the specified model."""
         self._wait_for_model()
         assert self._llm is not None, "LLM backend must be initialized"
-        return self._llm.context_length(model)
+        if not model:
+            return self._llm.context_length
+        return self._llm.get_context_length(model)
 
     def chat(  # noqa: D417
         self,

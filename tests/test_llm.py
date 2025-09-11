@@ -92,7 +92,7 @@ def test_llm_context_length(mock_llm_class):
 
     LLMCLIENT._sdkllm_cache.clear()
     mock_llm_instance = MagicMock()
-    mock_llm_instance.context_length.return_value = 8000
+    mock_llm_instance.context_length = 8000
 
     mock_llm_class.return_value = mock_llm_instance
 
