@@ -1,1 +1,1 @@
-lightning_sdk >= 2025.09.10
+lightning_sdk >= 2025.09.11

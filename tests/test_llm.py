@@ -92,7 +92,7 @@ def test_llm_context_length(mock_llm_class):
 
     LLMCLIENT._sdkllm_cache.clear()
     mock_llm_instance = MagicMock()
-    mock_llm_instance.context_length = 8000
+    mock_llm_instance.get_context_length.return_value = 8000
 
     mock_llm_class.return_value = mock_llm_instance
 
@@ -134,6 +134,7 @@ def test_llm_chat(mock_llm_class):
         full_response=False,
         my_kwarg="test-kwarg",
         tools=None,
+        reasoning_effort=None,
     )
     test_kwargs = mock_llm_instance.chat.call_args.kwargs
     assert test_kwargs.get("my_kwarg") == "test-kwarg"
@@ -190,6 +191,7 @@ def test_model_override(monkeypatch):
         stream=False,
         full_response=True,
         tools=None,
+        reasoning_effort=None,
     )
 
 
@@ -240,6 +242,7 @@ def test_fallback_models(monkeypatch):
         stream=False,
         full_response=False,
         tools=None,
+        reasoning_effort=None,
     )
 
 

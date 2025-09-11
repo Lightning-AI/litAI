@@ -19,7 +19,7 @@ import logging
 import os
 import threading
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
@@ -219,6 +219,7 @@ class LLM:
         tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
         lit_tools: Optional[List[LitTool]] = None,
         auto_call_tools: bool = False,
+        reasoning_effort: Optional[str] = None,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -238,6 +239,7 @@ class LLM:
             stream=stream,
             full_response=full_response,
             tools=tools,
+            reasoning_effort=reasoning_effort,
             **kwargs,
         )
         if tools and isinstance(response, V1ConversationResponseChunk):
@@ -251,7 +253,8 @@ class LLM:
         self._wait_for_model()
         assert self._llm is not None, "LLM backend must be initialized"
         if not model:
-            return self._llm.context_length
+            # TODO use metadata
+            return self._llm.get_context_length(self._model)
         return self._llm.get_context_length(model)
 
     def chat(  # noqa: D417
@@ -266,6 +269,7 @@ class LLM:
         stream: bool = False,
         tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
         auto_call_tools: bool = False,
+        reasoning_effort: Optional[Literal["low", "medium", "high"]] = None,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -286,11 +290,14 @@ class LLM:
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
             auto_call_tools (bool): Tools will be executed automatically whenever applicable. Defaults to False.
+            reasoning_effort (Optional[Literal["low", "medium", "high"]]): The level of reasoning effort for the model.
             **kwargs (Any): Additional keyword arguments
 
         Returns:
             str: The response from the LLM.
         """
+        if reasoning_effort is not None and reasoning_effort not in ["low", "medium", "high"]:
+            raise ValueError("reasoning_effort must be 'low', 'medium', 'high', or None")
         self._wait_for_model()
         lit_tools = LitTool.convert_tools(tools)
         processed_tools = [tool.as_tool() for tool in lit_tools] if lit_tools else None
@@ -314,6 +321,7 @@ class LLM:
                     tools=processed_tools,
                     lit_tools=lit_tools,
                     auto_call_tools=auto_call_tools,
+                    reasoning_effort=reasoning_effort,
                     **kwargs,
                 )
             except Exception as e:
@@ -336,6 +344,7 @@ class LLM:
                         tools=processed_tools,
                         lit_tools=lit_tools,
                         auto_call_tools=auto_call_tools,
+                        reasoning_effort=reasoning_effort,
                         **kwargs,
                     )
 
