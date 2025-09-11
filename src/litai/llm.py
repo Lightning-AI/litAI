@@ -19,7 +19,7 @@ import logging
 import os
 import threading
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
@@ -219,6 +219,7 @@ class LLM:
         tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
         lit_tools: Optional[List[LitTool]] = None,
         auto_call_tools: bool = False,
+        reasoning_effort: Optional[str] = None,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -238,6 +239,7 @@ class LLM:
             stream=stream,
             full_response=full_response,
             tools=tools,
+            reasoning_effort=reasoning_effort,
             **kwargs,
         )
         if tools and isinstance(response, V1ConversationResponseChunk):
@@ -266,6 +268,7 @@ class LLM:
         stream: bool = False,
         tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
         auto_call_tools: bool = False,
+        reasoning_effort: Optional[Literal["low", "medium", "high"]] = None,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -314,6 +317,7 @@ class LLM:
                     tools=processed_tools,
                     lit_tools=lit_tools,
                     auto_call_tools=auto_call_tools,
+                    reasoning_effort=reasoning_effort,
                     **kwargs,
                 )
             except Exception as e:
@@ -336,6 +340,7 @@ class LLM:
                         tools=processed_tools,
                         lit_tools=lit_tools,
                         auto_call_tools=auto_call_tools,
+                        reasoning_effort=reasoning_effort,
                         **kwargs,
                     )
 
