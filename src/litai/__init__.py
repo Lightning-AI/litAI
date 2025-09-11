@@ -14,8 +14,8 @@
 """Chat with LLMs through Lightning."""
 
 from litai.__about__ import *  # noqa: F401, F403
-from litai.llm import LLM, LightningLLM  # noqa: F401
+from litai.llm import LLM  # noqa: F401
 from litai.llm_config import Models
 from litai.tools import LitTool, tool
 
-__all__ = ["LLM", "Models", "LitTool", "tool", "LightningLLM"]
+__all__ = ["LLM", "Models", "LitTool", "tool"]

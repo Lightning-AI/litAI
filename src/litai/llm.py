@@ -530,16 +530,3 @@ class LLM:
             str: A string representation of the instance.
         """
         return f"<LLM model={self.model} fallback_models={self.fallback_models} max_retries={self.max_retries}"
-
-
-class LightningLLM(LLM):
-    """Alias for the LightningLLM class."""
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initializes the LightningLLM client."""
-        super().__init__(*args, **kwargs)
-        warnings.warn(
-            "The LightningLLM class is deprecated. Use the LLM class instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
