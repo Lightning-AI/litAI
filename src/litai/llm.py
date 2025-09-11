@@ -253,7 +253,8 @@ class LLM:
         self._wait_for_model()
         assert self._llm is not None, "LLM backend must be initialized"
         if not model:
-            return self._llm.context_length
+            # TODO use metadata
+            return self._llm.get_context_length(self._model)
         return self._llm.get_context_length(model)
 
     def chat(  # noqa: D417
