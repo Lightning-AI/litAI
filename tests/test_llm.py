@@ -119,6 +119,7 @@ def test_llm_chat(mock_llm_class):
         system_prompt="You are a helpful assistant.",
         metadata={"user_api": "123456"},
         my_kwarg="test-kwarg",
+        reasoning_effort="none",
     )
 
     assert isinstance(response, str)
@@ -134,7 +135,7 @@ def test_llm_chat(mock_llm_class):
         full_response=False,
         my_kwarg="test-kwarg",
         tools=None,
-        reasoning_effort=None,
+        reasoning_effort="none",
     )
     test_kwargs = mock_llm_instance.chat.call_args.kwargs
     assert test_kwargs.get("my_kwarg") == "test-kwarg"
