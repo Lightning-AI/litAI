@@ -302,11 +302,8 @@ class LLM:
         """
         if reasoning_effort is not None and reasoning_effort not in ["low", "medium", "high"]:
             raise ValueError("reasoning_effort must be 'low', 'medium', 'high', or None")
-        if (
-            reasoning_effort is None
-            and model in NONE_REASONING_MODELS
-            or self._model in NONE_REASONING_MODELS
-            and model is None
+        if reasoning_effort is None and (
+            model in NONE_REASONING_MODELS or (self._model in NONE_REASONING_MODELS and model is None)
         ):
             reasoning_effort = "none"
 
