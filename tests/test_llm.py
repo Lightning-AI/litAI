@@ -119,7 +119,50 @@ def test_llm_chat(mock_llm_class):
         system_prompt="You are a helpful assistant.",
         metadata={"user_api": "123456"},
         my_kwarg="test-kwarg",
-        reasoning_effort="none",
+        reasoning_effort=None,
+    )
+
+    assert isinstance(response, str)
+    assert "helpful" in response.lower()
+    mock_llm_instance.chat.assert_called_once_with(
+        prompt="Hello, who are you?",
+        system_prompt="You are a helpful assistant.",
+        max_completion_tokens=None,
+        images=None,
+        conversation=None,
+        metadata={"user_api": "123456"},
+        stream=False,
+        full_response=False,
+        my_kwarg="test-kwarg",
+        tools=None,
+        reasoning_effort=None,
+    )
+    test_kwargs = mock_llm_instance.chat.call_args.kwargs
+    assert test_kwargs.get("my_kwarg") == "test-kwarg"
+
+    llm.reset_conversation("test")
+    mock_llm_instance.reset_conversation.assert_called_once()
+
+
+@patch("litai.llm.SDKLLM")
+def test_reasoning_effort_override(mock_llm_class):
+    """Test LigtningLLM chat."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.chat.return_value = "Hello! I am a helpful assistant."
+
+    mock_llm_class.return_value = mock_llm_instance
+
+    llm = LLM(model="google/gemini-2.0-flash")
+
+    response = llm.chat(
+        "Hello, who are you?",
+        system_prompt="You are a helpful assistant.",
+        metadata={"user_api": "123456"},
+        my_kwarg="test-kwarg",
+        reasoning_effort=None,
     )
 
     assert isinstance(response, str)
