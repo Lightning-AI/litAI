@@ -272,7 +272,7 @@ class LLM:
         stream: bool = False,
         tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
         auto_call_tools: bool = False,
-        reasoning_effort: Optional[Literal["low", "medium", "high"]] = None,
+        reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
         **kwargs: Any,
     ) -> str:
         """Sends a message to the LLM and retrieves a response.
@@ -293,14 +293,13 @@ class LLM:
             categorized by conversation ID.
             full_response (bool): Whether the entire response should be returned from the chat.
             auto_call_tools (bool): Tools will be executed automatically whenever applicable. Defaults to False.
-            reasoning_effort (Optional[Literal["low", "medium", "high"]]):
-                The level of reasoning effort for the model.
+            reasoning_effort (Optional[Literal["low", "medium", "high"]]): The level of reasoning effort for the model.
             **kwargs (Any): Additional keyword arguments
 
         Returns:
             str: The response from the LLM.
         """
-        if reasoning_effort is not None and reasoning_effort not in ["low", "medium", "high"]:
+        if reasoning_effort is not None and reasoning_effort not in ["none", "low", "medium", "high"]:
             raise ValueError("reasoning_effort must be 'low', 'medium', 'high', or None")
         if reasoning_effort is None and (
             model in NONE_REASONING_MODELS or (self._model in NONE_REASONING_MODELS and model is None)
