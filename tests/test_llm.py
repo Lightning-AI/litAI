@@ -178,7 +178,7 @@ def test_reasoning_effort_override(mock_llm_class):
         full_response=False,
         my_kwarg="test-kwarg",
         tools=None,
-        reasoning_effort="none",
+        reasoning_effort=None,
     )
     test_kwargs = mock_llm_instance.chat.call_args.kwargs
     assert test_kwargs.get("my_kwarg") == "test-kwarg"
