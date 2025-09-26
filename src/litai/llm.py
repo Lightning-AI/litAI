@@ -526,7 +526,9 @@ class LLM:
         Answer with only 'yes' or 'no'.
         """
 
-        response = self.chat(prompt).strip().lower()
+        response = self.chat(prompt)
+        if isinstance(response, str):
+            response = response.strip().lower()
         return "yes" in response
 
     def classify(self, input: str, choices: List[str]) -> str:
@@ -552,7 +554,9 @@ class LLM:
         Answer with only one of the choices.
         """.strip()
 
-        response = self.chat(prompt).strip().lower()
+        response = self.chat(prompt)
+        if isinstance(response, str):
+            response = response.strip().lower()
 
         if response in normalized_choices:
             return response
