@@ -14,6 +14,7 @@
 """LLM client class."""
 
 import datetime
+import itertools
 import json
 import logging
 import os
@@ -317,7 +318,7 @@ class LLM:
                         name=model, teamspace=self._teamspace, enable_async=self._enable_async
                     )
                 sdk_model = self._sdkllm_cache[model_key]
-                return self._model_call(
+                response = self._model_call(
                     model=sdk_model,
                     prompt=prompt,
                     system_prompt=system_prompt,
@@ -332,6 +333,24 @@ class LLM:
                     reasoning_effort=reasoning_effort,
                     **kwargs,
                 )
+                if not stream and response:
+                    return response
+                if stream:
+                    peek_iter, return_iter = itertools.tee(response)
+                    try:
+                        peek_iter, return_iter = itertools.tee(response)
+                        has_content = False
+
+                        for chunk in peek_iter:
+                            if chunk != "":
+                                has_content = True
+                                break
+
+                        if has_content:
+                            return return_iter
+                    except StopIteration:
+                        pass
+
             except Exception as e:
                 print(f"💥 Failed to override with model '{model}'")
                 handle_model_error(e, sdk_model, 0, self.max_retries, self._verbose)
@@ -357,16 +376,22 @@ class LLM:
                     )
 
                     if not stream and response:
-                        yield response
-                        return
-                    elif stream:
-                        has_content = False
-                        for chunk in response:
-                            if chunk != "":
-                                has_content = True
-                                yield chunk
-                        if has_content:
-                            return
+                        return response
+                    if stream:
+                        peek_iter, return_iter = itertools.tee(response)
+                        try:
+                            peek_iter, return_iter = itertools.tee(response)
+                            has_content = False
+
+                            for chunk in peek_iter:
+                                if chunk != "":
+                                    has_content = True
+                                    break
+
+                            if has_content:
+                                return return_iter
+                        except StopIteration:
+                            pass
 
                 except Exception as e:
                     handle_model_error(e, model, attempt, self.max_retries, self._verbose)
