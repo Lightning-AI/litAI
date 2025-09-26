@@ -535,6 +535,8 @@ class LLM:
         response = self.chat(prompt)
         if isinstance(response, str):
             response = response.strip().lower()
+        elif isinstance(response, Iterator):
+            response = "".join(list(response)).strip().lower()
         return "yes" in response
 
     def classify(self, input: str, choices: List[str]) -> str:
@@ -563,6 +565,8 @@ class LLM:
         response = self.chat(prompt)
         if isinstance(response, str):
             response = response.strip().lower()
+        elif isinstance(response, Iterator):
+            response = "".join(list(response)).strip().lower()
 
         if response in normalized_choices:
             return response
