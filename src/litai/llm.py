@@ -334,7 +334,7 @@ class LLM:
         for model in self.models:
             for attempt in range(self.max_retries):
                 try:
-                    return self._model_call(
+                    response = self._model_call(
                         model=model,
                         prompt=prompt,
                         system_prompt=system_prompt,
@@ -349,6 +349,18 @@ class LLM:
                         reasoning_effort=reasoning_effort,
                         **kwargs,
                     )
+
+                    if not stream and response:
+                        yield response
+                        return
+                    elif stream:
+                        has_content = False
+                        for chunk in response:
+                            if chunk != "":
+                                has_content = True
+                                yield chunk
+                        if has_content:
+                            return
 
                 except Exception as e:
                     handle_model_error(e, model, attempt, self.max_retries, self._verbose)
