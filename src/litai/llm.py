@@ -14,12 +14,13 @@
 """LLM client class."""
 
 import datetime
+import itertools
 import json
 import logging
 import os
 import threading
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Literal, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
@@ -274,7 +275,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
         **kwargs: Any,
-    ) -> str:
+    ) -> Union[str, Iterator[str]]:
         """Sends a message to the LLM and retrieves a response.
 
         Args:
@@ -317,7 +318,7 @@ class LLM:
                         name=model, teamspace=self._teamspace, enable_async=self._enable_async
                     )
                 sdk_model = self._sdkllm_cache[model_key]
-                return self._model_call(
+                response = self._model_call(
                     model=sdk_model,
                     prompt=prompt,
                     system_prompt=system_prompt,
@@ -332,6 +333,23 @@ class LLM:
                     reasoning_effort=reasoning_effort,
                     **kwargs,
                 )
+                if not stream and response:
+                    return response
+                if stream:
+                    try:
+                        peek_iter, return_iter = itertools.tee(response)
+                        has_content = False
+
+                        for chunk in peek_iter:
+                            if chunk != "":
+                                has_content = True
+                                break
+
+                        if has_content:
+                            return return_iter
+                    except StopIteration:
+                        pass
+
             except Exception as e:
                 print(f"💥 Failed to override with model '{model}'")
                 handle_model_error(e, sdk_model, 0, self.max_retries, self._verbose)
@@ -340,7 +358,7 @@ class LLM:
         for model in self.models:
             for attempt in range(self.max_retries):
                 try:
-                    return self._model_call(
+                    response = self._model_call(
                         model=model,
                         prompt=prompt,
                         system_prompt=system_prompt,
@@ -355,6 +373,23 @@ class LLM:
                         reasoning_effort=reasoning_effort,
                         **kwargs,
                     )
+
+                    if not stream and response:
+                        return response
+                    if stream:
+                        try:
+                            peek_iter, return_iter = itertools.tee(response)
+                            has_content = False
+
+                            for chunk in peek_iter:
+                                if chunk != "":
+                                    has_content = True
+                                    break
+
+                            if has_content:
+                                return return_iter
+                        except StopIteration:
+                            pass
 
                 except Exception as e:
                     handle_model_error(e, model, attempt, self.max_retries, self._verbose)
@@ -497,7 +532,11 @@ class LLM:
         Answer with only 'yes' or 'no'.
         """
 
-        response = self.chat(prompt).strip().lower()
+        response = self.chat(prompt)
+        if isinstance(response, str):
+            response = response.strip().lower()
+        elif isinstance(response, Iterator):
+            response = "".join(list(response)).strip().lower()
         return "yes" in response
 
     def classify(self, input: str, choices: List[str]) -> str:
@@ -523,7 +562,11 @@ class LLM:
         Answer with only one of the choices.
         """.strip()
 
-        response = self.chat(prompt).strip().lower()
+        response = self.chat(prompt)
+        if isinstance(response, str):
+            response = response.strip().lower()
+        elif isinstance(response, Iterator):
+            response = "".join(list(response)).strip().lower()
 
         if response in normalized_choices:
             return response
