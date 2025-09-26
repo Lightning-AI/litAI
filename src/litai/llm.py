@@ -330,7 +330,6 @@ class LLM:
                 if not stream and response:
                     return response
                 if stream:
-                    peek_iter, return_iter = itertools.tee(response)
                     try:
                         peek_iter, return_iter = itertools.tee(response)
                         has_content = False
