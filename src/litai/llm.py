@@ -20,7 +20,7 @@ import logging
 import os
 import threading
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Literal, Optional, Sequence, Union
 
 import requests
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
@@ -273,7 +273,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
         **kwargs: Any,
-    ) -> str:
+    ) -> Union[str, Iterator[str]]:
         """Sends a message to the LLM and retrieves a response.
 
         Args:
