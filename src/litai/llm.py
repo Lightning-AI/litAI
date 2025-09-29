@@ -21,6 +21,7 @@ import logging
 import os
 import threading
 import warnings
+from asyncio import Task
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, Iterator, List, Literal, Optional, Sequence, Union
 
 import nest_asyncio
@@ -359,7 +360,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[str, AsyncIterator[str], None]:
+    ) -> Union[str, None]:
         """Sends a message to the LLM synchronously with full retry/fallback logic."""
         for sdk_model in models_to_try:
             for attempt in range(self.max_retries):
@@ -420,7 +421,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
         **kwargs: Any,
-    ) -> Union[str, Iterator[str], AsyncIterator[str]]:
+    ) -> Union[str, Task[str | AsyncIterator[str] | None] | None]:
         """Sends a message to the LLM and retrieves a response.
 
         Args:
