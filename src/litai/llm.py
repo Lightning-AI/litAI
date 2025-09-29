@@ -210,7 +210,7 @@ class LLM:
             return LLM.call_tool(result, lit_tools) or ""
         return json.dumps(result)
 
-    def _model_call(
+    def _model_call(  # noqa: D417
         self,
         model: SDKLLM,
         prompt: str,
@@ -289,7 +289,7 @@ class LLM:
 
         return None
 
-    async def async_chat(
+    async def async_chat(  # noqa: D417
         self,
         models_to_try: List[SDKLLM],
         prompt: str,
