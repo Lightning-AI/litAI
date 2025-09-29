@@ -278,7 +278,7 @@ class LLM:
 
         if has_content_found:
 
-            async def rebuilt():
+            async def rebuilt() -> AsyncIterator[str]:
                 for peeked_item in peeked_items:
                     yield peeked_item
 
@@ -311,7 +311,7 @@ class LLM:
         for sdk_model in models_to_try:
             for attempt in range(self.max_retries):
                 try:
-                    response = await self._model_call(
+                    response = await self._model_call(  # type: ignore[misc]
                         model=sdk_model,
                         prompt=prompt,
                         system_prompt=system_prompt,
@@ -360,7 +360,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[str] = None,
         **kwargs: Any,
-    ) -> Union[str, None]:
+    ) -> Union[str, Iterator[str], None]:
         """Sends a message to the LLM synchronously with full retry/fallback logic."""
         for sdk_model in models_to_try:
             for attempt in range(self.max_retries):
