@@ -41,8 +41,6 @@ CLOUDY_MODELS = {
     "google/gemini-2.5-flash",
 }
 
-# this nmodels support reasoning_effort='none'
-NONE_REASONING_MODELS = ["google/gemini-2.0-flash", "google/gemini-2.5-flash-lite-preview-06-17"]
 
 logger = logging.getLogger(__name__)
 
@@ -301,10 +299,6 @@ class LLM:
         """
         if reasoning_effort is not None and reasoning_effort not in ["none", "low", "medium", "high"]:
             raise ValueError("reasoning_effort must be 'low', 'medium', 'high', or None")
-        if reasoning_effort is None and (
-            model in NONE_REASONING_MODELS or (self._model in NONE_REASONING_MODELS and model is None)
-        ):
-            reasoning_effort = "none"
 
         self._wait_for_model()
         lit_tools = LitTool.convert_tools(tools)
