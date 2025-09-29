@@ -182,3 +182,13 @@ def handle_model_error(e: Exception, model: SDKLLM, attempt: int, max_retries: i
         print("-" * 50)
         print(f"❌ All {max_retries} attempts failed for model {model.name}")
         print("-" * 50)
+
+
+def handle_empty_response(model: SDKLLM, attempt: int, max_retries: int) -> None:
+    """Handles empty responses from model calls."""
+    if attempt < max_retries - 1:
+        print(f"🔁 Received empty response. Attempt {attempt + 1}/{max_retries} failed. Retrying...")
+    else:
+        print("-" * 50)
+        print(f"❌ All {max_retries} attempts received empty responses for model {model.name}.")
+        print("-" * 50)

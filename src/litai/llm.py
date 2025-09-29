@@ -13,6 +13,7 @@
 # limitations under the License.
 """LLM client class."""
 
+import asyncio
 import datetime
 import itertools
 import json
@@ -20,15 +21,16 @@ import logging
 import os
 import threading
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Literal, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, Iterator, List, Literal, Optional, Sequence, Union
 
+import nest_asyncio
 import requests
 from lightning_sdk.lightning_cloud.openapi import V1ConversationResponseChunk
 from lightning_sdk.llm import LLM as SDKLLM
 
 from litai.tools import LitTool
 from litai.utils.supported_public_models import ModelLiteral
-from litai.utils.utils import handle_model_error
+from litai.utils.utils import handle_empty_response, handle_model_error
 
 if TYPE_CHECKING:
     from langchain_core.tools import StructuredTool
@@ -259,6 +261,151 @@ class LLM:
             return self._llm.get_context_length(self._model)
         return self._llm.get_context_length(model)
 
+    async def _peek_and_rebuild_async(
+        self,
+        agen: AsyncIterator[str],
+    ) -> Optional[AsyncIterator[str]]:
+        """Peek into an async iterator to check for non-empty content and rebuild it if necessary."""
+        peeked_items: List[str] = []
+        has_content_found = False
+
+        async for item in agen:
+            peeked_items.append(item)
+            if item != "":
+                has_content_found = True
+                break
+
+        if has_content_found:
+
+            async def rebuilt():
+                for peeked_item in peeked_items:
+                    yield peeked_item
+
+                async for remaining_item in agen:
+                    yield remaining_item
+
+            return rebuilt()
+
+        return None
+
+    async def async_chat(
+        self,
+        models_to_try: List[SDKLLM],
+        prompt: str,
+        system_prompt: Optional[str],
+        max_tokens: Optional[int],
+        images: Optional[Union[List[str], str]],
+        conversation: Optional[str],
+        metadata: Optional[Dict[str, str]],
+        stream: bool,
+        full_response: Optional[bool] = None,
+        model: Optional[SDKLLM] = None,
+        tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
+        lit_tools: Optional[List[LitTool]] = None,
+        auto_call_tools: bool = False,
+        reasoning_effort: Optional[str] = None,
+        **kwargs: Any,
+    ) -> Union[str, AsyncIterator[str], None]:
+        """Sends a message to the LLM asynchronously with full retry/fallback logic."""
+        for sdk_model in models_to_try:
+            for attempt in range(self.max_retries):
+                try:
+                    response = await self._model_call(
+                        model=sdk_model,
+                        prompt=prompt,
+                        system_prompt=system_prompt,
+                        max_completion_tokens=max_tokens,
+                        images=images,
+                        conversation=conversation,
+                        metadata=metadata,
+                        stream=stream,
+                        tools=tools,
+                        lit_tools=lit_tools,
+                        full_response=full_response,
+                        auto_call_tools=auto_call_tools,
+                        reasoning_effort=reasoning_effort,
+                        **kwargs,
+                    )
+
+                    if not stream:
+                        if response:
+                            return response
+                        handle_empty_response(sdk_model, attempt, self.max_retries)
+                    else:
+                        non_empty_stream = await self._peek_and_rebuild_async(response)
+                        if non_empty_stream:
+                            return non_empty_stream
+                        handle_empty_response(sdk_model, attempt, self.max_retries)
+                    if sdk_model == model:
+                        print(f"💥 Failed to override with model '{model}'")
+                except Exception as e:
+                    handle_model_error(e, sdk_model, attempt, self.max_retries, self._verbose)
+        raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
+
+    def sync_chat(
+        self,
+        models_to_try: List[SDKLLM],
+        prompt: str,
+        system_prompt: Optional[str],
+        max_tokens: Optional[int],
+        images: Optional[Union[List[str], str]],
+        conversation: Optional[str],
+        metadata: Optional[Dict[str, str]],
+        stream: bool,
+        model: Optional[SDKLLM] = None,
+        full_response: Optional[bool] = None,
+        tools: Optional[Sequence[Union[str, Dict[str, Any]]]] = None,
+        lit_tools: Optional[List[LitTool]] = None,
+        auto_call_tools: bool = False,
+        reasoning_effort: Optional[str] = None,
+        **kwargs: Any,
+    ) -> Union[str, AsyncIterator[str], None]:
+        """Sends a message to the LLM synchronously with full retry/fallback logic."""
+        for sdk_model in models_to_try:
+            for attempt in range(self.max_retries):
+                try:
+                    response = self._model_call(
+                        model=sdk_model,
+                        prompt=prompt,
+                        system_prompt=system_prompt,
+                        max_completion_tokens=max_tokens,
+                        images=images,
+                        conversation=conversation,
+                        metadata=metadata,
+                        stream=stream,
+                        tools=tools,
+                        lit_tools=lit_tools,
+                        full_response=full_response,
+                        auto_call_tools=auto_call_tools,
+                        reasoning_effort=reasoning_effort,
+                        **kwargs,
+                    )
+
+                    if not stream:
+                        if response:
+                            return response
+                        handle_empty_response(sdk_model, attempt, self.max_retries)
+                    if stream:
+                        try:
+                            peek_iter, return_iter = itertools.tee(response)
+                            has_content = False
+                            for chunk in peek_iter:
+                                if chunk != "":
+                                    has_content = True
+                                    break
+                            if has_content:
+                                return return_iter
+                            handle_empty_response(sdk_model, attempt, self.max_retries)
+                        except StopIteration:
+                            pass
+
+                except Exception as e:
+                    if sdk_model == model:
+                        print(f"💥 Failed to override with model '{model}'")
+                    handle_model_error(e, sdk_model, attempt, self.max_retries, self._verbose)
+
+        raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
+
     def chat(  # noqa: D417
         self,
         prompt: str,
@@ -273,7 +420,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
         **kwargs: Any,
-    ) -> Union[str, Iterator[str]]:
+    ) -> Union[str, Iterator[str], AsyncIterator[str]]:
         """Sends a message to the LLM and retrieves a response.
 
         Args:
@@ -304,91 +451,61 @@ class LLM:
         self._wait_for_model()
         lit_tools = LitTool.convert_tools(tools)
         processed_tools = [tool.as_tool() for tool in lit_tools] if lit_tools else None
+
+        models_to_try = []
+        sdk_model = None
         if model:
-            try:
-                model_key = f"{model}::{self._teamspace}::{self._enable_async}"
-                if model_key not in self._sdkllm_cache:
-                    self._sdkllm_cache[model_key] = SDKLLM(
-                        name=model, teamspace=self._teamspace, enable_async=self._enable_async
-                    )
-                sdk_model = self._sdkllm_cache[model_key]
-                response = self._model_call(
+            model_key = f"{model}::{self._teamspace}::{self._enable_async}"
+            if model_key not in self._sdkllm_cache:
+                self._sdkllm_cache[model_key] = SDKLLM(
+                    name=model, teamspace=self._teamspace, enable_async=self._enable_async
+                )
+            sdk_model = self._sdkllm_cache[model_key]
+            models_to_try.append(sdk_model)
+        models_to_try.extend(self.models)
+
+        if self._enable_async:
+            nest_asyncio.apply()
+            nest_asyncio.apply()
+
+            loop = asyncio.get_event_loop()
+            return loop.create_task(
+                self.async_chat(
+                    models_to_try=models_to_try,
                     model=sdk_model,
                     prompt=prompt,
                     system_prompt=system_prompt,
-                    max_completion_tokens=max_tokens,
+                    max_tokens=max_tokens,
                     images=images,
                     conversation=conversation,
                     metadata=metadata,
                     stream=stream,
+                    full_response=self._full_response,
                     tools=processed_tools,
                     lit_tools=lit_tools,
                     auto_call_tools=auto_call_tools,
                     reasoning_effort=reasoning_effort,
                     **kwargs,
                 )
-                if not stream and response:
-                    return response
-                if stream:
-                    try:
-                        peek_iter, return_iter = itertools.tee(response)
-                        has_content = False
+            )
 
-                        for chunk in peek_iter:
-                            if chunk != "":
-                                has_content = True
-                                break
-
-                        if has_content:
-                            return return_iter
-                    except StopIteration:
-                        pass
-
-            except Exception as e:
-                print(f"💥 Failed to override with model '{model}'")
-                handle_model_error(e, sdk_model, 0, self.max_retries, self._verbose)
-
-        # Retry with fallback models
-        for model in self.models:
-            for attempt in range(self.max_retries):
-                try:
-                    response = self._model_call(
-                        model=model,
-                        prompt=prompt,
-                        system_prompt=system_prompt,
-                        max_completion_tokens=max_tokens,
-                        images=images,
-                        conversation=conversation,
-                        metadata=metadata,
-                        stream=stream,
-                        tools=processed_tools,
-                        lit_tools=lit_tools,
-                        auto_call_tools=auto_call_tools,
-                        reasoning_effort=reasoning_effort,
-                        **kwargs,
-                    )
-
-                    if not stream and response:
-                        return response
-                    if stream:
-                        try:
-                            peek_iter, return_iter = itertools.tee(response)
-                            has_content = False
-
-                            for chunk in peek_iter:
-                                if chunk != "":
-                                    has_content = True
-                                    break
-
-                            if has_content:
-                                return return_iter
-                        except StopIteration:
-                            pass
-
-                except Exception as e:
-                    handle_model_error(e, model, attempt, self.max_retries, self._verbose)
-
-        raise RuntimeError(f"💥 [LLM call failed after {self.max_retries} attempts]")
+        return self.sync_chat(
+            models_to_try=models_to_try,
+            model=sdk_model,
+            prompt=prompt,
+            system_prompt=system_prompt,
+            max_tokens=max_tokens,
+            images=images,
+            conversation=conversation,
+            metadata=metadata,
+            stream=stream,
+            full_response=self._full_response,
+            tools=processed_tools,
+            lit_tools=lit_tools,
+            auto_call_tools=auto_call_tools,
+            reasoning_effort=reasoning_effort,
+            **kwargs,
+        )
 
     @staticmethod
     def call_tool(
