@@ -328,15 +328,12 @@ class LLM:
                         **kwargs,
                     )
 
-                    if not stream:
-                        if response:
-                            return response
-                        handle_empty_response(sdk_model, attempt, self.max_retries)
-                    else:
-                        non_empty_stream = await self._peek_and_rebuild_async(response)
-                        if non_empty_stream:
-                            return non_empty_stream
-                        handle_empty_response(sdk_model, attempt, self.max_retries)
+                    if not stream and response:
+                        return response
+                    non_empty_stream = await self._peek_and_rebuild_async(response)
+                    if non_empty_stream:
+                        return non_empty_stream
+                    handle_empty_response(sdk_model, attempt, self.max_retries)
                     if sdk_model == model:
                         print(f"💥 Failed to override with model '{model}'")
                 except Exception as e:
@@ -382,10 +379,8 @@ class LLM:
                         **kwargs,
                     )
 
-                    if not stream:
-                        if response:
-                            return response
-                        handle_empty_response(sdk_model, attempt, self.max_retries)
+                    if not stream and response:
+                        return response
                     if stream:
                         try:
                             peek_iter, return_iter = itertools.tee(response)
@@ -396,9 +391,9 @@ class LLM:
                                     break
                             if has_content:
                                 return return_iter
-                            handle_empty_response(sdk_model, attempt, self.max_retries)
                         except StopIteration:
                             pass
+                    handle_empty_response(sdk_model, attempt, self.max_retries)
 
                 except Exception as e:
                     if sdk_model == model:
