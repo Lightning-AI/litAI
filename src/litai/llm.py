@@ -330,9 +330,10 @@ class LLM:
 
                     if not stream and response:
                         return response
-                    non_empty_stream = await self._peek_and_rebuild_async(response)
-                    if non_empty_stream:
-                        return non_empty_stream
+                    if stream and response:
+                        non_empty_stream = await self._peek_and_rebuild_async(response)
+                        if non_empty_stream:
+                            return non_empty_stream
                     handle_empty_response(sdk_model, attempt, self.max_retries)
                     if sdk_model == model:
                         print(f"💥 Failed to override with model '{model}'")
