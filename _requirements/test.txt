@@ -1,7 +1,7 @@
 coverage>=5.0
 pytest>=6.0
 pytest-cov
-mypy==1.17.1
+mypy==1.18.2
 psutil>=7.0.0
 pytest-asyncio>=1.1.0
 openai>=1.97.1
