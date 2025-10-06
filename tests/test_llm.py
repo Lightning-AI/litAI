@@ -247,6 +247,175 @@ def test_fallback_models(monkeypatch):
     )
 
 
+def test_empty_response_retries(monkeypatch):
+    """Test fallback model logic when main model fails."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_main_model = MagicMock()
+    mock_main_model.name = "main-model"
+    mock_fallback_model = MagicMock()
+    mock_fallback_model.name = "fallback-model"
+
+    mock_main_model.chat.side_effect = ""
+    mock_fallback_model.chat.side_effect = [
+        "",
+        "",
+        "Fallback response",
+    ]
+
+    def mock_llm_constructor(name, teamspace="default-teamspace", **kwargs):
+        if name == "main-model":
+            return mock_main_model
+        if name == "fallback-model":
+            return mock_fallback_model
+        raise ValueError(f"Unknown model: {name}")
+
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_constructor)
+
+    llm = LLM(
+        model="main-model",
+        fallback_models=["fallback-model"],
+    )
+
+    response = llm.chat(prompt="Hello")
+    assert response == "Fallback response"
+
+    assert mock_main_model.chat.call_count == 3
+    assert mock_fallback_model.chat.call_count == 3
+
+    mock_fallback_model.chat.assert_called_with(
+        prompt="Hello",
+        system_prompt=None,
+        max_completion_tokens=None,
+        images=None,
+        conversation=None,
+        metadata=None,
+        stream=False,
+        full_response=False,
+        tools=None,
+        reasoning_effort=None,
+    )
+
+
+def test_empty_response_retries_sync_stream(monkeypatch):
+    """Test that retries work correctly for sync streaming when empty responses are returned."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+
+    class MockSyncIterator:
+        def __init__(self, items):
+            self.items = items
+            self.index = 0
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            if self.index < len(self.items):
+                item = self.items[self.index]
+                self.index += 1
+                return item
+            raise StopIteration
+
+    mock_responses = [
+        MockSyncIterator([]),
+        MockSyncIterator([]),
+        MockSyncIterator(["hello", " world"]),
+    ]
+
+    mock_main_model = MagicMock()
+
+    def mock_llm_constructor(name, teamspace="default-teamspace", **kwargs):
+        if name == "main-model":
+            mock_main_model.chat.side_effect = mock_responses
+            mock_main_model.name = "main-model"
+            return mock_main_model
+        raise ValueError(f"Unknown model: {name}")
+
+    monkeypatch.setattr("litai.llm.SDKLLM", mock_llm_constructor)
+
+    llm = LLM(
+        model="main-model",
+    )
+
+    response = llm.chat("test prompt", stream=True)
+
+    assert mock_main_model.chat.call_count == 3
+
+    result = ""
+    for chunk in response:
+        result += chunk
+    assert result == "hello world"
+
+
+@pytest.mark.asyncio
+async def test_empty_response_retries_async(monkeypatch):
+    """Test that retries work correctly for async  and non streaming when empty responses are returned."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_sdkllm = MagicMock()
+    mock_sdkllm.name = "mock-model"
+
+    mock_sdkllm.chat = AsyncMock(side_effect=["", "", "Main response"])
+
+    monkeypatch.setattr("litai.llm.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
+
+    llm = LLM(
+        model="main-model",
+        enable_async=True,
+    )
+    response = await llm.chat(prompt="Hello", stream=False)
+
+    assert response == "Main response"
+    assert mock_sdkllm.chat.call_count == 3
+
+
+@pytest.mark.asyncio
+async def test_empty_response_retries_async_stream(monkeypatch):
+    """Test that retries work correctly for async streaming when empty responses are returned."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_sdkllm = MagicMock()
+    mock_sdkllm.name = "mock-model"
+
+    class MockAsyncIterator:
+        def __init__(self, items):
+            self.items = items
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            if self.index < len(self.items):
+                item = self.items[self.index]
+                self.index += 1
+                return item
+            raise StopAsyncIteration
+
+    mock_sdkllm.chat = AsyncMock(
+        side_effect=[MockAsyncIterator([]), MockAsyncIterator([]), MockAsyncIterator(["Main", " response"])]
+    )
+
+    monkeypatch.setattr("litai.llm.SDKLLM", lambda *args, **kwargs: mock_sdkllm)
+
+    llm = LLM(
+        model="main-model",
+        enable_async=True,
+    )
+
+    response = await llm.chat(prompt="Hello", stream=True)
+    result = ""
+    async for chunk in response:
+        result += chunk
+    assert result == "Main response"
+    assert mock_sdkllm.chat.call_count == 3
+
+
 @pytest.mark.asyncio
 async def test_llm_async_chat(monkeypatch):
     """Test async requests."""
