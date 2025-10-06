@@ -417,7 +417,7 @@ class LLM:
         auto_call_tools: bool = False,
         reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
         **kwargs: Any,
-    ) -> Union[str, Task[str | AsyncIterator[str] | None] | Iterator[str], None]:
+    ) -> Union[str, Task[Union[str, AsyncIterator[str], None]], Iterator[str], None]:
         """Sends a message to the LLM and retrieves a response.
 
         Args:
