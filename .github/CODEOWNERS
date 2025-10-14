@@ -2,10 +2,6 @@
 
 # These owners will be the default owners for everything in the repo. Unless a later match takes precedence,
 # @global-owner1 and @global-owner2 will be requested for review when someone opens a pull request.
-* @borda @k223kim @aniketmaurya @Abdul-0x4A @Danidapena @tchaton
-
-# CI/CD and configs
-/.github/       @borda
-*.yml           @borda
+* @k223kim @aniketmaurya @Abdul-0x4A @Danidapena @tchaton
 
 /README.md                           @williamfalcon
