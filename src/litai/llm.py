@@ -31,7 +31,6 @@ from litai.utils.utils import handle_http_error, verbose_http_error_log, verbose
 
 if TYPE_CHECKING:
     from langchain_core.tools import StructuredTool
-    from pydantic import BaseModel
 
 CLOUDY_MODELS = {
     "openai/gpt-4o",
@@ -359,7 +358,7 @@ class LLM:
     @staticmethod
     def call_tool(
         response: Union[List[dict], dict, str], tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None
-    ) -> Optional[Union[str, "BaseModel", list["BaseModel"]]]:
+    ) -> Optional[str]:
         """Calls a tool with the given response."""
         if tools is None:
             raise ValueError("No tools provided")
