@@ -128,8 +128,8 @@ class LitTool(BaseModel):
                 self.description = model.__doc__ or ""
 
             def run(self, *args, **kwargs) -> Any:  # type: ignore
-                # Default implementation: validate & return an instance
-                return model(*args, **kwargs)
+                # Default implementation: validate & return a serialized instance
+                return model(*args, **kwargs).model_dump()
 
             def _extract_parameters(self) -> Dict[str, Any]:
                 return model.model_json_schema()
