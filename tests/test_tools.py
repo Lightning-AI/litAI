@@ -261,7 +261,7 @@ def test_tool_from_model_with_no_description(weather_tool_model):
 def test_tool_run_from_model(weather_tool_model):
     lit_tool = LitTool.from_model(weather_tool_model)
 
-    assert lit_tool.run(location="NYC") == weather_tool_model(location="NYC")
+    assert lit_tool.run(location="NYC") == weather_tool_model(location="NYC").model_dump()
 
 
 def test_tool_from_model_with_description(weather_tool_model):
