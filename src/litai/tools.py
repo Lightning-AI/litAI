@@ -118,6 +118,25 @@ class LitTool(BaseModel):
         return LangchainTool()
 
     @classmethod
+    def from_model(cls, model: type[BaseModel]) -> "LitTool":
+        """Create a LitTool that exposes a Pydantic model as a structured schema."""
+
+        class ModelTool(LitTool):
+            def setup(self) -> None:
+                super().setup()
+                self.name = model.__name__
+                self.description = model.__doc__ or ""
+
+            def run(self, *args, **kwargs) -> Any:  # type: ignore
+                # Default implementation: validate & return a serialized instance
+                return model(*args, **kwargs).model_dump()
+
+            def _extract_parameters(self) -> Dict[str, Any]:
+                return model.model_json_schema()
+
+        return ModelTool()
+
+    @classmethod
     def convert_tools(cls, tools: Optional[Sequence[Union["LitTool", "StructuredTool"]]]) -> List["LitTool"]:
         """Convert a list of tools into LitTool instances.
 
