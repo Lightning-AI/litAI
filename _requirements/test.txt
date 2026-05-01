@@ -1,5 +1,5 @@
 coverage>=5.0
-pytest>=6.0
+pytest>=8.4.2
 pytest-cov
 mypy==1.19.1
 psutil>=7.0.0
