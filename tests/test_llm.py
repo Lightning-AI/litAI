@@ -136,12 +136,44 @@ def test_llm_chat(mock_llm_class):
         my_kwarg="test-kwarg",
         tools=None,
         reasoning_effort=None,
+        temperature=None,
     )
     test_kwargs = mock_llm_instance.chat.call_args.kwargs
     assert test_kwargs.get("my_kwarg") == "test-kwarg"
 
     llm.reset_conversation("test")
     mock_llm_instance.reset_conversation.assert_called_once()
+
+
+@patch("litai.llm.SDKLLM")
+def test_llm_chat_temperature(mock_llm_class):
+    """Test that temperature is passed through to the underlying model."""
+    from litai.llm import LLM as LLMCLIENT
+
+    LLMCLIENT._sdkllm_cache.clear()
+    mock_llm_instance = MagicMock()
+    mock_llm_instance.chat.return_value = "Creative response."
+    mock_llm_class.return_value = mock_llm_instance
+
+    llm = LLM(model="openai/gpt-4")
+    response = llm.chat("Tell me a story.", temperature=0.9)
+
+    assert response == "Creative response."
+    call_kwargs = mock_llm_instance.chat.call_args.kwargs
+    assert call_kwargs["temperature"] == 0.9
+
+
+@patch("litai.llm.SDKLLM")
+def test_llm_chat_temperature_validation(mock_llm_class):
+    """Test that invalid temperature values raise ValueError."""
+    mock_llm_class.return_value = MagicMock()
+    llm = LLM(model="openai/gpt-4")
+
+    with pytest.raises(ValueError, match="temperature must be between 0 and 2"):
+        llm.chat("Hello", temperature=3.0)
+
+    with pytest.raises(ValueError, match="temperature must be between 0 and 2"):
+        llm.chat("Hello", temperature=-0.1)
 
 
 def test_model_override(monkeypatch):
@@ -193,6 +225,7 @@ def test_model_override(monkeypatch):
         full_response=True,
         tools=None,
         reasoning_effort=None,
+        temperature=None,
     )
 
 
@@ -244,6 +277,7 @@ def test_fallback_models(monkeypatch):
         full_response=False,
         tools=None,
         reasoning_effort=None,
+        temperature=None,
     )
 
 
@@ -295,6 +329,7 @@ def test_empty_response_retries(monkeypatch):
         full_response=False,
         tools=None,
         reasoning_effort=None,
+        temperature=None,
     )
 
 
