@@ -225,6 +225,7 @@ class LLM:
         lit_tools: Optional[List[LitTool]] = None,
         auto_call_tools: bool = False,
         reasoning_effort: Optional[str] = None,
+        temperature: Optional[float] = None,
         **kwargs: Any,
     ) -> str:
         """Handles the model call and logs appropriate messages."""
@@ -245,6 +246,7 @@ class LLM:
             full_response=full_response,
             tools=tools,
             reasoning_effort=reasoning_effort,
+            temperature=temperature,
             **kwargs,
         )
         if tools and isinstance(response, V1ConversationResponseChunk):
@@ -305,6 +307,7 @@ class LLM:
         lit_tools: Optional[List[LitTool]] = None,
         auto_call_tools: bool = False,
         reasoning_effort: Optional[str] = None,
+        temperature: Optional[float] = None,
         **kwargs: Any,
     ) -> Union[str, AsyncIterator[str], None]:
         """Sends a message to the LLM asynchronously with full retry/fallback logic."""
@@ -325,6 +328,7 @@ class LLM:
                         full_response=full_response,
                         auto_call_tools=auto_call_tools,
                         reasoning_effort=reasoning_effort,
+                        temperature=temperature,
                         **kwargs,
                     )
 
@@ -357,6 +361,7 @@ class LLM:
         lit_tools: Optional[List[LitTool]] = None,
         auto_call_tools: bool = False,
         reasoning_effort: Optional[str] = None,
+        temperature: Optional[float] = None,
         **kwargs: Any,
     ) -> Union[str, Iterator[str], None]:
         """Sends a message to the LLM synchronously with full retry/fallback logic."""
@@ -377,6 +382,7 @@ class LLM:
                         full_response=full_response,
                         auto_call_tools=auto_call_tools,
                         reasoning_effort=reasoning_effort,
+                        temperature=temperature,
                         **kwargs,
                     )
 
@@ -416,6 +422,7 @@ class LLM:
         tools: Optional[Sequence[Union[LitTool, "StructuredTool"]]] = None,
         auto_call_tools: bool = False,
         reasoning_effort: Optional[Literal["none", "low", "medium", "high"]] = None,
+        temperature: Optional[float] = None,
         **kwargs: Any,
     ) -> Union[str, Task[Union[str, AsyncIterator[str], None]], Iterator[str], None]:
         """Sends a message to the LLM and retrieves a response.
@@ -437,6 +444,8 @@ class LLM:
             full_response (bool): Whether the entire response should be returned from the chat.
             auto_call_tools (bool): Tools will be executed automatically whenever applicable. Defaults to False.
             reasoning_effort (Optional[Literal["low", "medium", "high"]]): The level of reasoning effort for the model.
+            temperature (Optional[float]): Sampling temperature between 0 and 2. Higher values make output more random,
+            lower values make it more deterministic. Defaults to None (uses model default).
             **kwargs (Any): Additional keyword arguments
 
         Returns:
@@ -444,6 +453,9 @@ class LLM:
         """
         if reasoning_effort is not None and reasoning_effort not in ["none", "low", "medium", "high"]:
             raise ValueError("reasoning_effort must be 'low', 'medium', 'high', or None")
+
+        if temperature is not None and not (0.0 <= temperature <= 2.0):
+            raise ValueError("temperature must be between 0 and 2")
 
         self._wait_for_model()
         lit_tools = LitTool.convert_tools(tools)
@@ -482,6 +494,7 @@ class LLM:
                     lit_tools=lit_tools,
                     auto_call_tools=auto_call_tools,
                     reasoning_effort=reasoning_effort,
+                    temperature=temperature,
                     **kwargs,
                 )
             )
@@ -501,6 +514,7 @@ class LLM:
             lit_tools=lit_tools,
             auto_call_tools=auto_call_tools,
             reasoning_effort=reasoning_effort,
+            temperature=temperature,
             **kwargs,
         )
 
